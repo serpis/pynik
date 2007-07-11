@@ -3,6 +3,7 @@
 from __main__ import *
 import __main__
 from commands import Command
+import htmlentitydefs
 
 class EchoCommand(Command): 
 	triggers = ['echo']   
@@ -77,6 +78,7 @@ class TempCommand(Command):
 		if m:
 			bot.tell(target, 'Temperature in ' + argument_text + ': ' + m.group(1))
 
+
 class GoogleCommand(Command):
 	triggers = ['google']
 
@@ -103,8 +105,15 @@ class GoogleCommand(Command):
 			m = re.search('<div class=g><a href="(.*?)" class=l>(.*?)<\/a>(.*?)</div>', feeddata)
 
 			if m:
-				text = m.group(2)
+				def unescape(text):
+					def fromhtml(s):
+						try: return htmlentitydefs.entitydefs[s.group(1)]
+						except KeyError: return chr(int(s.group(1)))
+					return re.sub("&#?(\w+);", fromhtml, text)
+
+				text = unescape(m.group(2))
 				text = re.sub('<.+?>', '', text)
+				text = unescape(text)
 
 				link = m.group(1)
 	

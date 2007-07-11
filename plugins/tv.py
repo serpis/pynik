@@ -1,6 +1,7 @@
 # coding: latin-1
 
 from commands import Command
+import re
 
 class TVCommand(Command):
 	triggers = ['tv']

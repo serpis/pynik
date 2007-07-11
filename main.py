@@ -4,10 +4,7 @@ import sys
 import socket
 import re
 import plugin_handler
-import rollback_importer
 import traceback
-
-importer = rollback_importer.RollbackImporter()
 
 def plugin_instances():
 	return plugin_handler._instances

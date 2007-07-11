@@ -2,102 +2,98 @@
 
 from __future__ import with_statement
 from commands import Command
+import string, random
 
-class FavoriteCommands(Command):
-	triggers = ['setfav', 'fav', 'favorites', 'delfav']
-	favorites = {}
+class quote:
+	quote = ""
+	index = 0
+	played = 0
+
+class QuoteCollection:
+	quotes = []
+	plays = []
+	quotefilename = "data/quotes.txt"
+	playlistfilename = "data/playlist.txt"
+	
+	def __init__(self):
+		self.LoadFromFiles()
+	
+	def GetQuote(self):
+			print 'GetQuote'
+			self.NormalizePlays()
+			DueQuotes = self.GetDueQuotes()
+			if DueQuotes:
+				chosen = random.choice(DueQuotes).index
+				self.quotes[chosen].played += 1
+
+				return self.quotes[chosen].quote
+			else:
+				print "emtpy list"
+
+	def NormalizePlays(self):
+		plays = []
+
+		for quote in self.quotes:
+			plays.append(quote.played)
+		minplays = int(min(plays))
+		if minplays != 0:
+		   for quote in self.quotes:
+			   quote.played = int(quote.played) - int(minplays)
+
+	def GetDueQuotes(self):
+		for quote in self.quotes:
+			print quote.played
+
+		DueQuotes = []
+		for quote in self.quotes:
+			if quote.played == 0:
+				DueQuotes.append(quote)
+		return DueQuotes;
+
+	def LoadFromFiles(self):
+		indexCounter = 0
+		with open(self.quotefilename, 'r') as quotefile:
+			with open(self.playlistfilename, 'r') as playlistfile:
+				for line in quotefile:
+					currentQuote = quote()
+	
+					currentQuote.quote = string.strip(line)
+				  	played = playlistfile.readline()
+				  	try:
+						currentQuote.played = int(played)
+				  	except:
+						currentQuote.played = 0
+				  	currentQuote.index = indexCounter
+				  
+					self.quotes.append(currentQuote)
+					indexCounter += 1
+
+	def SaveToFiles(self):
+		quotefile = open(self.quotefilename, "w")
+		playlistfile = open(self.playlistfilename, "w")
+		quotesToWrite = []
+		playlistToWrite = [] 
+		for quote in self.quotes:
+			quotesToWrite.append(quote.quote + "\n")
+			playlistToWrite.append(str(quote.played) + "\n")
+		
+		quotefile.writelines(quotesToWrite)
+		playlistfile.writelines(playlistToWrite)
+		
+		quotefile.close()
+		playlistfile.close()
+
+
+
+class QuoteCommand(Command):
+	triggers = ['qotd']
+	collection = QuoteCollection()
 
 	def __init__(self):
 		pass
 
-	def on_delfav(self, bot, source, target, trigger, argument):
-		if source == 'serp':
-			m = re.search('^(\w+)', argument)
-		
-			if m:
-				fav_trig = m.group(1)
-
-				if fav_trig in self.favorites:
-					del self.favorites[fav_trig]
-	
-					self.save()
-
-					bot.tell(target, 'Favorite \'' + fav_trig  + '\' deleted.')
-
-	def on_setfav(self, bot, source, target, trigger, argument):
-		m = re.search('^(\w+)\s+((ftp:\/\/|http:\/\/|https:\/\/)[^\s]+)$', argument)
-		
-		if m:
-			fav_trig = m.group(1)
-			fav_url = m.group(2)
-			
-			self.favorites[fav_trig] = fav_url
-	
-			self.save()
-
-			bot.tell(target, 'Favorite \'' + fav_trig  + '\' added.')
-
-	def on_favorites(self, bot, source, target, trigger, argument):
-		from copy import copy
-		l = copy(self.favorites.keys())
-		l.sort()
-		bot.tell(target, 'Favorites: ' + ', '.join(l) + '.')
-	
-	def on_fav(self, bot, source, target, trigger, argument):
-		m = re.search('(\S+)\s+(.*)$', argument)
-		
-		if m:
-			fav_trig = m.group(1);
-			fav_args = m.group(2);
-
-			if fav_trig in self.favorites:
-				url = self.favorites[fav_trig]
-				url = url.replace('%s', fav_args)
-				bot.tell(target, url)
-			else:
-				bot.tell(target, 'No such favorite \'' + fav_trig + '\'.')
-	
 	def on_trigger(self, bot, source, target, trigger, argument):
-		{
-			'setfav': self.on_setfav,
-			'fav': self.on_fav,
-			'favorites': self.on_favorites,
-			'delfav': self.on_delfav
-		}[trigger](bot, source, target, trigger, argument)
+		self.on_qotd(bot, source, target, trigger, argument)
 
-	def save(self):
-		file = open('data/favorites.txt', 'w')
-
-		for key in self.favorites.keys():
-			line = key + ' ' + self.favorites[key]
-
-			file.write(line)
-			file.write('\n')
-
-		file.close()
-
-	def on_load(self):
-		self.favorites.clear()
-
-		file = open('data/favorites.txt', 'r')
-		
-		while True:
-			line = file.readline()
-			if not line:
-				break
-
-		#with open('data/favorites.txt', 'r') as file:
-		#	for line in file:
-			m = re.search('^(.+?)\s(.+)$', line)
-
-			if m:
-				key = m.group(1)
-				url = m.group(2)
-
-				self.favorites[key] = url
-
-		file.close()
-	
-	def on_unload(self):
-		self.favorites.clear()
-
+	def on_qotd(self, bot, source, target, trigger, argument):
+		bot.tell(target, self.collection.GetQuote())
