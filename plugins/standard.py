@@ -1,9 +1,10 @@
 # coding: latin-1
 
-from __main__ import *
 import __main__
 from commands import Command
 import htmlentitydefs
+import string
+import re
 
 class EchoCommand(Command): 
 	triggers = ['echo']   
@@ -22,7 +23,7 @@ class InsultCommand(Command):
 
 	def on_trigger(self, bot, source, target, trigger, argument):
 		t = source
-		if len(argument):
+		if argument:
 			m = re.search('(\w+)', argument)
 
 			if m:
@@ -58,6 +59,8 @@ class CommandsCommand(Command):
 
 		bot.tell(target, 'Commands: ' + ', '.join(sorted(triggers)) + '.')
 
+asciilize = string.maketrans("åäöÅÄÖ", "aaoAAO")
+_get_temp_re = re.compile('^\s*(.+)\s*$')
 class TempCommand(Command):
 	triggers = ['temp']
 
@@ -68,12 +71,11 @@ class TempCommand(Command):
 			argument = 'ryd'
 
 		argument_text = argument
-		argument = argument.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace('Å', 'A').replace('Ä', 'A').replace('Ö', 'O')
+		argument = argument.translate(asciilize)
 
 		data = urlopen('http://www.temperatur.nu/termo/' + argument + '/temp.txt').read()
 
-		p = re.compile('^\s*(.+)\s*$')
-		m = p.match(data)
+		m = _get_temp_re.match(data)
 	
 		if m:
 			bot.tell(target, 'Temperature in ' + argument_text + ': ' + m.group(1))
@@ -86,7 +88,7 @@ class GoogleCommand(Command):
 		from urllib import urlopen
 		import urllib2
 
-		url = 'http://www.google.com/search?client=safari&rls=en&q=' + argument.replace('+', '%2B').replace(' ', '+') + '&ie=UTF-8&oe=UTF-8'
+		url = 'http://www.google.com/search?rls=en&q=' + argument.replace('+', '%2B').replace(' ', '+') + '&ie=UTF-8&oe=UTF-8'
 
 		request = urllib2.Request(url)
 		request.add_header('User-Agent', 'PynikOpenAnything/1.0 +')
