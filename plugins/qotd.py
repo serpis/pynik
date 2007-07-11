@@ -6,7 +6,7 @@ import string, random
 
 class quote:
 	quote = ""
-	index = 0
+	index = 1
 	played = 0
 
 class QuoteCollection:
@@ -52,7 +52,7 @@ class QuoteCollection:
 		return DueQuotes;
 
 	def LoadFromFiles(self):
-		indexCounter = 0
+		indexCounter = 1
 		with open(self.quotefilename, 'r') as quotefile:
 			with open(self.playlistfilename, 'r') as playlistfile:
 				for line in quotefile:
