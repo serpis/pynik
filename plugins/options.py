@@ -1,9 +1,10 @@
 # coding: latin-1
 
 from commands import Command
-import __main__
+from plugins import Plugin
 import re
 import sys
+import utility
 
 class OptionsCommand(Command):
 	triggers = ['options']
@@ -14,10 +15,7 @@ class OptionsCommand(Command):
 	
 	def on_trigger(self, bot, source, target, trigger, argument):
 		if source == 'serp' or source == 'teetow':
-			#if target[0] == '#':
-			#	bot.tell(target, 'PM me, please.')
-			#else:
-				self.on_message(bot, source, target, trigger, argument)
+			self.on_message(bot, source, target, trigger, argument)
 
 	def on_message(self, bot, source, target, trigger, argument):
 		m = re.search('^(\w*)\.?(\w*)\.?(\w*)\(?(.*?)\)?$', argument)
@@ -37,9 +35,9 @@ class OptionsCommand(Command):
 
 				plugin = None
 
-				for p in __main__.plugin_instances().keys():
+				for p in utility.UtilityPlugin.instance.get_all_subclasses(Plugin):
 					if p.__name__ == module_name:
-						plugin = __main__.plugin_instances()[p]
+						plugin = p.instance
 						break
 				
 				options = self.get_members_by_name(module, option_name)
@@ -91,7 +89,7 @@ class OptionsCommand(Command):
 	def get_nodes_from_scratch(self, stratch):
 		modules = {}
 
-		for module in __main__.plugin_instances():
+		for module in utility.UtilityPlugin.instance.get_all_subclasses(Plugin):
 			name = module.__name__
 			modules[name] = module
 
@@ -100,7 +98,7 @@ class OptionsCommand(Command):
 	def get_nodes_from_module(self, module):
 		options = {}
 
-		instance = __main__.plugin_instances()[module]
+		instance = module.instance
 
 		for opt in instance.get_options():
 			options[opt] = instance.__getattribute__(opt)

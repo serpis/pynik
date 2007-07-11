@@ -1,6 +1,5 @@
 # coding: latin-1
 
-import __main__
 from commands import Command
 import htmlentitydefs
 import string
@@ -53,7 +52,7 @@ class CommandsCommand(Command):
 	def on_trigger(self, bot, source, target, trigger, argument):
 		triggers = []
 		for command in Command.__subclasses__():
-			for trigger in __main__.plugin_instances()[command].triggers:
+			for trigger in command.triggers:
 				if trigger not in triggers:
 					triggers.append(trigger)
 
@@ -107,11 +106,6 @@ class GoogleCommand(Command):
 			m = re.search('<div class=g><a href="(.*?)" class=l>(.*?)<\/a>(.*?)</div>', feeddata)
 
 			if m:
-				def unescape(text):
-					def fromhtml(s):
-						try: return htmlentitydefs.entitydefs[s.group(1)]
-						except KeyError: return chr(int(s.group(1)))
-					return re.sub("&#?(\w+);", fromhtml, text)
 
 				text = unescape(m.group(2))
 				text = re.sub('<.+?>', '', text)

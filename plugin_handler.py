@@ -34,22 +34,23 @@ def reload_plugin_modules():
 		except:
 			print 'error when reloading module', module.__name__, sys.exc_info(), str(traceback.extract_tb(sys.exc_info()[2]))
 
-_instances = {}
+def search_for_subclasses(c):
+	l = [c]
+	for subclass in c.__subclasses__():
+		l.extend(search_for_subclasses(subclass))
+	return l
 	
 def get_plugins_by_hook(hook):
 	result = []
-	for plugin in _instances.values():
+	for plugin in search_for_subclasses(plugins.Plugin):
 		if hook in plugin.hooks:
-			result.append(plugin)
+			result.append(plugin.instance)
 	return result
 
 def load_plugin(plugin):
 	import re
 
 	package = plugins_module
-#	if re.match('^commands\.', plugin):
-#		package = commands_module
-#		plugin = plugin[9:]
 
 	name = package.__name__ + '.' + plugin
 	file, filename, description = imp.find_module(plugin, package.__path__)
@@ -61,26 +62,20 @@ def load_plugin(plugin):
 	finally:
 		file.close()
 
-
-def search_for_subclasses(c):
-	l = [c]
-	for subclass in c.__subclasses__():
-		l.extend(search_for_subclasses(subclass))
-	return l
-
 def plugins_on_load():
-	_instances.clear()
-	
 	l = search_for_subclasses(plugins.Plugin) 
 
 	for plugin in l:
-		_instances[plugin] = plugin()
+		plugin.instance = plugin()
 
-	for plugin in _instances.values():
-		plugin.on_load()
+	for plugin in l:
+		plugin.instance.on_load()
 
 def plugins_on_unload():
-	for plugin in _instances.values():
-		plugin.on_unload()
+	l = search_for_subclasses(plugins.Plugin) 
 
-	_instances.clear()
+	for plugin in l:
+		plugin.instance.on_unload()
+
+	for plugin in l:
+		plugin.instance = None

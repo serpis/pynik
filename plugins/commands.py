@@ -1,6 +1,4 @@
 from plugins import Plugin
-import __main__
-#//from __main__ import *
 
 class Command(Plugin):
 	triggers = []
@@ -24,8 +22,7 @@ def get_commands_by_trigger(trigger):
 	commands = []
 
 	for command in Command.__subclasses__():
-		cmd = __main__.plugin_instances()[command]
-		if trigger in cmd.triggers:
-			commands.append(cmd)
+		if trigger in command.triggers:
+			commands.append(command.instance)
 
 	return commands

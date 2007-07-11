@@ -6,9 +6,6 @@ import re
 import plugin_handler
 import traceback
 
-def plugin_instances():
-	return plugin_handler._instances
-
 class Pynik:
 	p = re.compile('^(:([^  ]+))?[   ]*([^  ]+)[  ]+:?([^  ]*)[   ]*:?(.*)$')
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -49,9 +46,6 @@ class Pynik:
 	def load_plugin(self, plugin):
 		plugin_handler.load_plugin(plugin)
 
-	def plugins():
-		plugin_handler._instances
-	
 	def on_ping(self, tupels):
 		self.send("PONG :" + tupels[4])
 
