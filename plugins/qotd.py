@@ -27,7 +27,8 @@ class QuoteCollection:
                 self.quotes[chosenQuote.index].played += 1
                    
                 output = '#%s: %s' % (self.quotes[chosenQuote.index].index, self.quotes[chosenQuote.index].quote)
-                print  "choosing #%s out of %s quotes: %s (played %s times)" % (chosenQuote.index, len(DueQuotes), chosenQuote.quote, chosenQuote.played)
+                #output = "choosing #%s out of %s quotes: %s (played %s times)" % (chosenQuote.index, len(DueQuotes), chosenQuote.quote, chosenQuote.played)
+                self.SavePlaylist()
                 return output
             else:
                 print "emtpy list"
@@ -53,7 +54,7 @@ class QuoteCollection:
         return DueQuotes;
 
     def LoadFromFiles(self):
-        indexCounter = 1
+        indexCounter = 0
         playlistfile = open(self.playlistfilename, 'r') 
         with open(self.quotefilename, 'r') as quotefile:
             for line in quotefile:
@@ -70,22 +71,25 @@ class QuoteCollection:
                 self.quotes.append(currentQuote)
                 indexCounter += 1
 
-    def SaveToFiles(self):
+    def SaveQuotes(self):
         quotefile = open(self.quotefilename, "w")
-        playlistfile = open(self.playlistfilename, "w")
         quotesToWrite = []
-        playlistToWrite = [] 
+
         for quote in self.quotes:
             quotesToWrite.append(quote.quote + "\n")
-            playlistToWrite.append(str(quote.played) + "\n")
-        
+
         quotefile.writelines(quotesToWrite)
-        playlistfile.writelines(playlistToWrite)
-        
         quotefile.close()
+
+    def SavePlaylist(self):
+        playlistToWrite = [] 
+        playlistfile = open(self.playlistfilename, "w")
+
+        for quote in self.quotes:
+            playlistToWrite.append(str(quote.played) + "\n")
+
+        playlistfile.writelines(playlistToWrite)
         playlistfile.close()
-
-
 
 class QuoteCommand(Command):
     triggers = ['qotd']
