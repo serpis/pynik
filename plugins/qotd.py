@@ -6,7 +6,7 @@ import string, random
 
 class quote:
 	quote = ""
-	index = 1
+	index = 0
 	played = 0
 
 class QuoteCollection:
@@ -23,10 +23,11 @@ class QuoteCollection:
 			self.NormalizePlays()
 			DueQuotes = self.GetDueQuotes()
 			if DueQuotes:
-				chosen = random.choice(DueQuotes).index
-				self.quotes[chosen].played += 1
-
-				output = '#%s: %s' % (self.quotes[chosen].index, self.quotes[chosen].quote)
+				chosenQuote = random.choice(DueQuotes)
+				self.quotes[chosenQuote.index].played += 1
+	   			
+			 	output = '#%s: %s' % (self.quotes[chosenQuote.index].index, self.quotes[chosenQuote.index].quote)
+				print  "choosing #%s out of %s quotes: %s (played %s times)" % (chosenQuote.index, len(DueQuotes), chosenQuote.quote, chosenQuote.played)
 				return output
 			else:
 				print "emtpy list"
@@ -53,21 +54,21 @@ class QuoteCollection:
 
 	def LoadFromFiles(self):
 		indexCounter = 1
+		playlistfile = open(self.playlistfilename, 'r') 
 		with open(self.quotefilename, 'r') as quotefile:
-			with open(self.playlistfilename, 'r') as playlistfile:
-				for line in quotefile:
-					currentQuote = quote()
-	
-					currentQuote.quote = string.strip(line)
-				  	played = playlistfile.readline()
-				  	try:
-						currentQuote.played = int(played)
-				  	except:
-						currentQuote.played = 0
-				  	currentQuote.index = indexCounter
-				  
-					self.quotes.append(currentQuote)
-					indexCounter += 1
+			for line in quotefile:
+				currentQuote = quote()
+
+				currentQuote.quote = string.strip(line)
+			  	played = playlistfile.readline()
+			  	try:
+					currentQuote.played = int(played)
+			  	except:
+					currentQuote.played = 0
+			  	currentQuote.index = indexCounter
+			  
+				self.quotes.append(currentQuote)
+				indexCounter += 1
 
 	def SaveToFiles(self):
 		quotefile = open(self.quotefilename, "w")
