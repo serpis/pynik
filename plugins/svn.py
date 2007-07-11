@@ -13,6 +13,8 @@ class SvnCommand(Command):
 
 	def on_trigger(self, bot, source, target, trigger, argument):
 		url = argument
+		if not len(url):
+			url = 'http://stalverk80.se/svn/pynik'
 		p = os.popen2(['svn', 'info', url])
 		stdin, stdout =  p
 
