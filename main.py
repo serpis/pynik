@@ -7,9 +7,11 @@ import plugin_handler
 import traceback
 
 class Pynik:
-	p = re.compile('^(:([^  ]+))?[   ]*([^  ]+)[  ]+:?([^  ]*)[   ]*:?(.*)$')
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	recv_buf = ''
+	def __init__(self, s=None):
+		if not s:
+			self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		else:
+			self.s = s
 
 	def connect(self, address, port):
 		self.ping_count = 0
@@ -86,6 +88,15 @@ class Pynik:
 		print 'the irc server informs of an error: ' + tupels[5]
 
 	def run(self):
+		irc_message_pattern = re.compile('^(:([^  ]+))?[   ]*([^  ]+)[  ]+:?([^  ]*)[   ]*:?(.*)$')
+		irc_message_match = irc_message_pattern.match
+		message_handlers = {
+			'PING': self.on_ping,
+			'PRIVMSG': self.on_privmsg,
+			'NOTICE': self.on_notice,
+			'ERROR': self.on_error
+		}
+		recv_buf = ''
 		while True:
 			retn = self.s.recv(1024)
 	
@@ -93,35 +104,26 @@ class Pynik:
 				print 'error while receiving'
 				break
 	
-			self.recv_buf += retn
-
-			while True:
-				index = self.recv_buf.find("\r\n")
-				if index < 0:
-					break
-
-				line = self.recv_buf[0:index]
-				self.recv_buf = self.recv_buf[index+2:]
-
-				m = self.p.match(line)
-				if m:
-					pairs = {
-						'PING': self.on_ping,
-						'PRIVMSG': self.on_privmsg,
-						'NOTICE': self.on_notice,
-						'ERROR': self.on_error
-					}
-
-					try:
-						if m.group(3) in pairs:
-							pairs[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
-					except:
-						print 'OMG FUCKING FAIL IN PLUGIN!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+			recv_buf += retn
+			recv_lines = recv_buf.splitlines(True)
+			recv_buf = ''
+			for line in recv_lines:
+				if not line.endswith("\r\n"):
+					recv_buf = line
+				else:
+					m = irc_message_match(line.rstrip("\r\n"))
+					if m:
+						try:
+							if m.group(3) in message_handlers:
+								message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
+						except:
+							print 'OMG FUCKING FAIL IN PLUGIN!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
 
 plugin_handler.plugins_on_load()
 
-p = Pynik()
-p.connect("se.quakenet.org", 6667)
-p.send("USER pynik . . :pynik")
-p.send("NICK pynik")
-p.run()
+if __name__ == "__main__":
+	p = Pynik()
+	p.connect("se.quakenet.org", 6667)
+	p.send("USER pnik . . :pnik")
+	p.send("NICK pnik")
+	p.run()
