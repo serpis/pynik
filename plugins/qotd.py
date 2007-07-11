@@ -26,7 +26,8 @@ class QuoteCollection:
 				chosen = random.choice(DueQuotes).index
 				self.quotes[chosen].played += 1
 
-				return self.quotes[chosen].quote
+				output = '#%s: %s' % (self.quotes[chosen].index, self.quotes[chosen].quote)
+				return output
 			else:
 				print "emtpy list"
 
