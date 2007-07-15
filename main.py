@@ -125,5 +125,5 @@ if __name__ == "__main__":
 	p = Pynik()
 	p.connect("se.quakenet.org", 6667)
 	p.send("USER pnik . . :pnik")
-	p.send("NICK pnik")
+	p.send("NICK pynik")
 	p.run()

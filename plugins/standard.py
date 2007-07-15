@@ -4,6 +4,7 @@ from commands import Command
 import htmlentitydefs
 import string
 import re
+import utility
 
 class EchoCommand(Command): 
 	triggers = ['echo']   
@@ -107,9 +108,8 @@ class GoogleCommand(Command):
 
 			if m:
 
-				text = unescape(m.group(2))
+				text = utility.UtilityPlugin.instance.unescape(m.group(2))
 				text = re.sub('<.+?>', '', text)
-				text = unescape(text)
 
 				link = m.group(1)
 	

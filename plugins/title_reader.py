@@ -7,7 +7,7 @@ class TitleReaderPlugin(Command):
 	hooks = ['on_privmsg']   
 	triggers = ['title']
 	black_urls = []
-	last_url = ''
+	last_url = {}
 
 	def __init__(self):
 		pass
@@ -21,20 +21,23 @@ class TitleReaderPlugin(Command):
 		m = re.search('((http:\/\/|www.)\S+)', message)
 
 		if m:
-			self.last_url = m.group(1)
+			self.last_url[target] = m.group(1)
 
 	def on_trigger(self, bot, source, target, trigger, argument):
-		import urllib
+		if target in self.last_url.keys():
+			import urllib
 		
-		data = urllib.urlopen(self.last_url).read()
+			data = urllib.urlopen(self.last_url[target]).read()
 
-		m = re.search('<title>(.+?)<\/title>', data, re.IGNORECASE)
+			m = re.search('<title>(.+?)<\/title>', data, re.IGNORECASE)
 
-		if m:
-			title = m.group(1)
-			title = re.sub('<.+?>', '', title)
+			if m:
+				title = m.group(1)
+				title = re.sub('<.+?>', '', title)
 
-			bot.tell(target, title)
+				bot.tell(target, title)
+		else:
+			bot.tell(target, 'I haven\'t seen any urls here yet.')
 
 	def on_load(self):
 		del self.black_urls[:]
