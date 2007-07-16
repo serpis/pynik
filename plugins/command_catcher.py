@@ -40,20 +40,43 @@ class CommandCatcherPlugin(Plugin):
 			trigger = m.group(2)
 			arguments = m.group(3)
 
-			flag = 0
+			meth_name = 'trig_' + trigger
+			
+			perfect_execution = True
+			
+			for command_class in commands.Command.__subclasses__():
+				import __builtin__
+				meth = None
+				try:
+					meth = command_class.instance.__getattribute__(meth_name)
 
+					try:
+						timeout(meth, 10, (bot, source, target, trigger, arguments))
+						#command.on_trigger(bot, source, target, trigger, arguments)
+					except TimeoutException:
+						perfect_execution = False
+						bot.tell(target, 'Command \'' + trigger + '\' took too long to execute.')
+					except:
+						perfect_execution = False
+
+						bot.tell(target, 'Error when executing command \'' + trigger + '\': ' + str(sys.exc_info()[1]) + '.')
+						print 'Error when executing command \'', trigger, '\':', traceback.extract_tb(sys.exc_info()[2])
+				except:
+					pass
+					
 			for command in commands.get_commands_by_trigger(trigger):
 				try:
-					flag = 1
 					timeout(command.on_trigger, 10, (bot, source, target, trigger, arguments))
 					#command.on_trigger(bot, source, target, trigger, arguments)
 				except TimeoutException:
+					perfect_execution = False
 					bot.tell(target, 'Command \'' + trigger + '\' took too long to execute.')
 				except:
+					perfect_execution = False
 					bot.tell(target, str(sys.exc_info()))
 					print 'Error when executing command \'', trigger, '\':', traceback.extract_tb(sys.exc_info()[2])
 
-			if not flag:
+			if perfect_execution:
 				if trigger in favorites.FavoriteCommands.instance.favorites.keys():
 					favorites.FavoriteCommands.instance.on_fav(bot, source, target, 'fav', trigger + ' ' + arguments)
 

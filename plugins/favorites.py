@@ -46,7 +46,7 @@ class FavoriteCommands(Command):
 		bot.tell(target, 'Favorites: ' + ', '.join(sorted(self.favorites.keys())) + '.')
 	
 	def on_fav(self, bot, source, target, trigger, argument):
-		m = re.search('(\S+)\s+(.*)$', argument)
+		m = re.search('(\S+) ?(.*)$', argument)
 		
 		if m:
 			fav_trig = m.group(1);
