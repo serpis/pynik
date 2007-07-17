@@ -25,7 +25,7 @@ def google_pages(string):
 		return None
 
 def google_divisor(int1, int2):
-	if int1 > int2:
+	if int1 < int2:
 		biggest = int1
 	else:
 		biggest = int2
