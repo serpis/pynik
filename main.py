@@ -99,8 +99,6 @@ class Pynik:
 		if m:
 			target_nick = m.group(1)
 
-		print tupels
-
 		if target_nick:
 			for nick_list in self.nick_lists.values():
 				if target_nick in nick_list:
@@ -203,8 +201,7 @@ class Pynik:
 				self.s.settimeout(None)
 
 				if len(retn) <= 0:
-					print 'error while receiving'
-					break
+					raise Exception('error while receiving')
 		
 				recv_buf += retn
 				recv_lines = recv_buf.splitlines(True)

@@ -18,8 +18,6 @@ class NextEpisodeCommands(Command):
 		m = re.search('<tr bgcolor=\'#FFFFFF\'  id="brow"><td class=\'b1\'><img width=\'15\' height=\'10\' style=\'border: 1px solid black;\' src=\'http:\/\/images.tvrage.net\/flags\/.*?.gif\'> <a  href=\'(.*?)\' >(.*?)<\/a>(<\/td>|<br>)', data)
 
 
-		print '1'
-
 		if m:
 			url = m.group(1)
 			show = m.group(2)

@@ -2,6 +2,7 @@ import os
 import sets
 import imp
 import sys
+import re
 
 from copy import copy
 
@@ -25,6 +26,8 @@ for module in sys.modules.values():
 				new_modules.insert(1, module)
 		else:
 			new_modules.append(module)
+
+new_modules = filter(lambda x: re.match('^plugins\.', x.__name__), new_modules)
 
 def reload_plugin_modules():
 	import traceback

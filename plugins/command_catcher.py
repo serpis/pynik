@@ -18,7 +18,6 @@ def timeout(f, timeout = 1, args = (), kwargs = {}):
 
 	result = None
 	try:
-		print args
 		result = f(*args, **kwargs)
 	except:
 		signal.alarm(0)

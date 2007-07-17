@@ -35,7 +35,13 @@ class RssReader:
 
 		for channel in self.channels:
 			for item in channel:
-				pubDate, title, link = datetime.datetime.strptime(item['pubDate'][0:-6], '%a, %d %b %Y %H:%M:%S'), item['title'], item['link']
+				title, link = item['title'], item['link']
+
+				pubDate = None
+				try:
+					pubDate = datetime.datetime.strptime(item['pubDate'][0:-6], '%a, %d %b %Y %H:%M:%S')
+				except:
+					pubDate = datetime.datetime.strptime(item['pubDate'][0:-4], '%a, %d %b %Y %H:%M:%S')
 
 				articles.append([pubDate, title, link])
 
@@ -115,7 +121,6 @@ class RssCommand(Command):
 				nick, url, newest = t
 				
 				try:
-					print url
 					data = command_catcher.timeout(urllib.urlopen, 10, [url]).read()
 
 					self.reader.parse(data)
