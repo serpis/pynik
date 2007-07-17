@@ -8,7 +8,7 @@ class NextEpisodeCommands(Command):
 	def __init__(self):
 		pass
 
-	def trig_next(self, bot, source, target, trigger, argument):
+	def trig_nextep(self, bot, source, target, trigger, argument):
 		import  urllib
 
 		url = 'http://tvrage.com/search.php?search=' + argument.replace(' ', '+')
@@ -16,6 +16,9 @@ class NextEpisodeCommands(Command):
 		data = urllib.urlopen(url).read()
 
 		m = re.search('<tr bgcolor=\'#FFFFFF\'  id="brow"><td class=\'b1\'><img width=\'15\' height=\'10\' style=\'border: 1px solid black;\' src=\'http:\/\/images.tvrage.net\/flags\/.*?.gif\'> <a  href=\'(.*?)\' >(.*?)<\/a>(<\/td>|<br>)', data)
+
+
+		print '1'
 
 		if m:
 			url = m.group(1)

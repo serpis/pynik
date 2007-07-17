@@ -89,17 +89,17 @@ class RssCommand(Command):
 		if m:
 			url = m.group(1)
 
-			to_remove = filter(lambda x: x[1] == url, self.watch_list)
+			to_remove = filter(lambda x: x[1] == url and x[0] == source, self.watch_list)
 
 			if to_remove:
 				for entry in to_remove:
 					self.watch_list.remove(entry)
 				self.save()
 				bot.tell(target, 'I found the feed and removed it from your watch list.')
-			elif not self.watch_list:
+			elif not filter(lambda x: x[0] == source, self.watch_list):
 				bot.tell(target, 'You have no feeds in your watch list!')
 			else:
-				urls = map(lambda x: x[1], self.watch_list)
+				urls = map(lambda x: x[1], filter(lambda x: x[0] == source, self.watch_list))
 				bot.tell(target, 'These feeds are in your watch list: %s.' % (', '.join(urls)))
 			
 		else:

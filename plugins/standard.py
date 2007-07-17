@@ -75,8 +75,8 @@ class CommandsCommand(Command):
 		
 		bot.tell(target, 'Commands: ' + ', '.join(sorted(triggers)) + '.')
 
-	def can_trigger(self, source, trigger):
-		return source in ['serp!~serp@85.8.2.181.se.wasadata.net']
+#	def can_trigger(self, source, trigger):
+#		return source in ['serp!~serp@85.8.2.181.se.wasadata.net']
 
 asciilize = string.maketrans("åäöÅÄÖ", "aaoAAO")
 _get_temp_re = re.compile('^\s*(.+)\s*$')
