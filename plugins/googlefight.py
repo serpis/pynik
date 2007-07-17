@@ -14,10 +14,13 @@ def google_pages(string):
 
 	search = re.search('swrnum=(.*?)>', data)
 
-	result = search.group(1)
+	if search:
+		result = search.group(1)
 
-	if result:
-		return int(result)
+		if result:
+			return int(result)
+		else:
+			return None
 	else:
 		return None
 					
