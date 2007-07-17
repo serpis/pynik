@@ -9,6 +9,10 @@ class UtilityPlugin(Plugin):
 			try: return htmlentitydefs.entitydefs[s.group(1)]
 			except KeyError: return chr(int(s.group(1)))
 		return re.sub("&#?(\w+);", fromhtml, str)
+
+	def escape(self, str):
+		import urllib
+		return urllib.quote_plus(str)
 		
 	def get_all_subclasses(self, c):
 		l = [c]

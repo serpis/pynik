@@ -5,6 +5,8 @@ import socket
 import re
 import plugin_handler
 import traceback
+import errno
+import datetime
 
 class Pynik:
 	def __init__(self, s=None):
@@ -69,7 +71,7 @@ class Pynik:
 				self.temp_nick_list_channel = channel
 				self.temp_nick_list = []
 
-			for m in re.findall('([^a-z\[\]{}]?)(.+?)(\s|$)', nicks):
+			for m in re.findall('([^a-zA-Z\[\]{}]?)(.+?)(\s|$)', nicks):
 				prefix, nick = m[0:2]
 
 				self.temp_nick_list.append(nick)
@@ -153,11 +155,6 @@ class Pynik:
 		source = tupels[2]
 		target = tupels[4]
 
-		p = re.compile('^(.+)!')
-		m = p.match(source)	
-		if m:
-			source = m.group(1)
-
 		if target[0] != '#':
 			target = source
 
@@ -174,6 +171,10 @@ class Pynik:
 
 	def on_error(self, tupels):
 		print 'the irc server informs of an error: ' + tupels[5]
+
+	def timer_beat(self, now):
+		for plugin in plugin_handler.all_plugins():
+			plugin.timer_beat(self, now)
 
 	def run(self):
 		irc_message_pattern = re.compile('^(:([^  ]+))?[   ]*([^  ]+)[  ]+:?([^  ]*)[   ]*:?(.*)$')
@@ -192,33 +193,60 @@ class Pynik:
 			'366': self.on_end_nick_list,
 		}
 		recv_buf = ''
+
+		next_beat = None
+
 		while True:
-			retn = self.s.recv(1024)
+			try:
+				self.s.settimeout(1)
+				retn = self.s.recv(1024)
+				self.s.settimeout(None)
+
+				if len(retn) <= 0:
+					print 'error while receiving'
+					break
+		
+				recv_buf += retn
+				recv_lines = recv_buf.splitlines(True)
+				recv_buf = ''
+				for line in recv_lines:
+					if not line.endswith("\r\n"):
+						recv_buf = line
+					else:
+						m = irc_message_match(line.rstrip("\r\n"))
+						if m:
+							try:
+								if m.group(3) in message_handlers:
+									message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
+							except:
+								print 'OMG FUCKING FAIL IN PLUGIN!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+			except:
+				self.s.settimeout(None)
+
+			now = datetime.datetime.now()
 	
-			if len(retn) <= 0:
-				print 'error while receiving'
-				break
-	
-			recv_buf += retn
-			recv_lines = recv_buf.splitlines(True)
-			recv_buf = ''
-			for line in recv_lines:
-				if not line.endswith("\r\n"):
-					recv_buf = line
-				else:
-					m = irc_message_match(line.rstrip("\r\n"))
-					if m:
-						try:
-							if m.group(3) in message_handlers:
-								message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
-						except:
-							print 'OMG FUCKING FAIL IN PLUGIN!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+			if not next_beat or next_beat < now:
+				try:
+					self.timer_beat(now)
+				except:
+					print 'OMG FUCKING FAIL IN TIMER_BEAT!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+				next_beat = now + datetime.timedelta(0, 1)
 
 plugin_handler.plugins_on_load()
 
 if __name__ == "__main__":
-	p = Pynik()
-	p.connect("fi.quakenet.org", 6667)
-	p.send("USER pynik . . :pynik")
-	p.send("NICK pynik")
-	p.run()
+	try_again = True
+	while try_again:
+		try_again = False
+
+		p = Pynik()
+		p.connect("fi.quakenet.org", 6667)
+		p.send("USER pynik . . :pynik")
+		p.send("NICK pynik")
+		try:
+			p.run()
+		except KeyboardInterrupt:
+			raise
+		except:
+			print 'A very big error came by and said', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+			try_again = True

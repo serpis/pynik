@@ -47,6 +47,12 @@ def get_plugins_by_hook(hook):
 			result.append(plugin.instance)
 	return result
 
+def all_plugins():
+	result = []
+	for plugin in search_for_subclasses(plugins.Plugin):
+		result.append(plugin.instance)
+	return result
+
 def load_plugin(plugin):
 	import re
 

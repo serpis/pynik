@@ -7,13 +7,12 @@ import sys
 import utility
 
 class OptionsCommand(Command):
-	triggers = ['options']
 	_table = {}
 
 	def __init__(self):
 		pass
 	
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_options(self, bot, source, target, trigger, argument):
 		if source == 'serp' or source == 'teetow':
 			self.on_message(bot, source, target, trigger, argument)
 

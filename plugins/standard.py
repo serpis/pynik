@@ -7,21 +7,23 @@ import re
 import utility
 
 class EchoCommand(Command): 
-	triggers = ['echo']   
-
 	def __init__(self):
 		pass
 	
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_echo(self, bot, source, target, trigger, argument):
 		bot.tell(target, argument)
 
+class HelloCommand(Command): 
+	def __init__(self):
+		pass
+	
+	def trig_hello(self, bot, source, target, trigger, argument):
+		bot.tell(target, 'hello there, ' + source + '!')
 class InsultCommand(Command):
-	triggers = ['insult']
-
 	def __init__(self):
 		pass
 
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_insult(self, bot, source, target, trigger, argument):
 		t = source
 		if argument:
 			m = re.search('(\w+)', argument)
@@ -41,30 +43,45 @@ class InsultCommand(Command):
 		pass
 
 class RawCommand(Command):
-	triggers = ['raw']
-
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_raw(self, bot, source, target, trigger, argument):
 		if source == 'serp' or source == 'teetow':
 			bot.send(argument)
 
-class CommandsCommand(Command):
-	triggers = ['commands']
+def is_trigger(name):
+	m = re.search('^trig_.+', name)
+	if m:
+		return True
+	else:
+		return False
 
-	def on_trigger(self, bot, source, target, trigger, argument):
+def remove_first_five(text):
+	return text[5:]
+
+class CommandsCommand(Command):
+	def trig_commands(self, bot, source, target, trigger, argument):
 		triggers = []
 		for command in Command.__subclasses__():
 			for trigger in command.triggers:
 				if trigger not in triggers:
 					triggers.append(trigger)
 
+			l = command.__dict__
+			l = filter(is_trigger, l)
+			l = map(remove_first_five, l)
+
+			for trigger in l:
+				if trigger not in triggers:
+					triggers.append(trigger)
+		
 		bot.tell(target, 'Commands: ' + ', '.join(sorted(triggers)) + '.')
+
+	def can_trigger(self, source, trigger):
+		return source in ['serp!~serp@85.8.2.181.se.wasadata.net']
 
 asciilize = string.maketrans("Â‰ˆ≈ƒ÷", "aaoAAO")
 _get_temp_re = re.compile('^\s*(.+)\s*$')
 class TempCommand(Command):
-	triggers = ['temp']
-
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_temp(self, bot, source, target, trigger, argument):
 		from urllib import urlopen
 
 		if len(argument) == 0:
@@ -82,13 +99,11 @@ class TempCommand(Command):
 
 
 class GoogleCommand(Command):
-	triggers = ['google']
-
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_google(self, bot, source, target, trigger, argument):
 		from urllib import urlopen
 		import urllib2
 
-		url = 'http://www.google.com/search?rls=en&q=' + argument.replace('+', '%2B').replace(' ', '+') + '&ie=UTF-8&oe=UTF-8'
+		url = 'http://www.google.com/search?rls=en&q=' + utility.UtilityPlugin.instance.escape(argument) + '&ie=UTF-8&oe=UTF-8'
 
 		request = urllib2.Request(url)
 		request.add_header('User-Agent', 'PynikOpenAnything/1.0 +')

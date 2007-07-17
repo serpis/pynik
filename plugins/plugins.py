@@ -18,3 +18,6 @@ class Plugin(object):
 
 	def on_modified_options(self):
 		pass
+
+	def timer_beat(self, bot, now):
+		pass

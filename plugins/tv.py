@@ -4,11 +4,6 @@ from commands import Command
 import re
 
 class TVCommand(Command):
-	triggers = ['tv']
-
-	def __init__(self):
-		pass
-
 	def extract_channel_info(self, contents, channel_name):
 		m = re.search('(<div class="kanalRubrik">' + channel_name + '.*?<\/div><\/div>)', contents)
 		if m:
@@ -39,7 +34,7 @@ class TVCommand(Command):
 				return s
 		return None
 	
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_tv(self, bot, source, target, trigger, argument):
 		import urllib
 		data = urllib.urlopen('http://www.tv.nu/').read()
 

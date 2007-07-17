@@ -19,7 +19,8 @@ class QuoteCollection:
         self.LoadFromFiles()
     
     def GetQuote(self):
-            print 'GetQuote'
+            # serp commented this out due to spam annoyance
+			#print 'GetQuote'
             self.NormalizePlays()
             DueQuotes = self.GetDueQuotes()
             if DueQuotes:
@@ -30,8 +31,9 @@ class QuoteCollection:
                 #output = "choosing #%s out of %s quotes: %s (played %s times)" % (chosenQuote.index, len(DueQuotes), chosenQuote.quote, chosenQuote.played)
                 self.SavePlaylist()
                 return output
-            else:
-                print "emtpy list"
+            # serp commented this out due to spam annoyance
+			#else:
+            #    print "emtpy list"
 
     def NormalizePlays(self):
         plays = []
@@ -44,8 +46,9 @@ class QuoteCollection:
                quote.played = int(quote.played) - int(minplays)
 
     def GetDueQuotes(self):
-        for quote in self.quotes:
-            print quote.played
+		# serp commented this out due to spam annoyance
+        #for quote in self.quotes:
+        #    print quote.played
 
         DueQuotes = []
         for quote in self.quotes:

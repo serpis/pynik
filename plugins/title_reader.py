@@ -5,7 +5,6 @@ from commands import Command
 
 class TitleReaderPlugin(Command): 
 	hooks = ['on_privmsg']   
-	triggers = ['title']
 	black_urls = []
 	last_url = {}
 
@@ -23,7 +22,7 @@ class TitleReaderPlugin(Command):
 		if m:
 			self.last_url[target] = m.group(1)
 
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_title(self, bot, source, target, trigger, argument):
 		if target in self.last_url.keys():
 			import urllib
 		
@@ -36,6 +35,8 @@ class TitleReaderPlugin(Command):
 				title = re.sub('<.+?>', '', title)
 
 				bot.tell(target, title)
+			else:
+				bot.tell(target, 'I can\'t find a title for ' + self.last_url[target]) 
 		else:
 			bot.tell(target, 'I haven\'t seen any urls here yet.')
 

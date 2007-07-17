@@ -4,14 +4,12 @@ import datetime
 from commands import Command
 
 class SvnCommand(Command):
-	triggers = ['svn']
 	subscribers = {}
 
 	def get_options(self):
 		return ['subscribers']
-				  
 
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_svn(self, bot, source, target, trigger, argument):
 		url = argument
 		if not len(url):
 			url = 'http://stalverk80.se/svn/pynik'

@@ -5,12 +5,10 @@ from commands import Command
 import re
 
 class NextEpisodeCommands(Command):
-	triggers = ['nextep']
-
 	def __init__(self):
 		pass
 
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_next(self, bot, source, target, trigger, argument):
 		import  urllib
 
 		url = 'http://tvrage.com/search.php?search=' + argument.replace(' ', '+')
