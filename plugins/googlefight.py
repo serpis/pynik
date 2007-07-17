@@ -23,6 +23,25 @@ def google_pages(string):
 			return None
 	else:
 		return None
+
+def google_divisor(int1, int2):
+	if int1 > int2:
+		biggest = int1
+	else:
+		biggest = int2
+
+	if biggest > 1000000:
+		divisor = 1000000.0
+		unit = 'm'
+	elif biggest > 1000:
+		divisor = 1000.0
+		unit = 'k'
+	else:
+		divisor = 1
+		unit = ''
+	return (divisor, unit) 
+
+
 					
 class Googlefight(Command):
 	def __init__(self):
@@ -34,12 +53,18 @@ class Googlefight(Command):
 			result1 = google_pages(args[0])
 			result2 = google_pages(args[1])
 			if result1 and result2:
+				grej = google_divisor(result1, result2)
+
+				result1 = result1 / grej[0]
+				result2 = result2 / grej[0]
+				unit = grej[1]
+
 				if result1 == result2:
 					bot.tell(target, "It's a tie! " + str(result1/1000.0) + "k hits!")
 				elif result1 > result2:
-					bot.tell(target, args[0] + ' is the winner! (' + str(result1/1000.0) + 'k to ' + str(result2/1000.0) + 'k)')
+					bot.tell(target, args[0] + ' is the winner! (' + str(result1) + unit + ' to ' + str(result2) + unit + ')')
 				else:
-					bot.tell(target, args[1] + ' is the winner! (' + str(result2/1000.0) + 'k to ' + str(result1/1000.0) + 'k)')
+					bot.tell(target, args[1] + ' is the winner! (' + str(result2) + unit + ' to ' + str(result1) + unit + ')')
 			else:
 				bot.tell(target, "Couldn't search.")
 		else:
