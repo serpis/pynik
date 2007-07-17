@@ -107,12 +107,15 @@ class RssCommand(Command):
 
 	def timer_beat(self, bot, now):
 		if not self.next_beat or self.next_beat < now:
+			self.next_beat = now + datetime.timedelta(0, 0, 0, 0, 1)
+
 			save_needed = False
 
 			for t in self.watch_list:
 				nick, url, newest = t
 				
 				try:
+					print url
 					data = command_catcher.timeout(urllib.urlopen, 10, [url]).read()
 
 					self.reader.parse(data)
@@ -138,8 +141,6 @@ class RssCommand(Command):
 
 			if save_needed:
 				self.save()
-			
-			self.next_beat = now + datetime.timedelta(0, 0, 0, 0, 1)
 
 	def save(self):
 		file = open('data/rss_watch_list.txt', 'w')

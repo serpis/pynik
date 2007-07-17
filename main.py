@@ -220,17 +220,18 @@ class Pynik:
 									message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
 							except:
 								print 'OMG FUCKING FAIL IN PLUGIN!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
-			except:
+			except socket.timeout:
 				self.s.settimeout(None)
 
 			now = datetime.datetime.now()
 	
 			if not next_beat or next_beat < now:
+				next_beat = now + datetime.timedelta(0, 1)
+	
 				try:
 					self.timer_beat(now)
 				except:
 					print 'OMG FUCKING FAIL IN TIMER_BEAT!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
-				next_beat = now + datetime.timedelta(0, 1)
 
 plugin_handler.plugins_on_load()
 
