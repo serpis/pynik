@@ -1,5 +1,7 @@
 # coding: latin-1
-	  
+
+from __future__ import with_statement
+import pickle
 import os
 import re
 import datetime
@@ -77,12 +79,12 @@ class RssCommand(Command):
 			bot.tell(target, 'I couldn\'t find any articles there. :-(')
 
 	def trig_watch(self, bot, source, target, trigger, argument):
-		m = re.match('(http:\/\/\S*)', argument)
+		m = re.search('(http:\/\/\S*)', argument)
 
 		if m:
 			url = m.group(1)
 
-			self.watch_list.append([source, url, None])
+			self.watch_list.append([source, url, datetime.datetime(datetime.MINYEAR, 1, 1)])
 			self.save()
 
 			bot.tell(target, 'The feed was successfully added to your watch list. You will receive news privately.')
@@ -148,47 +150,18 @@ class RssCommand(Command):
 				self.save()
 
 	def save(self):
-		file = open('data/rss_watch_list.txt', 'w')
+		with open('data/rss_watch_list.txt', 'w') as file:
+			p = pickle.Pickler(file)
 
-		for entry in self.watch_list:
-			nick, url, newest = entry[0], entry[1], entry[2]
-
-			if not newest:
-				newest = '0'
-			else:
-				newest = int(time.mktime(newest.timetuple()))
-			
-			line = "%s %s %s" % (nick, url, newest)
-
-			file.write(line)
-			file.write('\n')
-
-		file.close()
+			p.dump(self.watch_list)
 
 	def on_load(self):
 		self.watch_list = []
 
-		file = open('data/rss_watch_list.txt', 'r')
-		
-		while True:
-			line = file.readline()
-			if not line:
-				break
+		with open('data/rss_watch_list.txt') as file:
+			unp = pickle.Unpickler(file)
 
-		#with open('data/favorites.txt', 'r') as file:
-		#	for line in file:
-			m = re.search('^(\S+)\s+(\S+)\s+(.+)$', line)
-
-			if m:
-				user = m.group(1)
-				url = m.group(2)
-				newest = m.group(3)
-
-				newest = datetime.datetime.fromtimestamp(int(newest))
-
-				self.watch_list.append([user, url, newest])
-
-		file.close()
+			self.watch_list = unp.load()
 	
 	def on_unload(self):
 		self.watch_list = []

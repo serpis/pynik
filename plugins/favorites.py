@@ -1,6 +1,7 @@
 # coding: latin-1
 
 from __future__ import with_statement
+import pickle
 from commands import Command
 import re
 import utility
@@ -69,41 +70,22 @@ class FavoriteCommands(Command):
 		}[trigger](bot, source, target, trigger, argument)
 
 	def save(self):
-		file = open('data/favorites.txt', 'w')
+		with open('data/favorites.txt', 'w') as file:
+			p = pickle.Pickler(file)
 
-		for key in self.favorites.keys():
-			line = key + ' ' + self.favorites[key]
-
-			file.write(line)
-			file.write('\n')
-
-		file.close()
+			p.dump(self.favorites)
 
 	def on_modified_options(self):
 		self.save()
 
 	def on_load(self):
-		self.favorites.clear()
+		self.favorites = {}
 
-		file = open('data/favorites.txt', 'r')
-		
-		while True:
-			line = file.readline()
-			if not line:
-				break
+		with open('data/favorites.txt') as file:
+			unpickler = pickle.Unpickler(file)
 
-		#with open('data/favorites.txt', 'r') as file:
-		#	for line in file:
-			m = re.search('^(.+?)\s(.+)$', line)
+			self.favorites = unpickler.load()
 
-			if m:
-				key = m.group(1)
-				url = m.group(2)
-
-				self.favorites[key] = url
-
-		file.close()
-	
 	def on_unload(self):
 		self.favorites.clear()
 
