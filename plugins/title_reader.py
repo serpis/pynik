@@ -19,12 +19,13 @@ class TitleReaderPlugin(Command):
 			self.last_url[target] = m.group(1)
 
 	def trig_title(self, bot, source, target, trigger, argument):
+		
 		if target in self.last_url.keys():
 			import urllib
 		
 			data = urllib.urlopen(self.last_url[target]).read()
 
-			m = re.search('<title>(.+?)<\/title>', data, re.IGNORECASE)
+			m = re.search('<title>\s*(.+?)\s*<\/title>', data, re.IGNORECASE)
 
 			if m:
 				title = m.group(1)
