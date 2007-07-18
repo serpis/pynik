@@ -116,7 +116,7 @@ class TitleReaderPlugin(Command):
 	def on_load(self):
 		del self.black_urls[:]
 
-		load_urls()
+		self.load_urls()
 
 		file = open('data/black_urls.txt', 'r')
 
