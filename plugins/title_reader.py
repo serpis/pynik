@@ -59,9 +59,7 @@ class TitleReaderPlugin(Command):
 		m = re.search('((http:\/\/|www.)\S+)', message, re.IGNORECASE)
 
 		if m:
-			if target not in self.urls.keys():			
-				self.urls[target] = URL()
-
+			self.urls[target] = URL()
 			self.urls[target].url = m.group(1)
 			self.urls[target].nick = source
 			self.urls[target].timestamp = 'test'
@@ -92,7 +90,11 @@ class TitleReaderPlugin(Command):
 						resultlist.append(object)
 	
 				if len(resultlist) > 0:
-					bot.tell(target, 'Match 1 of ' + str(len(resultlist)) + ': ' + resultlist[0].url + ' - ' + resultlist[0].title)
+					if resultlist[0].title:
+						title = resultlist[0].title
+					else:
+						title = 'N/A'
+					bot.tell(target, 'Match 1 of ' + str(len(resultlist)) + ': ' + resultlist[0].url + ' - ' + title)
 				else:
 					bot.tell(target, 'No match found.')
 	
