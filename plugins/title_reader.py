@@ -13,11 +13,11 @@ class URL():
 	timestamp = ''
 	nick = ''
 	def is_match(self, searchword):
-		if re.search(searchword, self.url, re.IGNORECASE):
+		if self.url and re.search(searchword, self.url, re.IGNORECASE):
 			return True
 		if self.title and re.search(searchword, self.title, re.IGNORECASE):
 			return True
-		if re.search(searchword, self.nick, re.IGNORECASE):
+		if self.nick and re.search(searchword, self.nick, re.IGNORECASE):
 			return True
 		return False
 	
@@ -79,24 +79,27 @@ class TitleReaderPlugin(Command):
 		resultlist = []
 		match = False
 
-		searchlist = argument.split(' ')
-		try:
-			for object in self.url_list:
-				match = True
-				for word in searchlist:
-					if not object.is_match(word):
-						match = False
-						break
-				if match:
-					resultlist.append(object)
-
-			if len(resultlist) > 0:
-				bot.tell(target, 'Match: ' + resultlist[0].url)
-			else:
-				bot.tell(target, 'No match found.')
-
-		except IOError:
-			bot.tell(target, 'I have no urls for this channel!')
+		if len(argument) > 0:
+			searchlist = argument.split(' ')
+			try:
+				for object in self.url_list:
+					match = True
+					for word in searchlist:
+						if not object.is_match(word):
+							match = False
+							break
+					if match:
+						resultlist.append(object)
+	
+				if len(resultlist) > 0:
+					bot.tell(target, 'Match 1 of ' + str(len(resultlist)) + ': ' + resultlist[0].url + ' - ' + resultlist[0].title)
+				else:
+					bot.tell(target, 'No match found.')
+	
+			except IOError:
+				bot.tell(target, 'I have no urls for this channel!')
+		else:
+			bot.tell(target, 'Usage: .urlsearch <search string>')
 
 		
 
