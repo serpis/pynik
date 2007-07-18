@@ -99,12 +99,12 @@ class TitleReaderPlugin(Command):
 					resultlist.append(object)
 
 			if len(resultlist) > 0:
-				print(target, 'Match: ' + resultlist[0].url)
+				bot.tell(target, 'Match: ' + resultlist[0].url)
 			else:
-				print(target, 'No match found')
+				bot.tell(target, 'No match found')
 
 		except IOError:
-			print(target, 'I have no urls for this channel')
+			bot.tell(target, 'I have no urls for this channel')
 
 		
 
@@ -113,11 +113,11 @@ class TitleReaderPlugin(Command):
 			m = self.urls[target].title
 
 			if m:
-				print(target, m)
+				bot.tell(target, m)
 			else:
-				print(target, 'I can\'t find a title for ' + self.urls[target].url) 
+				bot.tell(target, 'I can\'t find a title for ' + self.urls[target].url) 
 		else:
-			print(target, 'I haven\'t seen any urls here yet.')
+			bot.tell(target, 'I haven\'t seen any urls here yet.')
 
 	def on_load(self):
 		del self.black_urls[:]
