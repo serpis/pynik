@@ -113,7 +113,7 @@ class RssCommand(Command):
 
 	def timer_beat(self, bot, now):
 		if not self.next_beat or self.next_beat < now:
-			self.next_beat = now + datetime.timedelta(0, 0, 0, 0, 1)
+			self.next_beat = now + datetime.timedelta(0, 0, 0, 0, 5)
 
 			save_needed = False
 
