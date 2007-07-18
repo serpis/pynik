@@ -67,11 +67,10 @@ class TitleReaderPlugin(Command):
 			self.save_last_url(target)
 
 	def save_last_url(self, target):
-		file = open('data/urls.txt', 'w')
 		self.url_list.append(self.urls[target])
-		p = pickle.Pickler(file)
-		p.dump(self.url_list)
-		file.close()
+		self.save_urls()
+
+	
 
 	def trig_urlsearch(self, bot, source, target, trigger, argument):
 		resultlist = []
@@ -79,27 +78,24 @@ class TitleReaderPlugin(Command):
 
 		if len(argument) > 0:
 			searchlist = argument.split(' ')
-			try:
-				for object in self.url_list:
-					match = True
-					for word in searchlist:
-						if not object.is_match(word):
-							match = False
-							break
-					if match:
-						resultlist.append(object)
-	
-				if len(resultlist) > 0:
-					if resultlist[0].title:
-						title = resultlist[0].title
-					else:
-						title = 'N/A'
-					bot.tell(target, 'Match 1 of ' + str(len(resultlist)) + ': ' + resultlist[0].url + ' - ' + title)
+
+			for object in self.url_list:
+				match = True
+				for word in searchlist:
+					if not object.is_match(word):
+						match = False
+						break
+				if match:
+					resultlist.append(object)
+
+			if len(resultlist) > 0:
+				if resultlist[0].title:
+					title = resultlist[0].title
 				else:
-					bot.tell(target, 'No match found.')
-	
-			except IOError:
-				bot.tell(target, 'I have no urls for this channel!')
+					title = 'N/A'
+				bot.tell(target, 'Match 1 of ' + str(len(resultlist)) + ': ' + resultlist[0].url + ' - ' + title)
+			else:
+				bot.tell(target, 'No match found.')
 		else:
 			bot.tell(target, 'Usage: .urlsearch <search string>')
 
@@ -115,6 +111,12 @@ class TitleReaderPlugin(Command):
 				bot.tell(target, 'I can\'t find a title for ' + self.urls[target].url) 
 		else:
 			bot.tell(target, 'I haven\'t seen any urls here yet.')
+
+	def save_urls(self):
+		file = open('data/urls.txt', 'w')
+		p = pickle.Pickler(file)
+		p.dump(self.url_list)
+		file.close()
 
 	def load_urls(self):
 		try:
