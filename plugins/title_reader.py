@@ -63,7 +63,7 @@ class TitleReaderPlugin(Command):
 			self.save_last_url(target)
 
 	def save_last_url(self, target):
-		file = open('data/' + target + '-urls.txt', 'w')
+		file = open('data/urls.txt', 'w')
 		url_list.append(self.urls[target])
 		p = pickle.Pickler(file)
 		p.dump(url_list)
@@ -107,7 +107,7 @@ class TitleReaderPlugin(Command):
 
 	def load_urls(self):
 		try:
-			file = open('data/' + target + '-urls.txt', 'r')
+			file = open('data/urls.txt', 'r')
 			url_list = pickle.Unpickler(file).load()
 			file.close()
 		except IOError:
