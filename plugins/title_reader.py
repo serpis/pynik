@@ -25,6 +25,7 @@ class TitleReaderPlugin(Command):
 	hooks = ['on_privmsg']   
 	black_urls = []
 	urls = {}
+	url_list = []
 
 	def __init__(self):
 		pass
@@ -62,34 +63,19 @@ class TitleReaderPlugin(Command):
 			self.save_last_url(target)
 
 	def save_last_url(self, target):
-		list = []
-		try:
-			file = open('data/' + target + '-urls.txt', 'r')
-			list = pickle.Unpickler(file).load()
-			file.close()
-		except IOError:
-			pass
-
 		file = open('data/' + target + '-urls.txt', 'w')
-
-		list.append(self.urls[target])
+		url_list.append(self.urls[target])
 		p = pickle.Pickler(file)
-		p.dump(list)
-
+		p.dump(url_list)
 		file.close()
 
 	def trig_urlsearch(self, bot, source, target, trigger, argument):
-		list = []
 		resultlist = []
 		match = False
 
 		searchlist = argument.split(' ')
 		try:
-			file = open('data/' + target + '-urls.txt', 'r')
-			list = pickle.Unpickler(file).load()
-			file.close()
-
-			for object in list:
+			for object in url_list:
 				match = True
 				for word in searchlist:
 					if not object.is_match(word):
@@ -119,8 +105,18 @@ class TitleReaderPlugin(Command):
 		else:
 			bot.tell(target, 'I haven\'t seen any urls here yet.')
 
+	def load_urls(self):
+		try:
+			file = open('data/' + target + '-urls.txt', 'r')
+			url_list = pickle.Unpickler(file).load()
+			file.close()
+		except IOError:
+			pass
+
 	def on_load(self):
 		del self.black_urls[:]
+
+		load_urls()
 
 		file = open('data/black_urls.txt', 'r')
 
