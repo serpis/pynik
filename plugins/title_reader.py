@@ -5,6 +5,7 @@ import re
 import utility
 from plugins import Plugin
 from commands import Command
+import command_catcher
 
 class URL():
 	url = ''
@@ -37,7 +38,12 @@ class TitleReaderPlugin(Command):
 		import urllib
 		if not re.search('http', self.urls[target].url):
 			self.urls[target].url = 'http://' + self.urls[target].url
-		data = urllib.urlopen(self.urls[target].url).read()
+			
+		try:
+			data = urllib.urlopen(self.urls[target].url).read()
+		except command_catcher.TimeoutException:
+			self.urls[target].title = None
+			return
 
 		m = re.search('<title>(.+?)<\/title>', data, re.IGNORECASE)
 
@@ -87,10 +93,10 @@ class TitleReaderPlugin(Command):
 			if len(resultlist) > 0:
 				bot.tell(target, 'Match: ' + resultlist[0].url)
 			else:
-				bot.tell(target, 'No match found')
+				bot.tell(target, 'No match found.')
 
 		except IOError:
-			bot.tell(target, 'I have no urls for this channel')
+			bot.tell(target, 'I have no urls for this channel!')
 
 		
 

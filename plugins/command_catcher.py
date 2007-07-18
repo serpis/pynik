@@ -73,9 +73,9 @@ class CommandCatcherPlugin(Plugin):
 					except TimeoutException:
 						bot.tell(target, 'Command \'' + trigger + '\' took too long to execute.')
 					except:
-						bot.tell(target, 'Oops. An error occured. An administrator has been notified.')
-						bot.tell('teetow', "%s triggered an error by typing \'%s\': %s." % (source, trigger, arguments, sys.exc_info()))
-						bot.tell('serp', "%s triggered an error by typing \'%s\': %s." % (source, trigger, arguments, sys.exc_info()))
+						bot.tell(target, 'Oops. Error logged.')
+						bot.tell('teetow', "%s triggered an error by typing \'%s %s\': %s." % (source, trigger, arguments, sys.exc_info()))
+						bot.tell('serp', "%s triggered an error by typing \'%s %s\': %s." % (source, trigger, arguments, sys.exc_info()))
 
 						print sys.exc_info()
 						print 'Error when executing command \'', trigger, '\':', traceback.extract_tb(sys.exc_info()[2])
