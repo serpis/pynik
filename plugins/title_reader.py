@@ -64,9 +64,9 @@ class TitleReaderPlugin(Command):
 
 	def save_last_url(self, target):
 		file = open('data/urls.txt', 'w')
-		url_list.append(self.urls[target])
+		self.url_list.append(self.urls[target])
 		p = pickle.Pickler(file)
-		p.dump(url_list)
+		p.dump(self.url_list)
 		file.close()
 
 	def trig_urlsearch(self, bot, source, target, trigger, argument):
@@ -75,7 +75,7 @@ class TitleReaderPlugin(Command):
 
 		searchlist = argument.split(' ')
 		try:
-			for object in url_list:
+			for object in self.url_list:
 				match = True
 				for word in searchlist:
 					if not object.is_match(word):
@@ -108,7 +108,7 @@ class TitleReaderPlugin(Command):
 	def load_urls(self):
 		try:
 			file = open('data/urls.txt', 'r')
-			url_list = pickle.Unpickler(file).load()
+			self.url_list = pickle.Unpickler(file).load()
 			file.close()
 		except IOError:
 			pass
