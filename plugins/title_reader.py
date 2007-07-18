@@ -12,11 +12,11 @@ class URL():
 	timestamp = ''
 	nick = ''
 	def is_match(self, searchword):
-		if re.search(searchword, self.url):
+		if re.search(searchword, self.url, re.IGNORECASE):
 			return True
-		if re.search(searchword, self.title):
+		if re.search(searchword, self.title, re.IGNORECASE):
 			return True
-		if re.search(searchword, self.nick):
+		if re.search(searchword, self.nick, re.IGNORECASE):
 			return True
 		return False
 	
@@ -50,7 +50,7 @@ class TitleReaderPlugin(Command):
 	def on_privmsg(self, bot, source, target, tupels):
 		message = tupels[5]
 
-		m = re.search('((http:\/\/|www.)\S+)', message)
+		m = re.search('((http:\/\/|www.)\S+)', message, re.IGNORECASE)
 
 		if m:
 			if target not in self.urls.keys():			
