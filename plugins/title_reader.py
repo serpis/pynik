@@ -15,7 +15,7 @@ class URL():
 	def is_match(self, searchword):
 		if re.search(searchword, self.url, re.IGNORECASE):
 			return True
-		if re.search(searchword, self.title, re.IGNORECASE):
+		if self.title and re.search(searchword, self.title, re.IGNORECASE):
 			return True
 		if re.search(searchword, self.nick, re.IGNORECASE):
 			return True

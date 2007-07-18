@@ -240,7 +240,7 @@ if __name__ == "__main__":
 		p = Pynik()
 		p.connect("fi.quakenet.org", 6667)
 		p.send("USER pynik . . :pynik")
-		p.send("NICK pynik")
+		p.send("NICK pynik-test")
 		try:
 			p.run()
 		except KeyboardInterrupt:
