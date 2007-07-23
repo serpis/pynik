@@ -22,6 +22,26 @@ class URL():
 		return False
 	
 
+def get_title(self, url):
+	import urllib
+	if not re.search('http', url):
+		url = 'http://' + url
+	try:
+		datasource = urllib.urlopen(self.urls[target].url)
+		data = datasource.read()
+	except command_catcher.TimeoutException:
+		return None
+	finally:
+		datasource.close()
+
+	m = re.search('<title>(.+?)<\/title>', data, re.IGNORECASE)
+
+	if m:
+		title = m.group(1)
+		return re.sub('<.+?>', '', title)
+	else:
+		return None
+
 class TitleReaderPlugin(Command): 
 	hooks = ['on_privmsg']   
 	black_urls = []
@@ -33,25 +53,6 @@ class TitleReaderPlugin(Command):
 	
 	def get_options(self):
 		return ['black_urls']
-
-	def set_title(self, target):
-		import urllib
-		if not re.search('http', self.urls[target].url):
-			self.urls[target].url = 'http://' + self.urls[target].url
-			
-		try:
-			data = urllib.urlopen(self.urls[target].url).read()
-		except command_catcher.TimeoutException:
-			self.urls[target].title = None
-			return
-
-		m = re.search('<title>(.+?)<\/title>', data, re.IGNORECASE)
-
-		if m:
-			self.urls[target].title = m.group(1)
-			self.urls[target].title = re.sub('<.+?>', '', self.urls[target].title)
-		else:
-			self.urls[target].title = None
 	
 	def on_privmsg(self, bot, source, target, tupels):
 		message = tupels[5]
@@ -63,7 +64,7 @@ class TitleReaderPlugin(Command):
 			self.urls[target].url = m.group(1)
 			self.urls[target].nick = source
 			self.urls[target].timestamp = 'test'
-			self.set_title(target)
+			self.urls[target].title = get_title(url)
 			self.save_last_url(target)
 
 	def save_last_url(self, target):
