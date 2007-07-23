@@ -29,7 +29,7 @@ class RssReader:
 				items.append(members)
 
 				for member in item.childNodes:
-					if not re.match('^#.*', member.nodeName) and member.childNodes:
+					if not re.match('^#.*', member.nodeName) and member.childNodes and member.nodeName and member.childNodes[0].nodeValue:
 						members[member.nodeName.encode('latin-1', 'ignore')] = member.childNodes[0].nodeValue.encode('latin-1', 'ignore')
 
 	def get_articles(self):
@@ -44,6 +44,13 @@ class RssReader:
 					pubDate = datetime.datetime.strptime(item['pubDate'][0:-6], '%a, %d %b %Y %H:%M:%S')
 				except:
 					pubDate = datetime.datetime.strptime(item['pubDate'][0:-4], '%a, %d %b %Y %H:%M:%S')
+
+				# hack to please #teewars-dev
+				
+				m = re.search('^Ticket #(\d+)', title)
+				if m and 'description' in item:
+					id = m.group(1)
+					title = "Ticket #%s: %s" % (id, item['description'])
 
 				articles.append([pubDate, title, link])
 
@@ -115,7 +122,7 @@ class RssCommand(Command):
 
 	def timer_beat(self, bot, now):
 		if not self.next_beat or self.next_beat < now:
-			self.next_beat = now + datetime.timedelta(0, 0, 0, 0, 5)
+			self.next_beat = now + datetime.timedelta(0, 0, 0, 0, 2)
 
 			save_needed = False
 
@@ -138,9 +145,9 @@ class RssCommand(Command):
 								t[2] = newest = articles[0][0]
 								save_needed = True
 
-							bot.tell(nick, 'New: ' + ' | '.join(map(lambda x: "%s - %s" % (x[1], x[2]), articles[0:2])))
-					else:
-						bot.tell(nick, 'I couldn\'t find any articles there. :-(')
+							bot.tell(nick, 'New: ' + ' | '.join(map(lambda x: "%s - %s" % (x[1], x[2]), articles[0:3])))
+					#else:
+					#	bot.tell(nick, 'I couldn\'t find any articles there. :-(')
 				except command_catcher.TimeoutException:
 					pass
 				except:

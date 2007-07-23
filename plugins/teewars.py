@@ -13,15 +13,15 @@ class TeewarsCommand(Command):
 		address = "jp.serp.se"
 		port = 8303
 
-		m = re.search("^(\S+):?(\d*)", argument)
+		m = re.search("^(\S+)[: ]?(\d*)", argument)
 
 		if m:
-			address = m.groups(1)
-			if m.groups(2):
-				port = int(m.groups(1))
+			address = m.group(1)
+			if m.group(2):
+				port = int(m.group(2))
 			
 
-		sock = socket(AF_INET, SOCK_DRAM)
+		sock = socket(AF_INET, SOCK_DGRAM)
 		sock.sendto("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xffgief", (address, port))
 		data, addr = sock.recvfrom(1024)
 
