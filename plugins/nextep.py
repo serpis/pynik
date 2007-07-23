@@ -3,17 +3,16 @@
 from __future__ import with_statement
 from commands import Command
 import re
+import utility
 
 class NextEpisodeCommands(Command):
 	def __init__(self):
 		pass
 
 	def trig_nextep(self, bot, source, target, trigger, argument):
-		import  urllib
-
 		url = 'http://tvrage.com/search.php?search=' + argument.replace(' ', '+')
 
-		data = urllib.urlopen(url).read()
+		data = utility.read_url(url)
 
 		m = re.search('<tr bgcolor=\'#FFFFFF\'  id="brow"><td class=\'b1\'><img width=\'15\' height=\'10\' style=\'border: 1px solid black;\' src=\'http:\/\/images.tvrage.net\/flags\/.*?.gif\'> <a  href=\'(.*?)\' >(.*?)<\/a>(<\/td>|<br>)', data)
 
@@ -30,7 +29,7 @@ class NextEpisodeCommands(Command):
 			next_name = None
 			next_date = None
 
-			data = urllib.urlopen(url).read()
+			data = utility.read_url(url)
 
 			m = re.search('<b>(Latest|Last) Episode: <\/b><\/td><td><a href=\'.*?\'>\d+: (\d+x\d+) \| (.*)<\/a> \((.*?)\)', data)
 

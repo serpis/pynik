@@ -2,6 +2,7 @@
 
 from commands import Command
 import re
+import utility
 
 class TVCommand(Command):
 	def extract_channel_info(self, contents, channel_name):
@@ -35,8 +36,7 @@ class TVCommand(Command):
 		return None
 	
 	def trig_tv(self, bot, source, target, trigger, argument):
-		import urllib
-		data = urllib.urlopen('http://www.tv.nu/').read()
+		data = utility.read_url("http://www.tv.nu/")
 
 		if len(argument):
 			channel = argument

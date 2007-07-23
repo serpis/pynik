@@ -34,7 +34,7 @@ class OptionsCommand(Command):
 
 				plugin = None
 
-				for p in utility.UtilityPlugin.instance.get_all_subclasses(Plugin):
+				for p in utility.get_all_subclasses(Plugin):
 					if p.__name__ == module_name:
 						plugin = p.instance
 						break
@@ -88,7 +88,7 @@ class OptionsCommand(Command):
 	def get_nodes_from_scratch(self, stratch):
 		modules = {}
 
-		for module in utility.UtilityPlugin.instance.get_all_subclasses(Plugin):
+		for module in utility.get_all_subclasses(Plugin):
 			name = module.__name__
 			modules[name] = module
 

@@ -9,7 +9,6 @@ from commands import Command
 from xml.dom import minidom
 import utility
 import urllib
-import command_catcher
 import time
 
 class RssReader:
@@ -31,6 +30,8 @@ class RssReader:
 				for member in item.childNodes:
 					if not re.match('^#.*', member.nodeName) and member.childNodes and member.nodeName and member.childNodes[0].nodeValue:
 						members[member.nodeName.encode('latin-1', 'ignore')] = member.childNodes[0].nodeValue.encode('latin-1', 'ignore')
+
+		xmldoc.unlink()
 
 	def get_articles(self):
 		articles = []
@@ -74,7 +75,7 @@ class RssCommand(Command):
 
 		url = argument
 
-		data = urllib.urlopen(url).read()
+		data = utility.read_url(url)
 
 		self.reader.parse(data)
 
@@ -130,7 +131,7 @@ class RssCommand(Command):
 				nick, url, newest = t
 				
 				try:
-					data = command_catcher.timeout(urllib.urlopen, 10, [url]).read()
+					data = utility.timeout(utility.read_url, 10, [url])
 
 					self.reader.parse(data)
 
@@ -148,7 +149,7 @@ class RssCommand(Command):
 							bot.tell(nick, 'New: ' + ' | '.join(map(lambda x: "%s - %s" % (x[1], x[2]), articles[0:3])))
 					#else:
 					#	bot.tell(nick, 'I couldn\'t find any articles there. :-(')
-				except command_catcher.TimeoutException:
+				except utility.TimeoutException:
 					pass
 				except:
 					raise

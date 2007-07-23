@@ -21,24 +21,17 @@ class URL():
 			return True
 		return False
 	
-
-def get_title(self, url):
+def get_title(url):
 	import urllib
 	if not re.search('http', url):
 		url = 'http://' + url
-	try:
-		datasource = urllib.urlopen(self.urls[target].url)
-		data = datasource.read()
-	except command_catcher.TimeoutException:
-		return None
-	finally:
-		datasource.close()
+	data = utility.read_url(url)
 
 	m = re.search('<title>(.+?)<\/title>', data, re.IGNORECASE)
 
 	if m:
 		title = m.group(1)
-		return re.sub('<.+?>', '', title)
+		return utility.unescape(re.sub('<.+?>', '', title))
 	else:
 		return None
 
@@ -60,6 +53,7 @@ class TitleReaderPlugin(Command):
 		m = re.search('((http:\/\/|www.)\S+)', message, re.IGNORECASE)
 
 		if m:
+			url = m.group(1)
 			self.urls[target] = URL()
 			self.urls[target].url = m.group(1)
 			self.urls[target].nick = source
@@ -70,8 +64,6 @@ class TitleReaderPlugin(Command):
 	def save_last_url(self, target):
 		self.url_list.append(self.urls[target])
 		self.save_urls()
-
-	
 
 	def trig_urlsearch(self, bot, source, target, trigger, argument):
 		resultlist = []
@@ -99,8 +91,6 @@ class TitleReaderPlugin(Command):
 				bot.tell(target, 'No match found.')
 		else:
 			bot.tell(target, 'Usage: .urlsearch <search string>')
-
-		
 
 	def trig_title(self, bot, source, target, trigger, argument):
 		if target in self.urls.keys():

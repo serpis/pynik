@@ -4,7 +4,7 @@ import utility
 from commands import Command
 
 def google_pages(string):
-	url = 'http://www.google.se/search?q=' + utility.UtilityPlugin.instance.escape(string) + '&ie=UTF-8&oe=UTF-8'
+	url = 'http://www.google.se/search?q=' + utility.escape(string) + '&ie=UTF-8&oe=UTF-8'
 
 	request = urllib2.Request(url)
 	request.add_header('User-Agent', 'PynikOpenAnything/1.0 +')

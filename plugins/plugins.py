@@ -21,3 +21,12 @@ class Plugin(object):
 
 	def timer_beat(self, bot, now):
 		pass
+
+	def on_privmsg(self, bot, source, target, tupels):
+		pass
+	
+	def on_notice(self, bot, source, target, tupels):
+		pass
+
+	def on_connected(self, bot, address):
+		pass

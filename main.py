@@ -161,7 +161,7 @@ class Pynik:
 	
 	def on_notice(self, tupels):
 		for plugin in plugin_handler.get_plugins_by_hook('on_notice'):
-			plugin.on_notice(tupels)
+			plugin.on_notice(self, source, target, tupels)
 
 	def on_connected(self, tupels):
 		for plugin in plugin_handler.get_plugins_by_hook('on_connected'):

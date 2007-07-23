@@ -56,7 +56,7 @@ class FavoriteCommands(Command):
 
 			if fav_trig in self.favorites:
 				url = self.favorites[fav_trig]
-				url = url.replace('%s', utility.UtilityPlugin.instance.escape(fav_args).replace('%2F', '/'))
+				url = url.replace('%s', utility.escape(fav_args).replace('%2F', '/'))
 				bot.tell(target, url)
 			else:
 				bot.tell(target, 'No such favorite \'' + fav_trig + '\'.')
