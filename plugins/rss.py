@@ -47,11 +47,9 @@ class RssReader:
 					pubDate = datetime.datetime.strptime(item['pubDate'][0:-4], '%a, %d %b %Y %H:%M:%S')
 
 				# hack to please #teewars-dev
-				
 				m = re.search('^Ticket #(\d+)', title)
 				if m and 'description' in item:
-					id = m.group(1)
-					title = "Ticket #%s: %s" % (id, item['description'])
+					title = "Ticket #%s: %s" % (m.group(1), item['description'])
 
 				articles.append([pubDate, title, link])
 
@@ -136,7 +134,7 @@ class RssCommand(Command):
 					self.reader.parse(data)
 
 					articles = self.reader.get_articles()
-				
+
 					if articles:
 						articles = sorted(filter(lambda x: not newest or x[0] > newest, articles))
 
