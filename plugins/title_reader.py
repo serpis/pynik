@@ -27,7 +27,7 @@ def get_title(url):
 		url = 'http://' + url
 	data = utility.read_url(url)
 
-	m = re.search('<title>\s(.+?)\s<\/title>', data, re.IGNORECASE)
+	m = re.search('<title>\s*(.+?)\s*<\/title>', data, re.IGNORECASE)
 
 	if m:
 		title = m.group(1)
