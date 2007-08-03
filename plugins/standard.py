@@ -159,8 +159,10 @@ class CollectCommand(Command):
 					types[t] = 1
 
 			l = []
-			#for key in types:
-			#	l.append((types[key], key))
+			for key in types:
+				l.append((types[key], key))
+
 
 			#print sorted(l)
+		gc.set_debug(gc.DEBUG_LEAK)
 		bot.tell(target, "Collected %s objects out of %s." % (gc.collect(), obj_count))
