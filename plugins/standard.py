@@ -145,20 +145,22 @@ class AAOCommand(Command):
 class CollectCommand(Command):
 	def trig_collect(self, bot, source, target, trigger, argument):
 		import gc
-		objects = gc.get_objects()
-		obj_count = len(objects)
-		types = {}
-		for o in objects:
-			t = type(o)
+		obj_count = 0
+		if True:
+			objects = gc.get_objects()
+			obj_count = len(objects)
+			types = {}
+			for o in objects:
+				t = type(o)
 
-			if t in types:
-				types[t] += 1
-			else:
-				types[t] = 1
+				if t in types:
+					types[t] += 1
+				else:
+					types[t] = 1
 
-		l = []
-		for key in types:
-			l.append((types[key], key))
+			l = []
+			#for key in types:
+			#	l.append((types[key], key))
 
-		print sorted(l)
+			#print sorted(l)
 		bot.tell(target, "Collected %s objects out of %s." % (gc.collect(), obj_count))
