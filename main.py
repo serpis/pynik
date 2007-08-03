@@ -7,6 +7,9 @@ import plugin_handler
 import traceback
 import errno
 import datetime
+import gc
+
+gc.set_debug(gc.DEBUG_LEAK)
 
 class Pynik:
 	def __init__(self, s=None):

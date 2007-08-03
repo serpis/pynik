@@ -1,3 +1,5 @@
+#encoding: latin-1
+
 import sys
 from plugins import Plugin
 import htmlentitydefs
@@ -15,7 +17,21 @@ def unescape(str):
 
 def escape(str):
 	import urllib
-	return urllib.quote_plus(str)
+	t = {
+		'%E5': 'å',
+		'%E4': 'ä',
+		'%F6': 'ö',
+		'%C5': 'Å',
+		'%C4': 'Ä',
+		'%D6': 'Ö'
+	}
+
+	s = urllib.quote_plus(str)
+
+	for key in t.keys():
+		s = s.replace(key, t[key])
+
+	return s
 	
 def get_all_subclasses(c):
 	l = [c]

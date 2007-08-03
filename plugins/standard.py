@@ -141,3 +141,24 @@ class AAOCommand(Command):
 			bot.tell(target, 'Du använder nog latin-1 eller liknande')
 		else:
 			bot.tell(target, 'Du använder nog utf-8')
+			
+class CollectCommand(Command):
+	def trig_collect(self, bot, source, target, trigger, argument):
+		import gc
+		objects = gc.get_objects()
+		obj_count = len(objects)
+		types = {}
+		for o in objects:
+			t = type(o)
+
+			if t in types:
+				types[t] += 1
+			else:
+				types[t] = 1
+
+		l = []
+		for key in types:
+			l.append((types[key], key))
+
+		print sorted(l)
+		bot.tell(target, "Collected %s objects out of %s." % (gc.collect(), obj_count))
