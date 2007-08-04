@@ -164,10 +164,13 @@ class RssCommand(Command):
 	def on_load(self):
 		self.watch_list = []
 
-		with open('data/rss_watch_list.txt') as file:
-			unp = pickle.Unpickler(file)
+		try:
+			with open('data/rss_watch_list.txt') as file:
+				unp = pickle.Unpickler(file)
 
-			self.watch_list = unp.load()
+				self.watch_list = unp.load()
+		except:
+			pass
 	
 	def on_unload(self):
 		self.watch_list = []

@@ -37,15 +37,11 @@ def get_title(url):
 
 class TitleReaderPlugin(Command): 
 	hooks = ['on_privmsg']   
-	black_urls = []
 	urls = {}
 	url_list = []
 
 	def __init__(self):
 		pass
-	
-	def get_options(self):
-		return ['black_urls']
 	
 	def on_privmsg(self, bot, source, target, tupels):
 		message = tupels[5]
@@ -117,30 +113,10 @@ class TitleReaderPlugin(Command):
 			pass
 
 	def on_load(self):
-		del self.black_urls[:]
-
 		self.load_urls()
 
-		file = open('data/black_urls.txt', 'r')
-
-		while True:
-			line = file.readline()
-			if not line:
-				break
-
-			m = re.match('^(.+)$', line)
-			
-			if m:
-				self.black_urls.append(m.group(1))
-
 	def save(self):
-		file = open('data/black_urls.txt', 'w')
-
-		for url in self.black_urls:
-			file.write(url)
-			file.write('\n')
-
-		file.close()
+		pass
 
 	def on_modified_options(self):
 		self.save()
