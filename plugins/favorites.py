@@ -81,11 +81,13 @@ class FavoriteCommands(Command):
 	def on_load(self):
 		self.favorites = {}
 
-		with open('data/favorites.txt') as file:
-			if file:
+		try:
+			with open('data/favorites.txt') as file:
 				unpickler = pickle.Unpickler(file)
 
 				self.favorites = unpickler.load()
+		except:
+			pass
 
 	def on_unload(self):
 		self.favorites.clear()

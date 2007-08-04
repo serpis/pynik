@@ -111,9 +111,8 @@ class TitleReaderPlugin(Command):
 
 	def load_urls(self):
 		try:
-			file = open('data/urls.txt', 'r')
-			self.url_list = pickle.Unpickler(file).load()
-			file.close()
+			with open('data/urls.txt', 'r') as file:
+				self.url_list = pickle.Unpickler(file).load()
 		except IOError:
 			pass
 
