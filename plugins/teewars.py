@@ -19,7 +19,6 @@ class TeewarsCommand(Command):
 			address = m.group(1)
 			if m.group(2):
 				port = int(m.group(2))
-			
 
 		sock = socket(AF_INET, SOCK_DGRAM)
 		sock.sendto("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xffgief", (address, port))
@@ -32,5 +31,5 @@ class TeewarsCommand(Command):
 		max_players = ord(data[0])
 		num_players = ord(data[1])
 
-		bot.tell(target, "Server '%s' at %s:%s has %s/%s players." % (server_name, address, port, num_players, max_players))
+		bot.tell(target, "Server '%s' at %s:%s is playing %s with %s/%s players." % (server_name, address, port, map_name, num_players, max_players))
 
