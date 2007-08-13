@@ -138,9 +138,9 @@ class AAOCommand(Command):
 
 	def on_trigger(self, bot, source, target, trigger, argument):
 		if trigger == 'åäö':
-			bot.tell(target, 'Du använder nog latin-1 eller liknande')
+			bot.tell(target, 'Du använder nog latin-1 eller liknande.')
 		else:
-			bot.tell(target, 'Du använder nog utf-8')
+			bot.tell(target, 'Du använder nog utf8.')
 			
 class CollectCommand(Command):
 	def trig_collect(self, bot, source, target, trigger, argument):

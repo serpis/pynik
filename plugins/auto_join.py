@@ -8,7 +8,7 @@ class AutoJoinPlugin(Plugin):
 		pass
 	
 	def on_connected(self, bot, address):
-		channels = ['#anime.ava', '#starkast', '#c++.se', '#ryd', '#d1b', '#python.se', '#pynik', '#teewars-dev', '#teewars']
+		channels = ['#anime.ava', '#starkast', '#c++.se', '#ryd', '#d1b', '#python.se', '#pynik', '#teewars-dev', '#teewars', '#d2b']
 		#channels = ['#pynik']
 
 		for channel in channels:
