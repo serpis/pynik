@@ -1,4 +1,4 @@
-# coding: latin-1
+# coding: utf-8
 
 from commands import Command
 from plugins import Plugin
@@ -26,7 +26,7 @@ class OptionsCommand(Command):
 		
 			modules = self.get_members_by_name(self._table.keys(), module_name)
 			if not len(module_name) or len(modules) > 1:
-				bot.tell(target, 'Choose a module: ' + ', '.join(modules) + '.')
+				return "Choose a module: %s." % ", ".join(modules) 
 			elif len(modules) == 1:
 				module_name = modules[0]
 				module = self._table[module_name]
@@ -41,7 +41,7 @@ class OptionsCommand(Command):
 				
 				options = self.get_members_by_name(module, option_name)
 				if not len(option_name) or len(options) > 1:
-					bot.tell(target, 'You\'re at: ' + name + '. Choose an option: ' + ', '.join(options) + '.')
+					return "You're at: %s. Choose an option: %s." % (name, ", ".join(options))
 				elif len(options) == 1:
 					option_name = options[0]
 					option = module[option_name]
@@ -50,40 +50,40 @@ class OptionsCommand(Command):
 
 					methods = self.get_members_by_name(option, method_name)
 					if not len(method_name) or len(methods) > 1:
-						bot.tell(target, 'You\'re at: ' + name + '. Choose a method: ' + ', '.join(methods) + '.')
+						return 'You\'re at: ' + name + '. Choose a method: ' + ', '.join(methods) + '.'
 					elif len(methods) == 1:
 						method_name = methods[0]
 						method = option[method_name]
 
 						if method == self.dict_print or method == self.list_print:
-							bot.tell(target, 'Contents of \'' + option_name + '\': ' + method(obj) + '.')
+							return 'Contents of \'' + option_name + '\': ' + method(obj) + '.'
 						elif method == self.dict_assign:
 							m = re.search('^\s*\'?"?(.+?)\'?"?,\s*\'?"?(.+?)\'?"?\s*$', method_args)
 							if m:
 								a = m.groups()
-								#bot.tell(target, 'args: |' + a[0] + '|' + a[1] + '|')
+								#return 'args: |' + a[0] + '|' + a[1] + '|')
 								method(obj, a[0], a[1])
-								bot.tell(target, 'All done, as far as I know.')
+								return 'All done, as far as I know.'
 							else:
-								bot.tell(target, 'Couldn\'t parse argument(s).')
+								return 'Couldn\'t parse argument(s).'
 						else:
 							m = re.search('^\s*\'?"?(.+?)\'?"?\s*$', method_args)
 							if m:
 								a = m.groups()
 	
 								method(obj, a[0])
-								bot.tell(target, 'All done, as far as I know.')
+								return 'All done, as far as I know.'
 							else:
-								bot.tell(target, 'Couldn\'t parse argument(s).')
+								return 'Couldn\'t parse argument(s).'
 
 						plugin.on_modified_options()
 
 					else:
-						bot.tell(target, 'Couldn\'t find method \'' + method_name + '\' in ' + name + '.')
+						return 'Couldn\'t find method \'' + method_name + '\' in ' + name + '.'
 				else:
-					bot.tell(target, 'Couldn\'t find option \'' + option_name + '\' in ' + name + '.')
+					return 'Couldn\'t find option \'' + option_name + '\' in ' + name + '.'
 			else:
-				bot.tell(target, 'Couldn\'t find module \'' + module_name + '\'.')
+				return 'Couldn\'t find module \'' + module_name + '\'.'
 
 	def get_nodes_from_scratch(self, stratch):
 		modules = {}

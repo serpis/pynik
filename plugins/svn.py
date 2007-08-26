@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import os
 import re
 import datetime
@@ -34,8 +36,8 @@ class SvnCommand(Command):
 				
 				d = datetime.datetime(*args)
 
-				bot.tell(target, "Last revision was %s by %s at %s." % (last_rev, last_author, d))
+				return "Last revision was %s by %s at %s." % (last_rev, last_author, d)
 
 
 		if error:
-			bot.tell(target, "Could not retrieve that information for some reason.")
+			return "Could not retrieve that information for some reason."

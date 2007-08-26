@@ -1,27 +1,31 @@
-# coding: latin-1
+# coding: utf-8
 
 from commands import Command
-from commands import get_instance
-from __main__ import *
+import htmlentitydefs
+import string
+import re
+import utility
 
 class EchoCommand(Command): 
-	triggers = ['echo']   
-
 	def __init__(self):
 		pass
 	
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_echo(self, bot, source, target, trigger, argument):
 		bot.tell(target, argument)
 
+class HelloCommand(Command): 
+	def __init__(self):
+		pass
+	
+	def trig_hello(self, bot, source, target, trigger, argument):
+		bot.tell(target, 'hello there, ' + source + '!')
 class InsultCommand(Command):
-	triggers = ['insult']
-
 	def __init__(self):
 		pass
 
-	def on_trigger(self, bot, source, target, trigger, argument):
+	def trig_insult(self, bot, source, target, trigger, argument):
 		t = source
-		if len(argument):
+		if argument:
 			m = re.search('(\w+)', argument)
 
 			if m:
@@ -39,60 +43,74 @@ class InsultCommand(Command):
 		pass
 
 class RawCommand(Command):
-	triggers = ['raw']
-
-	def on_trigger(self, bot, source, target, trigger, argument):
-		if (source == 'serp') || (source == 'teetow'):
+	def trig_raw(self, bot, source, target, trigger, argument):
+		if source == 'serp' or source == 'teetow':
 			bot.send(argument)
 
-class CommandsCommand(Command):
-	triggers = ['commands']
+def is_trigger(name):
+	m = re.search('^trig_.+', name)
+	if m:
+		return True
+	else:
+		return False
 
-	def on_trigger(self, bot, source, target, trigger, argument):
+def remove_first_five(text):
+	return text[5:]
+
+class CommandsCommand(Command):
+	def trig_commands(self, bot, source, target, trigger, argument):
 		triggers = []
 		for command in Command.__subclasses__():
-			for trigger in get_instance(command).triggers:
+			for trigger in command.triggers:
 				if trigger not in triggers:
 					triggers.append(trigger)
 
-		triggers.sort()
+			l = command.__dict__
+			l = filter(is_trigger, l)
+			l = map(remove_first_five, l)
 
-		bot.tell(target, 'Commands: ' + ', '.join(triggers) + '.')
+			for trigger in l:
+				if trigger not in triggers:
+					triggers.append(trigger)
+		
+		bot.tell(target, 'Commands: ' + ', '.join(sorted(triggers)) + '.')
 
+#	def can_trigger(self, source, trigger):
+#		return source in ['serp!~serp@85.8.2.181.se.wasadata.net']
+
+asciilize = string.maketrans("åäöÅÄÖ", "aaoAAO")
+_get_temp_re = re.compile('^\s*(.+)\s*$')
 class TempCommand(Command):
-	triggers = ['temp']
-
-	def on_trigger(self, bot, source, target, trigger, argument):
-		from urllib import urlopen
+	def trig_temp(self, bot, source, target, trigger, argument):
 
 		if len(argument) == 0:
 			argument = 'ryd'
 
 		argument_text = argument
-		argument = argument.replace('å', 'a').replace('ä', 'a').replace('ö', 'o').replace('Å', 'A').replace('Ä', 'A').replace('Ö', 'O')
+		argument = argument.translate(asciilize)
 
-		data = urlopen('http://www.temperatur.nu/termo/' + argument + '/temp.txt').read()
+		url = "http://www.temperatur.nu/termo/%s/temp.txt" % argument
+		data = utility.read_url(url)
 
-		p = re.compile('^\s*(.+)\s*$')
-		m = p.match(data)
+		m = _get_temp_re.match(data)
 	
 		if m:
 			bot.tell(target, 'Temperature in ' + argument_text + ': ' + m.group(1))
 
-class GoogleCommand(Command):
-	triggers = ['google']
 
-	def on_trigger(self, bot, source, target, trigger, argument):
-		from urllib import urlopen
+class GoogleCommand(Command):
+	def trig_google(self, bot, source, target, trigger, argument):
 		import urllib2
 
-		url = 'http://www.google.se/search?q=' + argument.replace('+', '%2B').replace(' ', '+')
+		url = 'http://www.google.com/search?rls=en&q=' + utility.escape(argument) + '&ie=UTF-8&oe=UTF-8'
 
 		request = urllib2.Request(url)
 		request.add_header('User-Agent', 'PynikOpenAnything/1.0 +')
 
 		opener = urllib2.build_opener()
-		feeddata = opener.open(request).read()
+		web_resource = opener.open(request)
+		feeddata = web_resource.read()
+		web_resource.close()
 
 		m = re.search('<td><img src=\/images\/calc_img\.gif alt=""><\/td><td>&nbsp;<\/td><td nowrap><font size=\+1><b>(.*?)<\/b>', feeddata)
 
@@ -102,13 +120,55 @@ class GoogleCommand(Command):
 			answer = re.sub('<.+?>', '', answer)
 			bot.tell(target, answer)
 		else:
-			bot.tell(target, url)
+			m = re.search('<div class=g><a href="(.*?)" class=l>(.*?)<\/a>(.*?)</div>', feeddata)
+
+			if m:
+
+				text = utility.unescape(m.group(2))
+				text = re.sub('<.+?>', '', text)
+
+				link = m.group(1)
+	
+				bot.tell(target, text + ' - ' + link + ' | ' + url)
+			else:
+				bot.tell(target, url)
 
 class AAOCommand(Command):
 	triggers = ['åäö', 'Ã¥Ã¤Ã¶']
 
 	def on_trigger(self, bot, source, target, trigger, argument):
-		if trigger == 'åäö':
-			bot.tell(target, 'Du använder nog latin-1 eller liknande')
+		if target == '#c++.se':
+			if trigger == 'åäö':
+				bot.tell(target, 'Du använder nog latin-1 eller liknande. Dags att byta till utf-8, vavava?!')
+			else:
+				bot.tell(target, 'Du använder nog utf-8. Bra shit, mannen!')
 		else:
-			bot.tell(target, 'Du använder nog utf-8')
+			if trigger == 'åäö':
+				bot.tell(target, 'Du använder nog latin-1 eller liknande.')
+			else:
+				bot.tell(target, 'Du använder nog utf-8.')
+			
+class CollectCommand(Command):
+	def trig_collect(self, bot, source, target, trigger, argument):
+		import gc
+		obj_count = 0
+		if True:
+			objects = gc.get_objects()
+			obj_count = len(objects)
+			types = {}
+			for o in objects:
+				t = type(o)
+
+				if t in types:
+					types[t] += 1
+				else:
+					types[t] = 1
+
+			l = []
+			for key in types:
+				l.append((types[key], key))
+
+
+			#print sorted(l)
+		gc.set_debug(gc.DEBUG_LEAK)
+		bot.tell(target, "Collected %s objects out of %s." % (gc.collect(), obj_count))

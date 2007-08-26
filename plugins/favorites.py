@@ -1,4 +1,4 @@
-# coding: latin-1
+# coding: utf-8
 
 from __future__ import with_statement
 import pickle
@@ -7,7 +7,6 @@ import re
 import utility
 
 class FavoriteCommands(Command):
-	triggers = ['setfav', 'fav', 'favorites', 'delfav']
 	favorites = {}
 
 	def __init__(self):
@@ -16,7 +15,7 @@ class FavoriteCommands(Command):
 	def get_options(self):
 		return ['favorites']
 
-	def on_delfav(self, bot, source, target, trigger, argument):
+	def trig_delfav(self, bot, source, target, trigger, argument):
 		if source == 'serp':
 			m = re.search('^(\w+)', argument)
 		
@@ -28,9 +27,9 @@ class FavoriteCommands(Command):
 	
 					self.save()
 
-					bot.tell(target, 'Favorite \'' + fav_trig  + '\' deleted.')
+					return "Favorite %s deleted." % fav_trig
 
-	def on_setfav(self, bot, source, target, trigger, argument):
+	def trig_setfav(self, bot, source, target, trigger, argument):
 		m = re.search('^(\w+)\s+((ftp:\/\/|http:\/\/|https:\/\/)[^\s]+)$', argument)
 		
 		if m:
@@ -41,34 +40,34 @@ class FavoriteCommands(Command):
 	
 			self.save()
 
-			bot.tell(target, 'Favorite \'' + fav_trig  + '\' added.')
+			return "Favorite %s added." % fav_trig
 
-	def on_favorites(self, bot, source, target, trigger, argument):
+	def trig_favorites(self, bot, source, target, trigger, argument):
 		from copy import copy
 		bot.tell(target, 'Favorites: ' + ', '.join(sorted(self.favorites.keys())) + '.')
-	
-	def on_fav(self, bot, source, target, trigger, argument):
+
+	def get_fav(self, trig, args):
+		if trig in self.favorites:
+			url = self.favorites[trig]
+			url = url.replace('%s', utility.escape(args).replace('%2F', '/'))
+			return url
+		else:
+			return None
+
+	def trig_fav(self, bot, source, target, trigger, argument):
 		m = re.search('(\S+) ?(.*)$', argument)
 		
 		if m:
 			fav_trig = m.group(1);
 			fav_args = m.group(2);
 
-			if fav_trig in self.favorites:
-				url = self.favorites[fav_trig]
-				url = url.replace('%s', utility.escape(fav_args).replace('%2F', '/'))
-				bot.tell(target, url)
-			else:
-				bot.tell(target, 'No such favorite \'' + fav_trig + '\'.')
-	
-	def on_trigger(self, bot, source, target, trigger, argument):
-		{
-			'setfav': self.on_setfav,
-			'fav': self.on_fav,
-			'favorites': self.on_favorites,
-			'delfav': self.on_delfav
-		}[trigger](bot, source, target, trigger, argument)
+			fav = self.get_fav(fav_trig, fav_args)
 
+			if fav:
+				return fav
+			else:
+				return "No such favorite '%s'." % fav_trig
+	
 	def save(self):
 		with open('data/favorites.txt', 'w') as file:
 			p = pickle.Pickler(file)

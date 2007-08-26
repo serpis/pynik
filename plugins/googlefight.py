@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import re
 import urllib2
 import utility
@@ -60,12 +62,12 @@ class Googlefight(Command):
 				unit = grej[1]
 
 				if result1 == result2:
-					bot.tell(target, "It's a tie! " + str(result1/1000.0) + "k hits!")
+					return "It's a tie! " + str(result1/1000.0) + "k hits!"
 				elif result1 > result2:
-					bot.tell(target, args[0] + ' is the winner! (' + str(result1) + unit + ' to ' + str(result2) + unit + ')')
+					return args[0] + ' is the winner! (' + str(result1) + unit + ' to ' + str(result2) + unit + ')'
 				else:
-					bot.tell(target, args[1] + ' is the winner! (' + str(result2) + unit + ' to ' + str(result1) + unit + ')')
+					return args[1] + ' is the winner! (' + str(result2) + unit + ' to ' + str(result1) + unit + ')'
 			else:
-				bot.tell(target, "Couldn't search.")
+				return "Couldn't search."
 		else:
-			bot.tell(target, "Usage: .googlefight arg1|arg2")
+			return "Usage: .googlefight arg1|arg2"

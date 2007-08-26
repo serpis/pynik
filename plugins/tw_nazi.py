@@ -1,4 +1,4 @@
-# coding: latin-1
+# coding: utf-8
 
 import re
 import sys
@@ -15,12 +15,8 @@ class TeewarsNaziPlugin(Plugin):
 		pass
 	
 	def on_privmsg(self, bot, source, target, tupels):
-		if target == '#teewars':
-			message = tupels[5]
-			illegal_chars = ['å', 'ä', 'ö', 'Å', 'Ä', 'Ö']
-
-			if reduce(lambda x, y: x or y in message, illegal_chars, False):
-				bot.tell(target, 'English, please.')
+		if target == '#teewars' and reduce(lambda x, y: x or y in tupels[5], ['å', 'ä', 'ö', 'Å', 'Ä', 'Ö'], False):
+			bot.tell(target, 'English, please.')
 
 	def on_load(self):
 		pass

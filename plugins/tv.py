@@ -1,4 +1,4 @@
-# coding: latin-1
+# coding: utf-8
 
 from commands import Command
 import re
@@ -30,7 +30,7 @@ class TVCommand(Command):
 				show_start = show_start.replace(':', '')
 				show_end = show_end.replace(':', '')
 
-				s = show_start + '-' + show_end + ' ' + show_name + show_movie
+				s = "%s-%s %s%s" % (show_start, show_end, show_name, show_movie)
 
 				return s
 		return None
@@ -43,9 +43,9 @@ class TVCommand(Command):
 			
 			s = self.extract_channel_info(data, channel)
 			if s:
-				bot.tell(target, 'Currently on ' + channel + ': ' + s)
+				return "Currently on %s: %s." % (channel, s)
 			else:
-				bot.tell(target, 'Could not find that channel. Try http://tvguide.swedb.se/tv?=NU')
+				return "Could not find that channel. Try http://tvguide.swedb.se/tv?=NU"
 		else:
 			channels = ['SVT 1', 'SVT 2', 'TV3', 'TV4', 'TV4+', 'Kanal 5', 'TV6', 'Discovery Mix', 'MTV']
 			descriptions = []
@@ -56,4 +56,4 @@ class TVCommand(Command):
 					descriptions.append(channel + ': ' + s)
 			descriptions.append('http://tvguide.swedb.se/tv?=NU')
 
-			bot.tell(target, ' | '.join(descriptions))
+			return " | ".join(descriptions)

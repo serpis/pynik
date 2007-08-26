@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from __future__ import with_statement
 import pickle
 import sys
@@ -82,22 +84,22 @@ class TitleReaderPlugin(Command):
 					title = resultlist[0].title
 				else:
 					title = 'N/A'
-				bot.tell(target, 'Match 1 of ' + str(len(resultlist)) + ': ' + resultlist[0].url + ' - ' + title)
+				return 'Match 1 of ' + str(len(resultlist)) + ': ' + resultlist[0].url + ' - ' + title
 			else:
-				bot.tell(target, 'No match found.')
+				return 'No match found.'
 		else:
-			bot.tell(target, 'Usage: .urlsearch <search string>')
+			return 'Usage: .urlsearch <search string>'
 
 	def trig_title(self, bot, source, target, trigger, argument):
 		if target in self.urls.keys():
 			m = self.urls[target].title
 
 			if m:
-				bot.tell(target, m)
+				return m
 			else:
-				bot.tell(target, 'I can\'t find a title for ' + self.urls[target].url) 
+				return 'I can\'t find a title for ' + self.urls[target].url
 		else:
-			bot.tell(target, 'I haven\'t seen any urls here yet.')
+			return 'I haven\'t seen any urls here yet.'
 
 	def save_urls(self):
 		file = open('data/urls.txt', 'w')

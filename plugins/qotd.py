@@ -1,4 +1,4 @@
-# coding: latin-1
+# coding: utf-8
 
 from __future__ import with_statement
 from commands import Command
@@ -95,14 +95,10 @@ class QuoteCollection:
         playlistfile.close()
 
 class QuoteCommand(Command):
-    triggers = ['qotd']
     collection = QuoteCollection()
 
     def __init__(self):
         pass
 
-    def on_trigger(self, bot, source, target, trigger, argument):
-        self.on_qotd(bot, source, target, trigger, argument)
-
-    def on_qotd(self, bot, source, target, trigger, argument):
-        bot.tell(target, self.collection.GetQuote())
+    def trig_qotd(self, bot, source, target, trigger, argument):
+        return self.collection.GetQuote()

@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import sys
 from plugins import Plugin
 
@@ -8,7 +10,7 @@ class AutoJoinPlugin(Plugin):
 		pass
 	
 	def on_connected(self, bot, address):
-		channels = ['#anime.ava', '#starkast', '#c++.se', '#ryd', '#d1b', '#python.se', '#pynik', '#teewars-dev', '#teewars', '#d2b']
+		channels = ['#anime.ava', '#starkast', '#c++.se', '#ryd', '#python.se', '#pynik', '#teewars-dev', '#teewars', '#d2a']
 		#channels = ['#pynik']
 
 		for channel in channels:

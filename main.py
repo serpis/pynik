@@ -8,14 +8,18 @@ import traceback
 import errno
 import datetime
 import gc
+import threading
 
 gc.set_debug(gc.DEBUG_LEAK)
 
 class Pynik:
 	def __init__(self, s=None):
+		self.connected = False
 		self.temp_nick_list_channel = None
 		self.temp_nick_list = None
 		self.nick_lists = {}
+
+		self.send_lock = threading.Lock()
 		
 		if not s:
 			self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,11 +27,15 @@ class Pynik:
 			self.s = s
 
 	def connect(self, address, port):
+		self.connected = False
 		self.ping_count = 0
 		return self.s.connect((address, port))
 
 	def send(self, string):
-		return self.s.send(string + "\r\n")
+		self.send_lock.acquire()
+		r = self.s.send(string + "\r\n")
+		self.send_lock.release()
+		return r
 
 	def tell(self, target, string):
 		split = len(string) - 1
@@ -145,10 +153,9 @@ class Pynik:
 		for plugin in plugin_handler.get_plugins_by_hook('on_ping'):
 			plugin.on_ping(tupels)
 
-		if self.ping_count == 0:
+		if not self.connected:
+			self.connected = True
 			self.on_connected(tupels)
-
-		self.ping_count += 1
 
 	def on_privmsg(self, tupels):
 		#reload(plugins)
@@ -219,19 +226,20 @@ class Pynik:
 								if m.group(3) in message_handlers:
 									message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
 							except:
-								print 'OMG FUCKING FAIL IN PLUGIN!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+								print 'OMG EPIC FAIL IN PLUGIN!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
 			except socket.timeout:
 				self.s.settimeout(None)
 
-			now = datetime.datetime.now()
-	
-			if not next_beat or next_beat < now:
-				next_beat = now + datetime.timedelta(0, 1)
-	
-				try:
-					self.timer_beat(now)
-				except:
-					print 'OMG FUCKING FAIL IN TIMER_BEAT!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+			if self.connected:
+				now = datetime.datetime.now()
+		
+				if not next_beat or next_beat < now:
+					next_beat = now + datetime.timedelta(0, 1)
+		
+					try:
+						self.timer_beat(now)
+					except:
+						print 'OMG EPIC FAIL IN TIMER_BEAT!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
 
 plugin_handler.plugins_on_load()
 

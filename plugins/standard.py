@@ -1,4 +1,4 @@
-# coding: latin-1
+# coding: utf-8
 
 from commands import Command
 import htmlentitydefs
@@ -11,14 +11,15 @@ class EchoCommand(Command):
 		pass
 	
 	def trig_echo(self, bot, source, target, trigger, argument):
-		bot.tell(target, argument)
+		return argument
 
 class HelloCommand(Command): 
 	def __init__(self):
 		pass
 	
 	def trig_hello(self, bot, source, target, trigger, argument):
-		bot.tell(target, 'hello there, ' + source + '!')
+		return "Hello there, %s!" % source
+
 class InsultCommand(Command):
 	def __init__(self):
 		pass
@@ -34,7 +35,7 @@ class InsultCommand(Command):
 		insults = ['just not cool', 'a little nerdy', 'a sponge', 'very smelly', 'purple', 'a pig', 'a tad strange', 'not very good looking', 'awfully dull', 'a big troll', 'a potato', 'oddly shaped', 'fairly muscular', 'not at all handy', 'a bloody pervert', 'very ordinary', 'not god']
 		import random;
 		insult = random.sample(insults, 1)[0]
-		bot.tell(target, t + ' is ' + insult + '.')
+		return "%s is %s." % (t, insult)
 	
 	def on_load(self):
 		pass
@@ -73,7 +74,7 @@ class CommandsCommand(Command):
 				if trigger not in triggers:
 					triggers.append(trigger)
 		
-		bot.tell(target, 'Commands: ' + ', '.join(sorted(triggers)) + '.')
+		return "Commands: %s" % ", ".join(sorted(triggers))
 
 #	def can_trigger(self, source, trigger):
 #		return source in ['serp!~serp@85.8.2.181.se.wasadata.net']
@@ -95,8 +96,7 @@ class TempCommand(Command):
 		m = _get_temp_re.match(data)
 	
 		if m:
-			bot.tell(target, 'Temperature in ' + argument_text + ': ' + m.group(1))
-
+			return "Temperature in %s: %s." % (argument_text, m.group(1))
 
 class GoogleCommand(Command):
 	def trig_google(self, bot, source, target, trigger, argument):
@@ -118,7 +118,7 @@ class GoogleCommand(Command):
 			answer = m.group(1)
 			answer = answer.replace(' &#215;', '×').replace('<sup>', '^')
 			answer = re.sub('<.+?>', '', answer)
-			bot.tell(target, answer)
+			return answer
 		else:
 			m = re.search('<div class=g><a href="(.*?)" class=l>(.*?)<\/a>(.*?)</div>', feeddata)
 
@@ -129,18 +129,51 @@ class GoogleCommand(Command):
 
 				link = m.group(1)
 	
-				bot.tell(target, text + ' - ' + link + ' | ' + url)
+				return "%s - %s | %s" % (text, link, url)
 			else:
-				bot.tell(target, url)
+				return url
+
+class WikipediaCommand(Command):
+	def trig_wp(self, bot, source, target, trigger, argument):
+		url = "http://en.wikipedia.org/wiki/%s" % utility.escape(argument)
+		
+		data = utility.read_url(url)
+
+		m = re.search("<p>(.+?)<\/p>", data)
+		if m:
+			data = utility.unescape(m.group(1))
+			data = re.sub("<.+?>", "", data)
+			data = re.sub("\[\d+\]", "", data)
+
+			index = data.rfind(".", 0, 300)
+			print index
+			if index == -1:
+				index = 300
+
+			if index+1 < len(data) and data[index+1] == '"':
+				index += 1
+
+			data = data[0:index+1]
+
+			return "%s - %s" % (data, url)
+		else:
+			return url
+			
 
 class AAOCommand(Command):
 	triggers = ['åäö', 'Ã¥Ã¤Ã¶']
 
 	def on_trigger(self, bot, source, target, trigger, argument):
-		if trigger == 'åäö':
-			bot.tell(target, 'Du använder nog latin-1 eller liknande.')
+		if target == '#c++.se':
+			if trigger == 'åäö':
+				return "Du använder nog latin-1 eller liknande. Fast det är OK. För den här gången."
+			else:
+				return "Du använder nog utf-8. Bra shit, mannen!"
 		else:
-			bot.tell(target, 'Du använder nog utf8.')
+			if trigger == 'åäö':
+				return "Du använder nog latin-1 eller liknande."
+			else:
+				return "Du använder nog utf-8."
 			
 class CollectCommand(Command):
 	def trig_collect(self, bot, source, target, trigger, argument):
@@ -162,7 +195,6 @@ class CollectCommand(Command):
 			for key in types:
 				l.append((types[key], key))
 
-
 			#print sorted(l)
 		gc.set_debug(gc.DEBUG_LEAK)
-		bot.tell(target, "Collected %s objects out of %s." % (gc.collect(), obj_count))
+		return "Collected %s objects out of %s." % (gc.collect(), obj_count)

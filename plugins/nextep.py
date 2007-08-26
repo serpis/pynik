@@ -1,4 +1,4 @@
-# coding: latin-1
+# coding: utf-8
 
 from __future__ import with_statement
 from commands import Command
@@ -53,20 +53,20 @@ class NextEpisodeCommands(Command):
 				next_date = m.group(3)
 
 			if last_ep or next_ep:
-				retn_str = show + ': Last Episode: '
+				ret_str = show + ': Last Episode: '
 				if last_ep:
-					retn_str += last_ep + ' - ' + last_name + ' (' + last_date + ')'
+					ret_str += "%s - %s (%s)" % (last_ep, last_name, last_date)
 				else:
-					retn_str += 'none'
+					ret_str += 'none'
 
-				retn_str += '  |  Next Episode: '
+				ret_str += '  |  Next Episode: '
 				if next_ep:
-					retn_str += next_ep + ' - ' + next_name + ' (' + next_date + ')'
+					ret_str += "%s - %s (%s)" % (next_ep, next_name, next_date)
 				else:
-					retn_str += 'none'
+					ret_str += 'none'
 
-				bot.tell(target, retn_str)
+				return ret_str
 			else:
-				bot.tell(target, 'Show found, but no relevant episode data found. :(')
+				return "Show found, but I couldn't find any relevant episode data. :("
 		else:
-			bot.tell(target, 'Show not found.')
+			return "Show not found."

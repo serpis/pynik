@@ -1,4 +1,4 @@
-# coding: latin-1
+# coding: utf-8
 
 from __future__ import with_statement
 import pickle
@@ -80,9 +80,9 @@ class RssCommand(Command):
 		articles = self.reader.get_articles()
 	
 		if articles:
-			bot.tell(target, 'Newest: ' + ' | '.join(map(lambda x: "%s - %s" % (x[1], x[2]), articles[0:3])))
+			return 'Newest: ' + ' | '.join(map(lambda x: "%s - %s" % (x[1], x[2]), articles[0:3]))
 		else:
-			bot.tell(target, 'I couldn\'t find any articles there. :-(')
+			return 'I couldn\'t find any articles there. :-('
 
 	def trig_watch(self, bot, source, target, trigger, argument):
 		m = re.search('(http:\/\/\S*)', argument)
@@ -93,9 +93,9 @@ class RssCommand(Command):
 			self.watch_list.append([source, url, datetime.datetime(datetime.MINYEAR, 1, 1)])
 			self.save()
 
-			bot.tell(target, 'The feed was successfully added to your watch list. You will receive news privately.')
+			return 'The feed was successfully added to your watch list. You will receive news privately.'
 		else:
-			bot.tell(target, 'Usage: watch <rss feed>.')
+			return 'Usage: watch <rss feed>.'
 
 	def trig_delwatch(self, bot, source, target, trigger, argument):
 		m = re.match('(\S*)', argument)
@@ -109,15 +109,15 @@ class RssCommand(Command):
 				for entry in to_remove:
 					self.watch_list.remove(entry)
 				self.save()
-				bot.tell(target, 'I found the feed and removed it from your watch list.')
+				return 'I found the feed and removed it from your watch list.'
 			elif not filter(lambda x: x[0] == source, self.watch_list):
-				bot.tell(target, 'You have no feeds in your watch list!')
+				return 'You have no feeds in your watch list!'
 			else:
 				urls = map(lambda x: x[1], filter(lambda x: x[0] == source, self.watch_list))
-				bot.tell(target, 'These feeds are in your watch list: %s.' % (', '.join(urls)))
+				return 'These feeds are in your watch list: %s.' % (', '.join(urls))
 			
 		else:
-			bot.tell(target, 'Usage delwatch <rss feed>.')
+			return 'Usage delwatch <rss feed>.'
 
 	def timer_beat(self, bot, now):
 		if not self.next_beat or self.next_beat < now:

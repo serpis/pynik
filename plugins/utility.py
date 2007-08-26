@@ -1,4 +1,4 @@
-#encoding: latin-1
+# coding: utf-8
 
 import sys
 from plugins import Plugin
@@ -58,15 +58,19 @@ def timeout(f, timeout = 1, args = (), kwargs = {}):
 	return result
 
 def read_url(url):
-	import urllib
+	import urllib2
 
+	request = urllib2.Request(url)
+	request.add_header('User-Agent', 'PynikOpenAnything/1.0 +')
+
+	opener = urllib2.build_opener()
+
+	web_resource = None
 	data = ''
-	datasource = None
-	
 	try:
-		datasource = urllib.urlopen(url)
-		data = datasource.read()
+		web_resource = opener.open(request)
+		data = web_resource.read()
 	finally:
-		if datasource:
-			datasource.close()
+		if web_resource:
+			web_resource.close()
 	return data
