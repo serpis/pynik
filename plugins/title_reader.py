@@ -27,6 +27,7 @@ def get_title(url):
 	import urllib
 	if not re.search('http', url):
 		url = 'http://' + url
+
 	data = utility.read_url(url)
 
 	m = re.search('<title>\s*(.+?)\s*<\/title>', data, re.IGNORECASE)

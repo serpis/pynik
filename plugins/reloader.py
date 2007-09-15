@@ -11,6 +11,6 @@ class ReloadCommand(Command):
 class LoadCommand(Command):
 	def trig_load(self, bot, source, target, trigger, argument):
 		plugin = argument
-		if source == 'serp':
+		if source == 'serp' or source == 'teetow':
 			bot.load_plugin(plugin)
 			return "Plugin %s loaded. Use 'reload' to initialize it." % plugin

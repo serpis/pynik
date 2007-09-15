@@ -59,6 +59,12 @@ def timeout(f, timeout = 1, args = (), kwargs = {}):
 
 def read_url(url):
 	import urllib2
+	import socket
+	
+	# THIS AFFECTS SOCKETS GLOBALLY AND SHOULD _NOT_ BE USED!!!
+	timeout_time = socket.getdefaulttimeout()
+	socket.setdefaulttimeout(15)
+	
 
 	request = urllib2.Request(url)
 	request.add_header('User-Agent', 'PynikOpenAnything/1.0 +')
@@ -68,9 +74,14 @@ def read_url(url):
 	web_resource = None
 	data = ''
 	try:
+	
 		web_resource = opener.open(request)
 		data = web_resource.read()
 	finally:
 		if web_resource:
 			web_resource.close()
+
+		
+		# THIS AFFECTS SOCKETS GLOBALLY AND SHOULD _NOT_ BE USED!!!
+		socket.setdefaulttimeout(timeout_time)
 	return data

@@ -95,12 +95,11 @@ class Pynik:
 	def on_join(self, tupels):
 		source, channel = [tupels[1], tupels[4]]
 
-		source_nick = self.get_nick(source)
-
-		if not channel in self.nick_lists:
-			self.nick_lists[channel] = []
-
-		self.nick_lists[channel].append(source_nick)
+		for plugin in plugin_handler.get_plugins_by_hook('on_join'):
+			try:
+				plugin.on_join(self, source, channel)
+			except:
+				print 'OMG epic fail in onjoin plugin', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
 
 	def on_kick(self, tupels):
 		source, channel = [tupels[1], tupels[4]]
@@ -151,7 +150,10 @@ class Pynik:
 		self.send("PONG :" + tupels[4])
 
 		for plugin in plugin_handler.get_plugins_by_hook('on_ping'):
-			plugin.on_ping(tupels)
+			try:
+				plugin.on_ping(tupels)
+			except:
+				print 'OMG epic fail in privmsg plugin', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
 
 		if not self.connected:
 			self.connected = True
@@ -167,15 +169,24 @@ class Pynik:
 			target = source
 
 		for plugin in plugin_handler.get_plugins_by_hook('on_privmsg'):
-			plugin.on_privmsg(self, source, target, tupels)
+			try:
+				plugin.on_privmsg(self, source, target, tupels)
+			except:
+				print 'OMG epic fail in privmsg plugin', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
 	
 	def on_notice(self, tupels):
 		for plugin in plugin_handler.get_plugins_by_hook('on_notice'):
-			plugin.on_notice(self, source, target, tupels)
+			try:
+				plugin.on_notice(self, source, target, tupels)
+			except:
+				print 'OMG epic fail in privmsg plugin', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
 
 	def on_connected(self, tupels):
 		for plugin in plugin_handler.get_plugins_by_hook('on_connected'):
-			plugin.on_connected(self, 'irc.server.address')
+			try:
+				plugin.on_connected(self, 'irc.server.address')
+			except:
+				print 'OMG epic fail in privmsg plugin', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
 
 	def on_error(self, tupels):
 		print 'the irc server informs of an error: ' + tupels[5]
@@ -222,11 +233,8 @@ class Pynik:
 					else:
 						m = irc_message_match(line.rstrip("\r\n"))
 						if m:
-							try:
-								if m.group(3) in message_handlers:
-									message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
-							except:
-								print 'OMG EPIC FAIL IN PLUGIN!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+							if m.group(3) in message_handlers:
+								message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
 			except socket.timeout:
 				self.s.settimeout(None)
 

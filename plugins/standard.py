@@ -48,6 +48,16 @@ class RawCommand(Command):
 		if source == 'serp' or source == 'teetow':
 			bot.send(argument)
 
+class TimeCommand(Command):
+	def trig_time(self, bot, source, target, trigger, argument):
+		import datetime
+		return datetime.datetime.now().isoformat()
+
+class WeekCommand(Command):
+	def trig_week(self, bot, source, target, trigger, argument):
+		import datetime
+		return "Current week: %s." % datetime.datetime.now().strftime("%W")
+
 def is_trigger(name):
 	m = re.search('^trig_.+', name)
 	if m:
@@ -161,17 +171,21 @@ class WikipediaCommand(Command):
 			
 
 class AAOCommand(Command):
-	triggers = ['åäö', 'Ã¥Ã¤Ã¶']
+	triggers = ['}{|', 'åäö', 'Ã¥Ã¤Ã¶']
 
 	def on_trigger(self, bot, source, target, trigger, argument):
 		if target == '#c++.se':
 			if trigger == 'åäö':
 				return "Du använder nog latin-1 eller liknande. Fast det är OK. För den här gången."
+			elif trigger == '}{|':
+				return "Du använder nog ISO-646. Uhm."
 			else:
 				return "Du använder nog utf-8. Bra shit, mannen!"
 		else:
 			if trigger == 'åäö':
 				return "Du använder nog latin-1 eller liknande."
+			elif trigger == '}{|':
+				return "Du använder nog ISO-646."
 			else:
 				return "Du använder nog utf-8."
 			

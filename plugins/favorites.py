@@ -7,10 +7,8 @@ import re
 import utility
 
 class FavoriteCommands(Command):
-	favorites = {}
-
 	def __init__(self):
-		pass
+		self.favorites = {}
 
 	def get_options(self):
 		return ['favorites']
@@ -33,14 +31,15 @@ class FavoriteCommands(Command):
 		m = re.search('^(\w+)\s+((ftp:\/\/|http:\/\/|https:\/\/)[^\s]+)$', argument)
 		
 		if m:
-			fav_trig = m.group(1)
-			fav_url = m.group(2)
+			fav_trig, fav_url = m.group(1, 2)
 			
 			self.favorites[fav_trig] = fav_url
 	
 			self.save()
 
 			return "Favorite %s added." % fav_trig
+		else:
+			return "Syntax: setfav <trigger> <url>"
 
 	def trig_favorites(self, bot, source, target, trigger, argument):
 		from copy import copy
