@@ -5,6 +5,8 @@ import htmlentitydefs
 import string
 import re
 import utility
+import os
+import pickle
 
 class EchoCommand(Command): 
 	def __init__(self):
@@ -20,28 +22,56 @@ class HelloCommand(Command):
 	def trig_hello(self, bot, source, target, trigger, argument):
 		return "Hello there, %s!" % source
 
-class InsultCommand(Command):
-	def __init__(self):
-		pass
+class InsultCommand(Command): 
+    def __init__(self): 
+        pass 
+ 
+    def trig_insult(self, bot, source, target, trigger, argument): 
+        t = source 
+        if argument: 
+            m = re.search('(\w+)', argument) 
+ 
+            if m: 
+                t = m.group(1) 
+ 
+        import random; 
+        insult = random.sample(self.insults, 1)[0] 
+        try: 
+            return insult.replace('%s', t)
+            
+        except: 
+            return "Improper insult, check your data" 
+         
+    def trig_addinsult(self, bot, source, target, trigger, argument): 
+        if not "%s" in argument: 
+            return "Trying to add an improper insult, booo!" 
+        elif argument in self.insults: 
+            return "That insult already exists!" 
+        self.insults.append(argument) 
+        self.save() 
+        return "Added insult: %s", argument.replace('%s', source)
+     
+    def save(self): 
+        f = open(os.path.join("data", "insults.txt"), "w") 
+        p = pickle.Pickler(f) 
+        p.dump(self.insults) 
+        f.close() 
+     
+    def on_load(self): 
+        self.insults = [] 
+ 
+        try:
+            f = open(os.path.join("data", "insults.txt"), "r") 
+            unpickler = pickle.Unpickler(f) 
+            self.insults = unpickler.load() 
+            f.close() 
+        except:
+            pass
+         
+    def on_unload(self): 
+        self.insults = None
 
-	def trig_insult(self, bot, source, target, trigger, argument):
-		t = source
-		if argument:
-			m = re.search('(\w+)', argument)
-
-			if m:
-				t = m.group(1)
-
-		insults = ['just not cool', 'a little nerdy', 'a sponge', 'very smelly', 'purple', 'a pig', 'a tad strange', 'not very good looking', 'awfully dull', 'a big troll', 'a potato', 'oddly shaped', 'fairly muscular', 'not at all handy', 'a bloody pervert', 'very ordinary', 'not god']
-		import random;
-		insult = random.sample(insults, 1)[0]
-		return "%s is %s." % (t, insult)
-	
-	def on_load(self):
-		pass
-
-	def on_unload(self):
-		pass
+#insults = ['just not cool', 'a little nerdy', 'a sponge', 'very smelly', 'purple', 'a pig', 'a tad strange', 'not very good looking', 'awfully dull', 'a big troll', 'a potato', 'oddly shaped', 'fairly muscular', 'not at all handy', 'a bloody pervert', 'very ordinary', 'not god']
 
 class RawCommand(Command):
 	def trig_raw(self, bot, source, target, trigger, argument):
@@ -110,19 +140,11 @@ class TempCommand(Command):
 
 class GoogleCommand(Command):
 	def trig_google(self, bot, source, target, trigger, argument):
-		import urllib2
-
 		url = 'http://www.google.com/search?rls=en&q=' + utility.escape(argument) + '&ie=UTF-8&oe=UTF-8'
 
-		request = urllib2.Request(url)
-		request.add_header('User-Agent', 'PynikOpenAnything/1.0 +')
+		data = utility.read_url(url)
 
-		opener = urllib2.build_opener()
-		web_resource = opener.open(request)
-		feeddata = web_resource.read()
-		web_resource.close()
-
-		m = re.search('<td><img src=\/images\/calc_img\.gif alt=""><\/td><td>&nbsp;<\/td><td nowrap><font size=\+1><b>(.*?)<\/b>', feeddata)
+		m = re.search('<td><img src=\/images\/calc_img\.gif alt=""><\/td><td>&nbsp;<\/td><td nowrap><font size=\+1><b>(.*?)<\/b>', data)
 
 		if m:
 			answer = m.group(1)
@@ -130,7 +152,7 @@ class GoogleCommand(Command):
 			answer = re.sub('<.+?>', '', answer)
 			return answer
 		else:
-			m = re.search('<div class=g><a href="(.*?)" class=l>(.*?)<\/a>(.*?)</div>', feeddata)
+			m = re.search('<div class=g><a href="(.*?)" class=l>(.*?)<\/a>(.*?)</div>', data)
 
 			if m:
 
@@ -156,7 +178,7 @@ class WikipediaCommand(Command):
 			data = re.sub("\[\d+\]", "", data)
 
 			index = data.rfind(".", 0, 300)
-			print index
+
 			if index == -1:
 				index = 300
 

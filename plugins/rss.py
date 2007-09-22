@@ -8,7 +8,6 @@ import datetime
 from commands import Command
 from xml.dom import minidom
 import utility
-import urllib
 import time
 
 class RssReader:
@@ -69,8 +68,6 @@ class RssCommand(Command):
 		return ['subscribers']
 
 	def trig_rss(self, bot, source, target, trigger, argument):
-		import urllib
-
 		url = argument
 
 		data = utility.read_url(url)

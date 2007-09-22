@@ -1,18 +1,13 @@
 # coding: utf-8
 
 import re
-import urllib2
 import utility
 from commands import Command
 
 def google_pages(string):
 	url = 'http://www.google.se/search?q=' + utility.escape(string) + '&ie=UTF-8&oe=UTF-8'
 
-	request = urllib2.Request(url)
-	request.add_header('User-Agent', 'PynikOpenAnything/1.0 +')
-
-	opener = urllib2.build_opener()
-	data = opener.open(request).read()
+	data = utility.read_url(url)
 
 	search = re.search('swrnum=(.*?)>', data)
 
