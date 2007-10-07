@@ -9,13 +9,13 @@ def google_pages(string):
 
 	data = utility.read_url(url)
 
-	search = re.search('swrnum=(.*?)>', data)
+	search = re.search('swrnum=(\d+)">', data)
 
 	if search:
 		result = search.group(1)
 
 		if result:
-			return int(result)
+			return int(result, 10)
 		else:
 			return None
 	else:

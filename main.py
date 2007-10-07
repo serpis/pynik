@@ -1,4 +1,5 @@
 # coding: latin-1
+from __future__ import with_statement
 
 import sys
 import socket
@@ -8,7 +9,7 @@ import traceback
 import errno
 import datetime
 import gc
-import threading
+import thread
 
 gc.set_debug(gc.DEBUG_LEAK)
 
@@ -19,12 +20,12 @@ class Pynik:
 		self.temp_nick_list = None
 		self.nick_lists = {}
 
-		self.send_lock = threading.Lock()
-		
 		if not s:
 			self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		else:
 			self.s = s
+
+		self.send_lock = thread.allocate_lock()
 
 	def connect(self, address, port):
 		self.connected = False
@@ -32,10 +33,8 @@ class Pynik:
 		return self.s.connect((address, port))
 
 	def send(self, string):
-		self.send_lock.acquire()
-		r = self.s.send(string + "\r\n")
-		self.send_lock.release()
-		return r
+		with self.send_lock:
+			return self.s.send(string + "\r\n")
 
 	def tell(self, target, string):
 		split = len(string) - 1
@@ -193,7 +192,10 @@ class Pynik:
 
 	def timer_beat(self, now):
 		for plugin in plugin_handler.all_plugins():
-			plugin.timer_beat(self, now)
+			try:
+				plugin.timer_beat(self, now)
+			except:
+				print 'OMG EPIC FAIL IN TIMER_BEAT!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
 
 	def run(self):
 		irc_message_pattern = re.compile('^(:([^  ]+))?[   ]*([^  ]+)[  ]+:?([^  ]*)[   ]*:?(.*)$')
@@ -243,11 +245,8 @@ class Pynik:
 		
 				if not next_beat or next_beat < now:
 					next_beat = now + datetime.timedelta(0, 1)
-		
-					try:
-						self.timer_beat(now)
-					except:
-						print 'OMG EPIC FAIL IN TIMER_BEAT!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+
+					self.timer_beat(now)
 
 plugin_handler.plugins_on_load()
 
@@ -257,9 +256,9 @@ if __name__ == "__main__":
 		try_again = False
 
 		p = Pynik()
-		p.connect("fi.quakenet.org", 6667)
-		p.send("USER pynik . . :pynik")
-		p.send("NICK pynik")
+		p.connect("port80.se.quakenet.org", 6667)
+		p.send("USER botnik . . :botnik")
+		p.send("NICK botnik")
 		try:
 			p.run()
 		except KeyboardInterrupt:

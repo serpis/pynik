@@ -49,7 +49,7 @@ class InsultCommand(Command):
             return "That insult already exists!" 
         self.insults.append(argument) 
         self.save() 
-        return "Added insult: %s", argument.replace('%s', source)
+        return "Added insult: %s" % argument.replace('%s', source)
      
     def save(self): 
         f = open(os.path.join("data", "insults.txt"), "w") 
@@ -166,10 +166,16 @@ class GoogleCommand(Command):
 				return url
 
 class WikipediaCommand(Command):
-	def trig_wp(self, bot, source, target, trigger, argument):
-		url = "http://en.wikipedia.org/wiki/%s" % utility.escape(argument)
-		
+	def wp_get(self, item):
+		url = "http://en.wikipedia.org/wiki/%s" % utility.escape(item.replace(" ", "_"))
+
 		data = utility.read_url(url)
+		
+		# sometimes there is a nasty table containing the first <p>. we can't allow this to happen!
+		pattern = re.compile("<table.*?>.+?<\/table>", re.MULTILINE)
+
+		data = re.sub(pattern, "", data)
+		print data
 
 		m = re.search("<p>(.+?)<\/p>", data)
 		if m:
@@ -187,10 +193,21 @@ class WikipediaCommand(Command):
 
 			data = data[0:index+1]
 
+			if "Wikipedia does not have an article with this exact name." in data:
+				return None
+			else:
+				return data
+		else:
+			return None
+
+	def trig_wp(self, bot, source, target, trigger, argument):
+		data = self.wp_get(argument)
+		url = "http://en.wikipedia.org/wiki/%s" % utility.escape(argument)
+
+		if data:
 			return "%s - %s" % (data, url)
 		else:
 			return url
-			
 
 class AAOCommand(Command):
 	triggers = ['}{|', 'åäö', 'Ã¥Ã¤Ã¶']
@@ -198,18 +215,18 @@ class AAOCommand(Command):
 	def on_trigger(self, bot, source, target, trigger, argument):
 		if target == '#c++.se':
 			if trigger == 'åäö':
-				return "Du använder nog latin-1 eller liknande. Fast det är OK. För den här gången."
+				return source+": Du använder nog latin-1 eller liknande. Fast det är OK. För den här gången."
 			elif trigger == '}{|':
-				return "Du använder nog ISO-646. Uhm."
+				return source+": Du använder nog ISO-646. Uhm."
 			else:
-				return "Du använder nog utf-8. Bra shit, mannen!"
+				return source+": Du använder nog utf-8. Bra shit, mannen!"
 		else:
 			if trigger == 'åäö':
-				return "Du använder nog latin-1 eller liknande."
+				return source+": Du använder nog latin-1 eller liknande."
 			elif trigger == '}{|':
-				return "Du använder nog ISO-646."
+				return source+": Du använder nog ISO-646."
 			else:
-				return "Du använder nog utf-8."
+				return source+": Du använder nog utf-8."
 			
 class CollectCommand(Command):
 	def trig_collect(self, bot, source, target, trigger, argument):

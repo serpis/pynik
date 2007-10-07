@@ -57,6 +57,13 @@ def timeout(f, timeout = 1, args = (), kwargs = {}):
 	signal.alarm(0)
 	return result
 
+def extract_nick(host):
+	m = re.search('^(.+)!', host)
+	if m:
+		return m.group(1)
+	else:
+		return host
+
 def read_url(url):
 	import httpget
 	import socket
