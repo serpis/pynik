@@ -26,10 +26,11 @@ def tw_get_num_players(address, port, players_dic):
 	 
 		data = data[14:] 
 	 
-		server_name, map_name = data[:-2].split("\x00")[0:2] 
+		slots = data.split("\x00")
+		server_info = slots[0:8]
+		server_name, map_name = slots[1:3]
 		data = data[-2:] 
-		max_players = ord(data[0]) 
-		num_players = ord(data[1]) 
+		num_players, max_players = map(int, slots[6:8])
 
 		with list_lock:
 			players_dic[thread.get_ident()] = num_players
@@ -40,11 +41,11 @@ def tw_get_num_players(address, port, players_dic):
 def tw_get_info(): 
 	counter = 0
 	address = "master.teewars.com" 
-	master_port = 8383 
+	master_port = 8300
  
 	sock = socket(AF_INET, SOCK_DGRAM) 
 	sock.settimeout(5.0) 
-	sock.sendto("\x20\x00\x00\x00\x00\x48\xff\xff\xff\xffreqt", (address, master_port)) 
+	sock.sendto("\x20\x00\x00\x00\x00\x00\xff\xff\xff\xffreqt", (address, master_port)) 
  
 	try:
 		data, addr = sock.recvfrom(1024) 

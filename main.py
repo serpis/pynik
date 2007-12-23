@@ -256,7 +256,7 @@ if __name__ == "__main__":
 		try_again = False
 
 		p = Pynik()
-		p.connect("port80.se.quakenet.org", 6667)
+		p.connect("irc.se.quakenet.org", 6667)
 		p.send("USER botnik . . :botnik")
 		p.send("NICK botnik")
 		try:

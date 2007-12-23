@@ -36,7 +36,8 @@ class TVCommand(Command):
 		return None
 	
 	def trig_tv(self, bot, source, target, trigger, argument):
-		data = utility.read_url("http://www.tv.nu/")
+		response = utility.read_url("http://www.tv.nu/")
+		data = response["data"]
 
 		if len(argument):
 			channel = argument

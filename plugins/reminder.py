@@ -25,7 +25,7 @@ class ReminderCommand(Command):
 		self.next_beat = None
 
 	def trig_reminder(self, bot, source, target, trigger, argument):
-		m = re.search('(\d\d):(\d\d) (.+)', argument)
+		m = re.search('(\d\d?):(\d\d) (.+)', argument)
 
 		if m:
 			hour, minute, message = m.groups()

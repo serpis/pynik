@@ -64,41 +64,6 @@ def read_http_data(s, length):
 
 	return data
 
-def read_http(address, port, file):
-	print "Connecting to %s" % address
-
-	request = http_get_request(file)
-	request.add_header("User-Agent", "Pynik/0.1")
-	request.add_header("Accept", "*/*")
-	request.add_header("Host", address)
-
-	s = socket(AF_INET, SOCK_STREAM)
-
-	s.connect((address, port))
-	request.send(s)
-
-	protocol, response_num, response_string, headers = read_http_headers(s)
-
-	if response_num == 301 or response_num == 302:
-		print "Site moved to: %s" % headers['Location']
-		s.close()
-		return read_url(headers['Location'])
-	elif response_num == 200:
-		print "Got response 200. Sweet!"
-		length = None
-		if "Content-Length" in headers:
-			length = min(1024*64, int(headers["Content-Length"])) # max 64kb YEAH!!! :D
-
-		data = read_http_data(s, length)
-
-		s.close()
-
-		return data
-	else:
-		print "Got unhandled response code: %s" % response_num
-		return None
-	
-
 def read_url(url):
 	m = re.match("^(.{3,5}):\/\/(.+?)(:?\d*)(\/.*?)?$", url)
 	if m:
@@ -113,7 +78,39 @@ def read_url(url):
 			if not file:
 				file = '/'
 
-			return read_http(address, port, file)
+			print "Connecting to %s" % address
+
+			request = http_get_request(file)
+			request.add_header("User-Agent", "Pynik/0.1")
+			request.add_header("Accept", "*/*")
+			request.add_header("Host", address)
+
+			s = socket(AF_INET, SOCK_STREAM)
+
+			s.connect((address, port))
+			request.send(s)
+
+			protocol, response_num, response_string, headers = read_http_headers(s)
+
+			if response_num == 301 or response_num == 302:
+				print "Site moved to: %s" % headers['Location']
+				s.close()
+	
+				return read_url(headers['Location'])
+			elif response_num == 200:
+				print "Got response 200. Sweet!"
+				length = None
+				if "Content-Length" in headers:
+					length = min(1024*1024, int(headers["Content-Length"])) # max one megabyte
+
+				data = read_http_data(s, length)
+
+				s.close()
+
+				return { "url": url, "data": data }
+			else:
+				print "Got unhandled response code: %s" % response_num
+				return None
 	else:
 		print "NOT AN URL: %s" % url
 		return None

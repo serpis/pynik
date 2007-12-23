@@ -7,6 +7,7 @@ import re
 import utility
 import os
 import pickle
+import random
 
 class EchoCommand(Command): 
 	def __init__(self):
@@ -21,6 +22,24 @@ class HelloCommand(Command):
 	
 	def trig_hello(self, bot, source, target, trigger, argument):
 		return "Hello there, %s!" % source
+
+class HelloCommand(Command): 
+	def __init__(self):
+		pass
+	
+	def trig_pick(self, bot, source, target, trigger, argument):
+		choices = argument.split(" or ")
+		choices = map(lambda x: x.strip(), choices)
+		choices = filter(lambda choice: len(choice), choices)
+
+		if choices:
+			responses = ["Hm... Definitely not %s.", "%s!", "I say... %s!", "I wouldn't pick %s...", "Perhaps %s..."]
+			choice = random.choice(choices)
+			response = random.choice(responses)
+			
+			return response % choice
+		else:
+			return None
 
 class InsultCommand(Command): 
     def __init__(self): 
@@ -131,7 +150,8 @@ class TempCommand(Command):
 		argument = argument.translate(asciilize)
 
 		url = "http://www.temperatur.nu/termo/%s/temp.txt" % argument
-		data = utility.read_url(url)
+		response = utility.read_url(url)
+		data = response["data"]
 
 		m = _get_temp_re.match(data)
 	
@@ -142,7 +162,9 @@ class GoogleCommand(Command):
 	def trig_google(self, bot, source, target, trigger, argument):
 		url = 'http://www.google.com/search?rls=en&q=' + utility.escape(argument) + '&ie=UTF-8&oe=UTF-8'
 
-		data = utility.read_url(url)
+		response = utility.read_url(url)
+
+		data = response["data"]
 
 		m = re.search('<td><img src=\/images\/calc_img\.gif alt=""><\/td><td>&nbsp;<\/td><td nowrap><font size=\+1><b>(.*?)<\/b>', data)
 
@@ -169,13 +191,15 @@ class WikipediaCommand(Command):
 	def wp_get(self, item):
 		url = "http://en.wikipedia.org/wiki/%s" % utility.escape(item.replace(" ", "_"))
 
-		data = utility.read_url(url)
+		response = utility.read_url(url)
+
+		data = response["data"]
+		url = response["url"]
 		
 		# sometimes there is a nasty table containing the first <p>. we can't allow this to happen!
 		pattern = re.compile("<table.*?>.+?<\/table>", re.MULTILINE)
 
 		data = re.sub(pattern, "", data)
-		print data
 
 		m = re.search("<p>(.+?)<\/p>", data)
 		if m:
@@ -194,15 +218,14 @@ class WikipediaCommand(Command):
 			data = data[0:index+1]
 
 			if "Wikipedia does not have an article with this exact name." in data:
-				return None
-			else:
-				return data
+				data = None
 		else:
-			return None
+			data = None
+
+		return (url, data)
 
 	def trig_wp(self, bot, source, target, trigger, argument):
-		data = self.wp_get(argument)
-		url = "http://en.wikipedia.org/wiki/%s" % utility.escape(argument)
+		url, data = self.wp_get(argument)
 
 		if data:
 			return "%s - %s" % (data, url)

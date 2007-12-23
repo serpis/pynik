@@ -7,7 +7,8 @@ from commands import Command
 def google_pages(string):
 	url = 'http://www.google.se/search?q=' + utility.escape(string) + '&ie=UTF-8&oe=UTF-8'
 
-	data = utility.read_url(url)
+	response = utility.read_url(url)
+	data = response["data"]
 
 	search = re.search('swrnum=(\d+)">', data)
 

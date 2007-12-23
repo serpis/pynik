@@ -9,7 +9,8 @@ from commands import Command
 def posten_kolli_query(KolliID):
 	url = 'http://posten.se/tracktrace/TrackConsignments_do.jsp?trackntraceAction=saveSearch&consignmentId=' + utility.escape(KolliID)
 
-	data = utility.read_url(url)
+	response = utility.read_url(url)
+	data = response["data"]
 
 ###	search = re.search('rightcol.*h2>(.*?)<div.*', data)
 	search = re.search('(?ims)rightcol.*h2>.*<h3>(.*?)</h3>\s*?(.*?)<div.*', data)

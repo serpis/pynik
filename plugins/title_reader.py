@@ -28,7 +28,8 @@ def get_title(url):
 	if not re.search('http', url):
 		url = 'http://' + url
 
-	data = utility.read_url(url)
+	response = utility.read_url(url)
+	data = response["data"]
 
 	m = re.search('<title>\s*(.+?)\s*<\/title>', data, re.IGNORECASE)
 

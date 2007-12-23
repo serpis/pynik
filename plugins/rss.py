@@ -70,7 +70,8 @@ class RssCommand(Command):
 	def trig_rss(self, bot, source, target, trigger, argument):
 		url = argument
 
-		data = utility.read_url(url)
+		response = utility.read_url(url)
+		data = response["data"]
 
 		self.reader.parse(data)
 
@@ -126,7 +127,10 @@ class RssCommand(Command):
 				nick, url, newest = t
 				
 				try:
-					data = utility.timeout(utility.read_url, 10, [url])
+					response = utility.timeout(utility.read_url, 10, [url])
+					data = response["data"]
+
+					print "data: %s" % data
 
 					self.reader.parse(data)
 
