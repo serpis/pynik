@@ -10,6 +10,8 @@ from commands import Command
 
 def control_pi(argument):
 	argumet = argument.strip()
+	if not argument:
+		"No argument given"
 	if len(argument) > 50:
 		return "Copypasta is FTL!"
 	if argument == pi[:len(argument)]:
