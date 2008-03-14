@@ -17,5 +17,5 @@ class picomp(Command):
 		if len(argument) > 50:
 			return "Copypasta is FTL!"
 		if argument == pi[:len(argument)]:
-			return "Grattis, du kan pi till %s decimaler" % len(argument)
-		return "Nejnej, %s är inte pi, försök igen, trunkera, avrunda inte" % argument
+			return "Congratulations, you know pi to %s decimals" % len(argument)-4
+		return "No no, %s isn't pi,try again, truncate this time" % argument
