@@ -10,11 +10,11 @@ from commands import Command
 
 def control_pi(argument):
 	argumet = argument.strip()
-		if len(argument) > 50:
-			return "Copypasta is FTL!"
-		if argument == pi[:len(argument)]:
-			return "Congratulations, you know pi to %s decimals" % len(argument)-4
-		return "No no, %s isn't pi,try again, truncate this time" % argument
+	if len(argument) > 50:
+		return "Copypasta is FTL!"
+	if argument == pi[:len(argument)]:
+		return "Congratulations, you know pi to %s decimals" % len(argument)-4
+	return "No no, %s isn't pi,try again, truncate this time" % argument
 
 class picomp(Command):
 	def __init__(self):
