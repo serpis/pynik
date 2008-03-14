@@ -12,7 +12,7 @@ class picomp(Command):
 	def __init__(self):
 		pass
 	
-	def trig_kolli(self, bot, source, target, trigger, argument):
+	def trig_pi(self, bot, source, target, trigger, argument):
 		argumet = argument.strip()
 		if len(argument) > 50:
 			return "Copypasta is FTL!"
