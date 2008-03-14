@@ -8,7 +8,7 @@ import re
 import utility
 from commands import Command
 				
-class kolli(Command):
+class picomp(Command):
 	def __init__(self):
 		pass
 	
