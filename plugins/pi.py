@@ -9,9 +9,11 @@ import utility
 from commands import Command
 
 def control_pi(argument):
-	argumet = argument.strip()
+	argument = argument.strip()
 	if not argument:
 		"No argument given"
+	if argumet == "3":
+		"Congrats, you know that pi starts with 3, idiot."
 	if len(argument) > 50:
 		return "Copypasta is FTL!"
 	if argument == pi[:len(argument)]:
