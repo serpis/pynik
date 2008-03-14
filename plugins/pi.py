@@ -16,7 +16,7 @@ def control_pi(argument):
 		return "Copypasta is FTL!"
 	if argument == pi[:len(argument)]:
 		return "Congratulations, you know pi to %s decimals" % (len(argument)-2,)
-	return "No no, %s isn't pi,try again, truncate this time" % argument
+	return "No no, %s isn't pi, try again, truncate this time." % argument
 
 class picomp(Command):
 	def __init__(self):
