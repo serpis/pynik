@@ -33,8 +33,7 @@ def imdb_info(url):
 
 	m = re.findall('"\/Sections\/Genres\/(.*?)\/', data)
 	if m:
-		genres = ", "
-		genres = genres.join(m)
+		genres = ", ".join(set(m))
 	else:
 		genres = ""
 

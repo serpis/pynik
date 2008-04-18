@@ -1,268 +1,39 @@
 # coding: latin-1
-from __future__ import with_statement
 
-import sys
-import socket
-import re
-import plugin_handler
-import traceback
-import errno
-import datetime
-import gc
-import thread
+from ircbot import IRCBot
+from httpsrv import http_server
+import time
 
-gc.set_debug(gc.DEBUG_LEAK)
+bot = IRCBot()
+bot.connect("port80.se.quakenet.org", 6667)
+bot.send("USER botnik * * :botnik")
+bot.send("NICK botnik2")
 
-class Pynik:
-	def __init__(self, s=None):
-		self.connected = False
-		self.temp_nick_list_channel = None
-		self.temp_nick_list = None
-		self.nick_lists = {}
+web_server = http_server.HTTPServer(8080)
 
-		if not s:
-			self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		else:
-			self.s = s
+botnik_picture_data = None
 
-		self.send_lock = thread.allocate_lock()
+def handle_request(request):
+	if "tickle" in request.request_path:
+		bot.tell("#c++.se", "stop that!")
+	elif request.request_path == "/botnik.png":
+		global botnik_picture_data
 
-	def connect(self, address, port):
-		self.connected = False
-		self.ping_count = 0
-		return self.s.connect((address, port))
-
-	def send(self, string):
-		with self.send_lock:
-			return self.s.send(string + "\r\n")
-
-	def tell(self, target, string):
-		split = len(string) - 1
-
-		if split >= 400:
-			split = 400
-			while split > 350:
-				if string[split] == ' ':
-					break
-				split -= 1
-
-			a = string[0:split]
-			b = string[split:]
-		
-			return self.tell(target, a) + self.tell(target, b)
-		else:
-			return self.send("PRIVMSG " + target + " :" + string)
-
-	def join(self, channel):
-		return self.send('JOIN ' + channel)
-
-	def reload_plugins(self):
-		plugin_handler.plugins_on_unload()
-		plugin_handler.reload_plugin_modules()
-		plugin_handler.plugins_on_load()
-
-	def load_plugin(self, plugin):
-		plugin_handler.load_plugin(plugin)
-
-	def get_nick(self, host):
-		m = re.search('^:?(\S+?)!', host)
-		if m:
-			return m.group(1)
-		else:
-			return host
-
-	def on_begin_nick_list(self, tupels):
-		m = re.search('. (.+?) :(.*)$', tupels[5])
-
-		if m:
-			channel, nicks = m.group(1, 2)
-
-			if self.temp_nick_list_channel != channel:
-				self.temp_nick_list_channel = channel
-				self.temp_nick_list = []
-
-			for m in re.findall('([^a-zA-Z\[\]{}]?)(.+?)(\s|$)', nicks):
-				prefix, nick = m[0:2]
-
-				self.temp_nick_list.append(nick)
-			
-	def on_end_nick_list(self, tupels):
-		self.nick_lists[self.temp_nick_list_channel] = self.temp_nick_list
-		self.temp_nick_list_channel = None
-		self.temp_nick_list = None
-
-	def on_join(self, tupels):
-		source, channel = [tupels[1], tupels[4]]
-
-		for plugin in plugin_handler.get_plugins_by_hook('on_join'):
+		if not botnik_picture_data:
 			try:
-				plugin.on_join(self, source, channel)
+				file = open("botnik.png")
+				botnik_picture_data = file.read()
+				file.close()
 			except:
-				print 'OMG epic fail in onjoin plugin', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+				web_server.respond_200(request, "Couldn't send image...")
+		web_server.respond_200(request, botnik_picture_data, "image/png")
+		return
 
-	def on_kick(self, tupels):
-		source, channel = [tupels[1], tupels[4]]
-		target_nick = None
+	web_server.respond_200(request, "If you can see this, I'm online.<p><img src=\"botnik.png\">")
 
-		m = re.search('^([^ ]+)', tupels[5])
-		if m:
-			target_nick = m.group(1)
+web_server.register_handle_request_callback(handle_request)
 
-		if target_nick:
-			for nick_list in self.nick_lists.values():
-				if target_nick in nick_list:
-					nick_list.remove(target_nick)
-
-	def on_nick(self, tupels):
-		source, new_nick = [tupels[1], tupels[4]]
-
-		source_nick = self.get_nick(source)
-
-		for nick_list in self.nick_lists.values():
-			if source_nick in nick_list:
-				nick_list.remove(source_nick)
-				nick_list.append(new_nick)
-
-	def on_part(self, tupels):
-		source, channel, reason = [tupels[1], tupels[4], tupels[5]]
-
-		source_nick = self.get_nick(source)
-
-		for nick_list in self.nick_lists.values():
-			if source_nick in nick_list:
-				nick_list.remove(source_nick)
-
-	def on_quit(self, tupels):
-		source = tupels[1]
-		reason = tupels[4]
-
-		if tupels[5] != '':
-			reason += ' ' + tupels[5]
-
-		source_nick = self.get_nick(source)
-
-		for nick_list in self.nick_lists.values():
-			if source_nick in nick_list:
-				nick_list.remove(source_nick)
-
-	def on_ping(self, tupels):
-		self.send("PONG :" + tupels[4])
-
-		for plugin in plugin_handler.get_plugins_by_hook('on_ping'):
-			try:
-				plugin.on_ping(tupels)
-			except:
-				print 'OMG epic fail in privmsg plugin', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
-
-		if not self.connected:
-			self.connected = True
-			self.on_connected(tupels)
-
-	def on_privmsg(self, tupels):
-		#reload(plugins)
-	
-		source = tupels[2]
-		target = tupels[4]
-
-		if target[0] != '#':
-			target = source
-
-		for plugin in plugin_handler.get_plugins_by_hook('on_privmsg'):
-			try:
-				plugin.on_privmsg(self, source, target, tupels)
-			except:
-				print 'OMG epic fail in privmsg plugin', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
-	
-	def on_notice(self, tupels):
-		for plugin in plugin_handler.get_plugins_by_hook('on_notice'):
-			try:
-				plugin.on_notice(self, source, target, tupels)
-			except:
-				print 'OMG epic fail in privmsg plugin', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
-
-	def on_connected(self, tupels):
-		for plugin in plugin_handler.get_plugins_by_hook('on_connected'):
-			try:
-				plugin.on_connected(self, 'irc.server.address')
-			except:
-				print 'OMG epic fail in privmsg plugin', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
-
-	def on_error(self, tupels):
-		print 'the irc server informs of an error: ' + tupels[5]
-
-	def timer_beat(self, now):
-		for plugin in plugin_handler.all_plugins():
-			try:
-				plugin.timer_beat(self, now)
-			except:
-				print 'OMG EPIC FAIL IN TIMER_BEAT!!', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
-
-	def run(self):
-		irc_message_pattern = re.compile('^(:([^  ]+))?[   ]*([^  ]+)[  ]+:?([^  ]*)[   ]*:?(.*)$')
-		irc_message_match = irc_message_pattern.match
-		message_handlers = {
-			'JOIN': self.on_join,
-			'KICK': self.on_kick,
-			'NICK': self.on_nick,
-			'PART': self.on_part,
-			'QUIT': self.on_quit,
-			'PING': self.on_ping,
-			'PRIVMSG': self.on_privmsg,
-			'NOTICE': self.on_notice,
-			'ERROR': self.on_error,
-			'353': self.on_begin_nick_list,
-			'366': self.on_end_nick_list,
-		}
-		recv_buf = ''
-
-		next_beat = None
-
-		while True:
-			try:
-				self.s.settimeout(1)
-				retn = self.s.recv(1024)
-				self.s.settimeout(None)
-
-				if len(retn) <= 0:
-					raise Exception('error while receiving')
-		
-				recv_buf += retn
-				recv_lines = recv_buf.splitlines(True)
-				recv_buf = ''
-				for line in recv_lines:
-					if not line.endswith("\r\n"):
-						recv_buf = line
-					else:
-						m = irc_message_match(line.rstrip("\r\n"))
-						if m:
-							if m.group(3) in message_handlers:
-								message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
-			except socket.timeout:
-				self.s.settimeout(None)
-
-			if self.connected:
-				now = datetime.datetime.now()
-		
-				if not next_beat or next_beat < now:
-					next_beat = now + datetime.timedelta(0, 1)
-
-					self.timer_beat(now)
-
-plugin_handler.plugins_on_load()
-
-if __name__ == "__main__":
-	try_again = True
-	while try_again:
-		try_again = False
-
-		p = Pynik()
-		p.connect("irc.se.quakenet.org", 6667)
-		p.send("USER botnik . . :botnik")
-		p.send("NICK botnik")
-		try:
-			p.run()
-		except KeyboardInterrupt:
-			raise
-		except:
-			print 'A very big error came by and said', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
-			try_again = True
+while True:
+	bot.tick()
+	web_server.tick()
+	time.sleep(0.1)

@@ -78,7 +78,7 @@ def read_url(url):
 			if not file:
 				file = '/'
 
-			print "Connecting to %s" % address
+			#print "Connecting to %s" % address
 
 			request = http_get_request(file)
 			request.add_header("User-Agent", "Pynik/0.1")
@@ -98,7 +98,7 @@ def read_url(url):
 	
 				return read_url(headers['Location'])
 			elif response_num == 200:
-				print "Got response 200. Sweet!"
+				#print "Got response 200. Sweet!"
 				length = None
 				if "Content-Length" in headers:
 					length = min(1024*1024, int(headers["Content-Length"])) # max one megabyte

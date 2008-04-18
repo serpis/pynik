@@ -62,10 +62,10 @@ class CommandCatcherPlugin(Plugin):
 			if trigger in favorites.FavoriteCommands.instance.favorites.keys():
 				return favorites.FavoriteCommands.instance.trig_fav(bot, source, target, 'fav', trigger + ' ' + arguments)
 	
-	def on_privmsg(self, bot, source, target, tupels):
+	def on_privmsg(self, bot, source, target, message):
 		p = re.compile('^(\S)(\S+)\s?(.*?)$')
 
-		m = p.match(tupels[5])
+		m = p.match(message)
 		
 		if m and m.group(1) == '.':
 			trigger = m.group(2)

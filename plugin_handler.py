@@ -6,13 +6,14 @@ import re
 
 from copy import copy
 
-
 prev = copy(sys.modules.values())
 from plugins import *
 new_modules = []
 plugins_module = None
 
 for module in sys.modules.values():
+	if not module:
+		continue
 	if module not in prev:
 		if module.__name__ == 'plugins':
 			plugins_module = module

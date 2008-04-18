@@ -23,7 +23,7 @@ class HelloCommand(Command):
 	def trig_hello(self, bot, source, target, trigger, argument):
 		return "Hello there, %s!" % source
 
-class HelloCommand(Command): 
+class PickCommand(Command): 
 	def __init__(self):
 		pass
 	
@@ -31,6 +31,8 @@ class HelloCommand(Command):
 		choices = argument.split(" or ")
 		choices = map(lambda x: x.strip(), choices)
 		choices = filter(lambda choice: len(choice), choices)
+
+		print choices
 
 		if choices:
 			responses = ["Hm... Definitely not %s.", "%s!", "I say... %s!", "I wouldn't pick %s...", "Perhaps %s..."]
@@ -48,7 +50,7 @@ class InsultCommand(Command):
     def trig_insult(self, bot, source, target, trigger, argument): 
         t = source 
         if argument: 
-            m = re.search('(\w+)', argument) 
+            m = re.search('(\S+)', argument) 
  
             if m: 
                 t = m.group(1) 
@@ -90,8 +92,6 @@ class InsultCommand(Command):
     def on_unload(self): 
         self.insults = None
 
-#insults = ['just not cool', 'a little nerdy', 'a sponge', 'very smelly', 'purple', 'a pig', 'a tad strange', 'not very good looking', 'awfully dull', 'a big troll', 'a potato', 'oddly shaped', 'fairly muscular', 'not at all handy', 'a bloody pervert', 'very ordinary', 'not god']
-
 class RawCommand(Command):
 	def trig_raw(self, bot, source, target, trigger, argument):
 		if source == 'serp' or source == 'teetow':
@@ -105,7 +105,7 @@ class TimeCommand(Command):
 class WeekCommand(Command):
 	def trig_week(self, bot, source, target, trigger, argument):
 		import datetime
-		return "Current week: %s." % datetime.datetime.now().strftime("%W")
+		return "Current week: %d." % (int(datetime.datetime.now().strftime("%W"))+1)
 
 def is_trigger(name):
 	m = re.search('^trig_.+', name)
@@ -139,12 +139,21 @@ class CommandsCommand(Command):
 #		return source in ['serp!~serp@85.8.2.181.se.wasadata.net']
 
 asciilize = string.maketrans("Â‰ˆ≈ƒ÷", "aaoAAO")
+
 _get_temp_re = re.compile('^\s*(.+)\s*$')
 class TempCommand(Command):
-	def trig_temp(self, bot, source, target, trigger, argument):
+	def __init__(self):
+		pass
 
-		if len(argument) == 0:
-			argument = 'ryd'
+	def trig_temp(self, bot, source, target, trigger, argument):
+		if argument:
+			self.places[source] = argument
+			self.save()
+		else:
+			if source in self.places:
+				argument = self.places[source]
+			else:
+				argument = 'ryd'
 
 		argument_text = argument
 		argument = argument.translate(asciilize)
@@ -154,9 +163,29 @@ class TempCommand(Command):
 		data = response["data"]
 
 		m = _get_temp_re.match(data)
-	
+
 		if m:
 			return "Temperature in %s: %s." % (argument_text, m.group(1))
+
+	def save(self): 
+		f = open(os.path.join("data", "places.txt"), "w") 
+		p = pickle.Pickler(f) 
+		p.dump(self.places) 
+		f.close() 
+
+	def on_load(self): 
+		self.places = {}
+
+		try:
+			f = open(os.path.join("data", "places.txt"), "r") 
+			unpickler = pickle.Unpickler(f) 
+			self.places = unpickler.load() 
+			f.close() 
+		except:
+			pass
+
+	def on_unload(self): 
+		self.places = {}
 
 class GoogleCommand(Command):
 	def trig_google(self, bot, source, target, trigger, argument):
@@ -166,7 +195,7 @@ class GoogleCommand(Command):
 
 		data = response["data"]
 
-		m = re.search('<td><img src=\/images\/calc_img\.gif alt=""><\/td><td>&nbsp;<\/td><td nowrap><font size=\+1><b>(.*?)<\/b>', data)
+		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><\/td><td>&nbsp;<\/td><td nowrap><font size=\+1><b>(.*?)<\/b>', data)
 
 		if m:
 			answer = m.group(1)

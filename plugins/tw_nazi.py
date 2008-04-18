@@ -14,8 +14,8 @@ class TeewarsNaziPlugin(Plugin):
 	def __init__(self):
 		pass
 	
-	def on_privmsg(self, bot, source, target, tupels):
-		if target == '#teewars' and reduce(lambda x, y: x or y in tupels[5], ['å', 'ä', 'ö', 'Å', 'Ä', 'Ö'], False):
+	def on_privmsg(self, bot, source, target, message):
+		if target == '#teewars' and reduce(lambda x, y: x or y in message, ['å', 'ä', 'ö', 'Å', 'Ä', 'Ö'], False):
 			bot.tell(target, 'English, please.')
 
 	def on_load(self):

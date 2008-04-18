@@ -31,7 +31,7 @@ def get_title(url):
 	response = utility.read_url(url)
 	data = response["data"]
 
-	m = re.search('<title>\s*(.+?)\s*<\/title>', data, re.IGNORECASE)
+	m = re.search('<title>\s*(.+?)\s*<\/title>', data, re.IGNORECASE|re.MULTILINE)
 
 	if m:
 		title = m.group(1)
@@ -47,9 +47,7 @@ class TitleReaderPlugin(Command):
 	def __init__(self):
 		pass
 	
-	def on_privmsg(self, bot, source, target, tupels):
-		message = tupels[5]
-
+	def on_privmsg(self, bot, source, target, message):
 		m = re.search('((http:\/\/|www.)\S+)', message, re.IGNORECASE)
 
 		if m:
@@ -82,11 +80,11 @@ class TitleReaderPlugin(Command):
 					resultlist.append(object)
 
 			if len(resultlist) > 0:
-				if resultlist[0].title:
-					title = resultlist[0].title
+				if resultlist[-1].title:
+					title = resultlist[-1].title
 				else:
 					title = 'N/A'
-				return 'Match 1 of ' + str(len(resultlist)) + ': ' + resultlist[0].url + ' - ' + title
+				return 'Match 1 of ' + str(len(resultlist)) + ': ' + resultlist[-1].url + ' - ' + title
 			else:
 				return 'No match found.'
 		else:

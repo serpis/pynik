@@ -71,6 +71,10 @@ class RssCommand(Command):
 		url = argument
 
 		response = utility.read_url(url)
+
+		if not response:
+			return "Couldn't fetch feed."
+
 		data = response["data"]
 
 		self.reader.parse(data)
@@ -128,9 +132,10 @@ class RssCommand(Command):
 				
 				try:
 					response = utility.timeout(utility.read_url, 10, [url])
-					data = response["data"]
+					if not response:
+						continue
 
-					print "data: %s" % data
+					data = response["data"]
 
 					self.reader.parse(data)
 

@@ -5,6 +5,15 @@ from commands import Command
 import re
 import utility
 
+class Episode:
+	def __init__(self, episode, name, date):
+		self.episode = episode
+		self.name = name
+		self.date = date
+
+	def __str__(self):
+		return "%s - %s (%s)" % (self.episode, self.name, self.date)
+
 class NextEpisodeCommands(Command):
 	def __init__(self):
 		pass
@@ -17,64 +26,28 @@ class NextEpisodeCommands(Command):
 
 		m = re.search('<tr bgcolor=\'#FFFFFF\'  id="brow"><td class=\'b1\'><img width=\'15\' height=\'10\' style=\'border: 1px solid black;\' src=\'http:\/\/images.tvrage.net\/flags\/.*?.gif\'> <a  href=\'(.*?)\' >(.*?)<\/a>(<\/td>|<br>)', data)
 
-
 		if m:
 			url = m.group(1)
-			show = m.group(2)
+			show_name = m.group(2)
 
 			last_ep = None
-			last_name = None
-			last_date = None
-
 			next_ep = None
-			next_name = None
-			next_date = None
 
 			response = utility.read_url(url)
 			data = response["data"]
 
-			m = re.search('<b>(Latest|Last) Episode: <\/b><\/td><td><a href=\'.*?\'>\d+: (\d+x\d+) \| (.*)<\/a> \((.*?)\)', data)
+			m = re.search('<b>(Latest|Last) Episode: <\/b><\/td><td>.*?<a href=\'.*?\'>(\d+: )?(\d+x\d+|\S+) (\||--) (.*?)<\/a> \((.*?)\)</td>', data)
 
 			if m:
-				last_ep = m.group(2)
-				last_name = m.group(3)
-				last_date = m.group(4)
-			else:
-				m = re.search('<b>(Latest|Last) Episode: <\/b><\/td><td><a href=\'.*?\'>(Movie) -- (.*)<\/a> \((.*?)\)', data)
+				last_ep = Episode(m.group(3), m.group(5), m.group(6))
 
-				if m:
-					last_ep = m.group(2)
-					last_name = m.group(3)
-					last_date = m.group(4)
-
-			m = re.search('<b>Next Episode: <\/b><\/td><td><a href=\'.*?\'>\d+: (\d+x\d+) \| (.*?)<\/a> \((.*?)\)', data)
+			m = re.search('<b>Next Episode: <\/b><\/td><td>.*?<a href=\'.*?\'>(\d+: )?(\d+x\d+|\S+) (\||--) (.*?)<\/a> \((.*?)\)</td>', data)
 
 			if m:
-				next_ep = m.group(1)
-				next_name = m.group(2)
-				next_date = m.group(3)
-			else:
-				m = re.search('<b>Next Episode: <\/b><\/td><td><a href=\'.*?\'>(.*?) -- (.*?)<\/a> \((.*?)\)', data)
-
-				if m:
-					next_ep = m.group(1)
-					next_name = m.group(2)
-					next_date = m.group(3)
+				next_ep = Episode(m.group(2), m.group(4), m.group(5))
 
 			if last_ep or next_ep:
-				ret_str = show + ': Last Episode: '
-				if last_ep:
-					ret_str += "%s - %s (%s)" % (last_ep, last_name, last_date)
-				else:
-					ret_str += 'none'
-
-				ret_str += '  |  Next Episode: '
-				if next_ep:
-					ret_str += "%s - %s (%s)" % (next_ep, next_name, next_date)
-				else:
-					ret_str += 'none'
-
-				return ret_str
+				return "%s: Last Episode: %s | Next Episode: %s" % (show_name, last_ep, next_ep)
 			else:
 				return "Show found, but I couldn't find any relevant episode data. :("
 		else:

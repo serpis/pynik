@@ -162,9 +162,7 @@ class GamePlugin(Command):
 		else:
 			return "I have no hiscore for this game."
 
-	def on_privmsg(self, bot, source, target, tupels):
-		message = tupels[5]
-
+	def on_privmsg(self, bot, source, target, message):
 		if target in self.games.keys():
 			game = self.games[target]
 			game.on_privmsg(bot, source, target, message)

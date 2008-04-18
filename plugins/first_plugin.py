@@ -9,5 +9,5 @@ class FirstPlugin(Plugin):
 	def __init__(self):
 		pass
 	
-	def on_privmsg(self, bot, source, target, tupels): 
+	def on_privmsg(self, bot, source, target, message): 
 		pass

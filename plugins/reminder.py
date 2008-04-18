@@ -89,7 +89,6 @@ class ReminderCommand(Command):
 			unp = pickle.Unpickler(file)
 
 			self.reminders = unp.load()
-			print 'weii'
 	
 	def on_unload(self):
 		self.reminders = []
