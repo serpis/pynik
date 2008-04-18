@@ -1,0 +1,250 @@
+(lp0
+S'%s \xc3\xa4r ett fetto'
+p1
+aS'Du \xc3\xa4r s\xc3\xa5 \xc3\xa4cklig %s, ja du!'
+p2
+aS'%s is %s.'
+p3
+aS'%s \xe4r till m\xe4nskligheten vad sandpapper \xe4r f\xf6r toalettbes\xf6ken'
+p4
+aS'%s \xe4r f\xf6r m\xe4nskligheten vad sandpapper \xe4r f\xf6r toalettbes\xf6ken'
+p5
+aS'%s \xe4r rund'
+p6
+aS'%s \xc3\xa4r en smutsig sk\xc3\xa5ning.'
+p7
+aS'Om %s slutade lukta illa skulle flygande grisar migrera fr\xe5n kylan i helvetet.'
+p8
+aS'Ni vet alla dom d\xe4r blondinsk\xe4mten? Dom handlar om %s.'
+p9
+aS'%s \xe4r son till sin bror.'
+p10
+aS'%s \xe4r r\xe4tt kass.'
+p11
+aS'%s kan inte stava till parallell.'
+p12
+aS'Tillvaron g\xe5r mot dr\xe4glig n\xe4r %s n\xe4rvaro g\xe5r mot noll.'
+p13
+aS'%s \xe4r en level 9 paladin.'
+p14
+aS'Det var.. nej jag orkar inte skriva n\xe5got roligt. Jag bara hatar dig %s. Hatar dig som bara fan. Jag hoppas att du d\xf6r, din inavlade familj likas\xe5. J\xe4vla skith\xf6g. Det b\xe4sta du kommer g\xf6ra \xe4r att ruttna under marken ditt f\xf6rbannade \xe4ckel.'
+p15
+aS"%s l\xe4gger till 'dock' i slutet av varje mening f\xf6r att verka smartare, oavsett om det passar d\xe4r eller en l\xe5ter halvt vettigt."
+p16
+aS'%s stavar fel p\xe5 "ens".'
+p17
+aS'%s har myror i byxorna. Bokstavligen, han njuter av det.'
+p18
+aS'%s \xc3\xa4r sin egen faster'
+p19
+aS'%d %s %s'
+p20
+aS'(Y %s) ==> #f'
+p21
+aS'%ss mamma \xc3\xa4r en pappa'
+p22
+aS'Ni vet alla de d\xc3\xa4r blondinsk\xc3\xa4mten? De handlar om %s.'
+p23
+aS'%s \xe4r en anal spr\xe5kfascist'
+p24
+aS'%s f\xc3\xa5r plats i sin navel'
+p25
+aS'det var %s som fes'
+p26
+aS'%s: i am rubber you are glue, your words bounce off me and stick to you'
+p27
+aS'%s anv\xe4nder internet explorer'
+p28
+aS'%s anv\xc3\xa4nder firefox'
+p29
+aS'%s k\xc3\xb6r compis som prim\xc3\xa4r arbetsstation'
+p30
+aS'%s gillar fontanellsex'
+p31
+aS'%s anv\xe4nder /amsg kommandot i mirc.'
+p32
+aS'%s warezar genom kazaa'
+p33
+aS'%s utvecklar i vbscript'
+p34
+aS'H{%s} = 0'
+p35
+aS'%s \xc3\xa4r en eufemism'
+p36
+aS'%s har bullar i ugnen'
+p37
+aS'%s \xe4ter frivilligt p\xe5 donken.'
+p38
+aS'%s har bandat behind-the-scenes till skilda v\xc3\xa4rldar'
+p39
+aS'%s har blandband med Sven-Ingvars'
+p40
+aS'%s'
+p41
+aS'%s \xc3\xa4r %s'
+p42
+aS'%s \xc3\xa4r Ulfalizer '
+p43
+aS'%s samlar p\xc3\xa5 br\xc3\xb6drostar'
+p44
+aS'%s \xe4r HACKERMAN!!!!!!!1111'
+p45
+aS'%s vill vara Joker fr\xc3\xa5n Rederiet'
+p46
+aS'%s vet inte hur man anv\xc3\xa4nder ehuru'
+p47
+aS'%s \xe4r f\xf6r cp f\xf6r cp-listan'
+p48
+aS'%s \xc3\xa4ter ugglor med senap.'
+p49
+aS'%s \xe4r en saltgurka'
+p50
+aS'%s: men h\xe5ll k\xe4ften.'
+p51
+aS'%s, en norrman och en isl\xc3\xa4nning gick in p\xc3\xa5 en bar...'
+p52
+aS'%s \xe4r Gudrun Schyman.'
+p53
+aS'%s: din pappa ringde, han \xc3\xa4r gravid.'
+p54
+aS'%s \xe4r h\xf6gst level i tibia.'
+p55
+aS'%s \xe4r en br.'
+p56
+aS'%s ser n\xe4stan ut som serp'
+p57
+aS'%s kan vara lugn, J-ohaN \xe4r v\xe4rre!'
+p58
+aS'%s bajsar regelbundet'
+p59
+aS'%s sitter och kissar'
+p60
+aS'%s kissar p\xe5 kanten'
+p61
+aS'%s \xe4ter soppa med gaffel'
+p62
+aS'%s har \xe4ppelknyckarbyxor'
+p63
+aS'%s \xc3\xa4r inte med i kommunistiska ungdomsf\xc3\xb6rbundet'
+p64
+aS'%s \xe4r spet\xe4lsk.'
+p65
+aS'%s \xc3\xa4r en hyvens karl. en riktig f\xc3\xb6rebild f\xc3\xb6r ungdomen. han dansar bra ocks\xc3\xa5.'
+p66
+aS'%s \xe4r en n\xf6rd'
+p67
+aS'%s \xe4r inte komplett'
+p68
+aS'serp \xc3\xa4r s\xc3\xa4mre \xc3\xa4n %s'
+p69
+aS'pest eller %s'
+p70
+aS'ur askan i %s'
+p71
+aS'Hellre ett hack iballen \xe4n %s i hallen'
+p72
+aS'liten %s f\xc3\xa4ller ofta stort lass'
+p73
+aS'man ska inte ropa %s innan man kommit \xf6ver b\xe4ckenet'
+p74
+aS'%s \xe4r \xe4ldre \xe4n teetow'
+p75
+aS'Forskare har uppt\xe4ckt ett nytt asteroid-b\xe4lte i form av cheese balls kretsande runt %ss feta mage'
+p76
+aS'%s skulle r\xf6stat p\xe5 Giuliani om han vore amerikan'
+p77
+aS'%s ser inte skillnad p\xc3\xa5 en spegel och serp'
+p78
+aS'%s tycker att alla insults \xe4r klockrena'
+p79
+aS'%shej jag heter botnik och jag \xc3\xa4r helt buggfri'
+p80
+aS'%s \xe4r v\xe4rldens b\xe4sta d\xe5liga exempel'
+p81
+aS'test \xc3\xa5\xc3\xa4\xc3\xb6 %s'
+p82
+aS'j\xc3\xa4vla %s'
+p83
+aS'%s is not intended for use in homes with children'
+p84
+aS'CAUTION! %s'
+p85
+aS'%s \xc3\xa4r s\xc3\xa5 ful att han aktiverar serps highlight'
+p86
+aS'%s liknar en jude'
+p87
+aS'%s fick sparken fr\xe5n samhall'
+p88
+aS'%s failade kv\xe4llskursen i datorkunskap p\xe5 komvux'
+p89
+aS'%s fick sitt dator-k\xf6rkort indrag'
+p90
+aS'%s gillar julnicks'
+p91
+aS'%s \xe4r en l\xf6k'
+p92
+aS'%s jobbar \xe5t microsoft'
+p93
+aS'%s t\xe4nder p\xe5 Uncle Ben'
+p94
+aS'%s \xe4r Stallmans sk\xe4gg'
+p95
+aS'%s t\xe4nkte inte s\xe4ga det h\xf6gt, men han har just str\xe4ckkollat Harry Potter 2 och 3'
+p96
+aS'%s liek mudkips.'
+p97
+aS'%s \xe4r medlem i Fi'
+p98
+aS'%s tror att serp har stor bokstav i b\xc3\xb6rjan av sitt nick'
+p99
+aS'%s \xe4r tr\xe5kigare \xe4n att sitta uppe mitt i natten en tisdag i november och inte ha n\xe5got alls att g\xf6ra'
+p100
+aS'%s k\xf6r svenskt windows'
+p101
+aS'%s skriver skitl\xe5nga koder.'
+p102
+aS'%s kan inte alla c++-koderna! Hahaha!'
+p103
+aS'%s f\xc3\xa5r aldrig n\xc3\xa5gra julklappar.'
+p104
+aS'%ss klocka g\xc3\xa5r fel'
+p105
+aS'%ss insults \xe4r totalt v\xe4rdel\xf6sa'
+p106
+aS'%s diggar Mircrosoft Bob'
+p107
+aS'%s gjorde en "Biohaxard".'
+p108
+aS'%ss luktar som en gammal avdankad k\xe4rring!'
+p109
+aS'%s < *'
+p110
+aS'%s har tv\xe5 pappor, dom f\xe5r inte gifta sig'
+p111
+aS'%s har tv\xe5 pappor, dom f\xe5r inte gifta sig med honom'
+p112
+aS'%s kan inte stava till kvalit\xc3\xa9'
+p113
+aS'%s \xc3\xa4r pretenti\xc3\xb6s nog att orka stava r\xc3\xa4tt till kvalit\xc3\xa9'
+p114
+aS'%s \xe4r l\xe5ngsammare \xe4n botnik'
+p115
+aS'ZEROblue t\xe4nder p\xe5 %s'
+p116
+aS'%s \xc3\xa4r b\xc3\xa4ttre \xc3\xa4n olsner'
+p117
+aS'%s_krejzy_cs_kid@hotmail.com'
+p118
+aS'%s ber om PHP-hj\xe4lp p\xe5 sweclockers'
+p119
+aS'%s brukar runka till VisualBasic-kod'
+p120
+aS'%ss enda kompis \xe4r Bonzi Buddy.'
+p121
+aS'%s hackar s\xe4mre \xe4n Ramzi'
+p122
+aS'.addinsult %s \xe4r r\xe4tt dum.'
+p123
+aS'.addinsult %%s \xe4r som %s'
+p124
+a.
