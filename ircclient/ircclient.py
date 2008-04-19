@@ -43,7 +43,6 @@ class IRCClient:
 		return self.connected
 
 	def send(self, line):
-		print line
 		return self.s.send(line + "\r\n")
 
 	def is_connected(self):

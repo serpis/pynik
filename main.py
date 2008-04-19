@@ -5,19 +5,16 @@ from httpsrv import http_server
 import time
 
 bot = IRCBot()
-bot.connect("port80.se.quakenet.org", 6667)
+bot.connect("irc.quakenet.org", 6667)
 bot.send("USER botnik * * :botnik")
-bot.send("NICK botnik2")
+bot.send("NICK botnik")
 
 web_server = http_server.HTTPServer(8000)
 
 botnik_picture_data = None
 
 def handle_request(request):
-	print request.request_path
-	if "tickle" in request.request_path:
-		bot.tell("#c++.se", "stop that!")
-	elif request.request_path == "/botnik.png":
+	if request.request_path == "/botnik.png":
 		global botnik_picture_data
 
 		if not botnik_picture_data:
