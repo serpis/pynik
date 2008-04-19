@@ -3,6 +3,7 @@ from __future__ import with_statement
 import sys
 import socket
 import re
+import time
 
 class IRCClient:
 	def __init__(self):
@@ -163,6 +164,7 @@ class IRCClient:
 
 		if not self.active_session:
 			self.active_session = True
+			time.sleep(2.0)
 			self.on_connected(tupels)
 
 	def on_privmsg(self, tupels):
