@@ -2,10 +2,60 @@ import socket
 import re
 import datetime
 
-class ClientRequest:
-	def __init__(self, address, data, socket):
-		self.source_address = address
+import sys
+import threading
+class TimeoutError(Exception): pass
+
+def timelimit(timeout):
+	def internal(function):
+		def internal2(*args, **kw):
+			class Calculator(threading.Thread):
+				def __init__(self):
+					threading.Thread.__init__(self)
+					self.result = None
+					self.error = None
+
+				def run(self):
+					try:
+						self.result = function(*args, **kw)
+					except:
+						self.error = sys.exc_info()[0]
+
+			c = Calculator()
+			c.start()
+			c.join(timeout)
+			if c.isAlive():
+				raise TimeoutError
+			if c.error:
+				raise c.error
+			return c.result
+		return internal2
+	return internal
+
+class InvalidRequestException:
+	pass
+
+class ClientConnection:
+	def __init__(self, socket, address):
 		self.socket = socket
+		self.address = address
+
+	@timelimit(10)
+	def wait_for_request(self):
+		data = ""
+
+		while True:
+			recv_data = self.socket.recv(65536)
+			data += recv_data
+
+			if "\r\n\r\n" in data:
+				break
+
+		return ClientRequest(self, data)
+
+class ClientRequest:
+	def __init__(self, client, data):
+		self.client = client
 
 		self.headers = {}
 
@@ -30,6 +80,8 @@ class ClientRequest:
 					if m:
 						name, value = m.group(1, 2)
 						self.headers[name] = value
+		else:
+			raise InvalidRequestException()
 
 		if "Cookie" in self.headers:
 			cookies = self.headers["Cookie"]
@@ -112,18 +164,18 @@ class HTTPServer:
 
 		self.socket.setblocking(False)
 
+		self.request_queue_lock = threading.Lock()
+		self.request_queue = []
+
 	def register_handle_request_callback(self, callback):
 		self.handle_request_callback = callback
 
-	def wait_for_request(self):
+	def accept_client_connection(self):
 		s, address = self.socket.accept()
-		#print "GOT CONNECTION!", s, address
 
-		data = s.recv(65536)
+		s.setblocking(True)
 
-		#s.close()
-
-		return ClientRequest(address, data, s)
+		return ClientConnection(s, address)
 
 	def respond_404(self, request):
 		response = ServerResponse(404)
@@ -148,18 +200,36 @@ class HTTPServer:
 		data = response.compile()
 
 		while data:
-			sent = request.socket.send(data)
+			sent = request.client.socket.send(data)
 			if sent <= 0:
 				return
 			else:
 				data = data[sent:]
 
-		request.socket.close()
+		request.client.socket.close()
+
+	def get_request(self, client):
+		try:
+			request = client.wait_for_request()
+			self.request_queue_lock.acquire()
+			self.request_queue.append(request)
+			self.request_queue_lock.release()
+		except TimeoutError:
+			client.socket.close()
+		except InvalidRequestException:
+			print "invalid request O.o"
+			client.socket.close()
 
 	def tick(self):
-		try:
-			request = self.wait_for_request()
+		self.request_queue_lock.acquire()
+		while self.request_queue:
+			request = self.request_queue.pop()
 			self.handle_request_callback(request)
+		self.request_queue_lock.release()
 
+		try:
+			client = self.accept_client_connection()
+			thread = threading.Thread(None, self.get_request, None, (client,))
+			thread.start()
 		except socket.error:
-			pass
+			pass # no incoming connection atm...
