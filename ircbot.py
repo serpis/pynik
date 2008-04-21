@@ -6,17 +6,21 @@ import traceback
 plugin_handler.plugins_on_load()
 
 class IRCBot():
-	def __init__(self):
-		self.client = IRCClient()
+	def __init__(self, address, port):
+		self.client = IRCClient(address, port)
 		self.client.callbacks = { "on_connected": self.on_connected, "on_join": self.on_join, "on_nick_change": self.on_nick_change, "on_notice": self.on_notice, "on_part": self.on_part, "on_privmsg": self.on_privmsg, "on_quit": self.on_quit }
 		self.plugins = []
 
+	def is_connected(self):
+		return self.client.is_connected()
+
 	def execute_plugins(self, trigger, *arguments):
-		for plugin in plugin_handler.get_plugins_by_hook(trigger):
-			try:
-				plugin.__class__.__dict__[trigger](plugin, self, *arguments)
-			except:
-				print "argh", sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+		pass
+		#for plugin in plugin_handler.all_plugins():
+		#	try:
+		#		plugin.__class__.__dict__[trigger](plugin, self, *arguments)
+		#	except:
+		#		print "argh", plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
 	
 	def on_connected(self):
 		self.execute_plugins("on_connected")
@@ -34,6 +38,8 @@ class IRCBot():
 		self.execute_plugins("on_part", nick, channel, reason)
 
 	def on_privmsg(self, nick, target, message):
+		for plugin in plugin_handler.all_plugins():
+			plugin.on_privmsg(self, nick, target, message)
 		self.execute_plugins("on_privmsg", nick, target, message)
 
 	def on_quit(self, nick, reason):
@@ -47,7 +53,6 @@ class IRCBot():
 	
 	def load_plugin(self, plugin):
 		plugin_handler.load_plugin(plugin)
-
 
 	def connect(self, address, port):
 		return self.client.connect(address, port)
