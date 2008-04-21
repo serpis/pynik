@@ -4,9 +4,10 @@ import sys
 import socket
 import re
 import time
+import datetime
 
 class IRCClient:
-	def __init__(self):
+	def __init__(self, address, port):
 		self.connected = False
 		self.active_session = False
 		self.temp_nick_list_channel = None
@@ -15,7 +16,11 @@ class IRCClient:
 		self.recv_buf = ''
 		self.callbacks = {}
 
-		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.lines = []
+
+		self.s = None
+
+		self.wait_until = None
 
 		self.irc_message_pattern = re.compile('^(:([^  ]+))?[   ]*([^  ]+)[  ]+:?([^  ]*)[   ]*:?(.*)$')
 		self.message_handlers = {
@@ -32,7 +37,12 @@ class IRCClient:
 			'366': self.on_end_nick_list,
 		}
 
+		self.server_address = address;
+		self.server_port = port;
+
 	def connect(self, address, port):
+		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 		self.active_session = False
 		self.ping_count = 0
 		self.connected = self.s.connect_ex((address, port)) == 0
@@ -41,8 +51,9 @@ class IRCClient:
 			self.s.setblocking(False)
 
 		return self.connected
-
+	
 	def send(self, line):
+		self.lines.append("SENT: " + line)
 		return self.s.send(line + "\r\n")
 
 	def is_connected(self):
@@ -189,24 +200,41 @@ class IRCClient:
 			self.callbacks["on_connected"]()
 
 	def on_error(self, tupels):
-		print 'the irc server informs of an error: ' + tupels[5]
+		message = tupels[5]
+		print 'the irc server informs of an error:', message
+
+		if "host is trying to (re)connect too fast" in message:
+			self.wait_until = datetime.datetime.now() + datetime.timedelta(0, 120)
 
 	def tick(self):
-		try:
-			retn = self.s.recv(1024)
+		if self.wait_until and self.wait_until > datetime.datetime.now():
+			return
 
-			self.recv_buf += retn
-			recv_lines = self.recv_buf.splitlines(True)
-			self.recv_buf = ''
-			for line in recv_lines:
-				if not line.endswith("\r\n"):
-					self.recv_buf = line
-				else:
-					line = line.rstrip("\r\n")
-					m = self.irc_message_pattern.match(line)
-					if m:
-						if m.group(3) in self.message_handlers:
-							self.message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
+		if self.connected:
+			try:
+				retn = self.s.recv(1024)
 
-		except socket.error:
-			pass
+				self.recv_buf += retn
+				recv_lines = self.recv_buf.splitlines(True)
+				self.recv_buf = ''
+				for line in recv_lines:
+					if not line.endswith("\r\n"):
+						self.recv_buf = line
+					else:
+						line = line.rstrip("\r\n")
+						self.lines.append("RECV: " + line)
+						m = self.irc_message_pattern.match(line)
+						if m:
+							if m.group(3) in self.message_handlers:
+								self.message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
+
+			except socket.error, (error_code, error_message):
+				if error_code != 35:
+					self.connected = False
+					print (error_code, error_message)
+				pass
+		else:
+			self.connect(self.server_address, self.server_port)
+			if self.connected:
+				self.send("USER botnik * * :botnik")
+				self.send("NICK botnik2")

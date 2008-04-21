@@ -4,10 +4,7 @@ from ircbot import IRCBot
 from httpsrv import http_server
 import time
 
-bot = IRCBot()
-bot.connect("irc.quakenet.org", 6667)
-bot.send("USER botnik * * :botnik")
-bot.send("NICK botnik")
+bot = IRCBot("irc.quakenet.org", 6667)
 
 web_server = http_server.HTTPServer(8000)
 
@@ -27,7 +24,20 @@ def handle_request(request):
 		web_server.respond_200(request, botnik_picture_data, "image/png")
 		return
 
-	web_server.respond_200(request, "If you can see this, I'm online.<p><img src=\"botnik.png\">")
+	c = None
+	if bot.is_connected():
+		c = "connected"
+	else:
+	 	c = "disconnected"
+
+	data = "I think that I am %s.<p><img src=\"botnik.png\"><p>" % c
+
+	data += "Conversation:<p><pre>"
+	for line in bot.client.lines:
+		data += line.replace("<", "&lt;").replace(">", "&gt;") + "\n"
+	data += "</pre>"
+
+	web_server.respond_200(request, data)
 
 web_server.register_handle_request_callback(handle_request)
 
