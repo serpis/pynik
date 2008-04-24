@@ -4,7 +4,7 @@ from ircbot import IRCBot
 from httpsrv import http_server
 import time
 
-bot = IRCBot("irc.quakenet.org", 6667)
+bot = IRCBot("stockholm.se.quakenet.org", 6667)
 
 web_server = http_server.HTTPServer(8000)
 

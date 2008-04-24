@@ -15,12 +15,18 @@ class IRCBot():
 		return self.client.is_connected()
 
 	def execute_plugins(self, trigger, *arguments):
-		pass
-		#for plugin in plugin_handler.all_plugins():
-		#	try:
-		#		plugin.__class__.__dict__[trigger](plugin, self, *arguments)
-		#	except:
-		#		print "argh", plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+		for plugin in plugin_handler.all_plugins():
+			try:
+				#if arguments:
+				#	print trigger
+				#	print("plugin.%s(self, %s)" % (trigger,", ".join(arguments)))
+				#else:
+				#	print("plugin.%s(self)" % trigger)
+				plugin.__class__.__dict__[trigger](plugin, self, *arguments)
+			except KeyError:
+				pass
+			except:
+				print "argh", plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
 	
 	def on_connected(self):
 		self.execute_plugins("on_connected")
@@ -38,13 +44,12 @@ class IRCBot():
 		self.execute_plugins("on_part", nick, channel, reason)
 
 	def on_privmsg(self, nick, target, message):
-		for plugin in plugin_handler.all_plugins():
-			plugin.on_privmsg(self, nick, target, message)
+		#for plugin in plugin_handler.all_plugins():
+		#	plugin.on_privmsg(self, nick, target, message)
 		self.execute_plugins("on_privmsg", nick, target, message)
 
 	def on_quit(self, nick, reason):
 		self.execute_plugins("on_quit", nick, reason)
-
 
 	def reload_plugins(self):
 		plugin_handler.plugins_on_unload()

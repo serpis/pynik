@@ -6,6 +6,9 @@ import re
 import time
 import datetime
 
+def timestamp():
+	return datetime.datetime.now().strftime("[%H:%M:%S]")
+
 class IRCClient:
 	def __init__(self, address, port):
 		self.connected = False
@@ -35,6 +38,7 @@ class IRCClient:
 			'ERROR': self.on_error,
 			'353': self.on_begin_nick_list,
 			'366': self.on_end_nick_list,
+			'001': self.on_connected
 		}
 
 		self.server_address = address;
@@ -53,8 +57,15 @@ class IRCClient:
 		return self.connected
 	
 	def send(self, line):
-		self.lines.append("SENT: " + line)
-		return self.s.send(line + "\r\n")
+		self.lines.append(timestamp() + " SENT: " + line)
+
+		data = line + "\r\n"
+
+		while data:
+			sent =  self.s.send(data)
+			data = data[sent:]
+
+		return len(line)+2
 
 	def is_connected(self):
 		return self.connected
@@ -172,11 +183,6 @@ class IRCClient:
 	def on_ping(self, tupels):
 		self.send("PONG :" + tupels[4])
 
-		if not self.active_session:
-			self.active_session = True
-			time.sleep(2.0)
-			self.on_connected(tupels)
-
 	def on_privmsg(self, tupels):
 		source, target, message = tupels[2], tupels[4], tupels[5]
 
@@ -196,6 +202,8 @@ class IRCClient:
 			self.callbacks["on_notice"](source, target, message)
 
 	def on_connected(self, tupels):
+		self.active_session = True
+
 		if "on_connected" in self.callbacks:
 			self.callbacks["on_connected"]()
 
@@ -222,7 +230,7 @@ class IRCClient:
 						self.recv_buf = line
 					else:
 						line = line.rstrip("\r\n")
-						self.lines.append("RECV: " + line)
+						self.lines.append(timestamp() + " RECV: " + line)
 						m = self.irc_message_pattern.match(line)
 						if m:
 							if m.group(3) in self.message_handlers:
@@ -232,9 +240,8 @@ class IRCClient:
 				if error_code != 35:
 					self.connected = False
 					print (error_code, error_message)
-				pass
 		else:
 			self.connect(self.server_address, self.server_port)
 			if self.connected:
 				self.send("USER botnik * * :botnik")
-				self.send("NICK botnik2")
+				self.send("NICK botnik")
