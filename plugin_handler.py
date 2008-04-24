@@ -11,6 +11,8 @@ from plugins import *
 new_modules = []
 plugins_module = None
 
+plugin_instances = []
+
 for module in sys.modules.values():
 	if not module:
 		continue
@@ -31,10 +33,12 @@ for module in sys.modules.values():
 new_modules = filter(lambda x: re.match('^plugins\.', x.__name__), new_modules)
 
 def reload_plugin_modules():
+	global plugin_instances
 	import traceback
 	for module in new_modules:
 		try:
 			reload(module)
+			plugin_instances.extend(module.get_plugins())
 		except:
 			print 'error when reloading module', module.__name__, sys.exc_info(), str(traceback.extract_tb(sys.exc_info()[2]))
 

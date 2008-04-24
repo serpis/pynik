@@ -2,14 +2,50 @@ from ircclient.ircclient import IRCClient
 import plugin_handler
 import sys
 import traceback
+import datetime
 
 plugin_handler.plugins_on_load()
 
+from heapq import heappush, heappop
+class PriorityQueue:
+	def __init__(self):
+		self.internal_array = []
+
+	def push(self, item):
+		heappush(self.internal_array, item)
+
+	def pop(self):
+		return heappop(self.internal_array)
+
+	def empty(self):
+		return len(self.internal_array) == 0
+	
+	def top(self):
+		return self.internal_array[0]
+
+class TimedEvent:
+	def __init__(self, trigger_delta, recurring, target, args):
+		self.trigger_delta = trigger_delta
+		self.trigger_time = datetime.datetime.now() + trigger_delta
+		self.recurring = recurring
+		self.target = target
+		self.args = args
+
+	def trigger(self):
+		self.target(*self.args)
+
+	def reset(self):
+		self.trigger_time += self.trigger_delta
+
+	def __cmp__(self, other):
+		return cmp(self.trigger_time, other.trigger_time)
+
 class IRCBot():
-	def __init__(self, address, port):
-		self.client = IRCClient(address, port)
+	def __init__(self, address, port, nick, username, realname):
+		self.client = IRCClient(address, port, nick, username, realname)
 		self.client.callbacks = { "on_connected": self.on_connected, "on_join": self.on_join, "on_nick_change": self.on_nick_change, "on_notice": self.on_notice, "on_part": self.on_part, "on_privmsg": self.on_privmsg, "on_quit": self.on_quit }
 		self.plugins = []
+		self.timer_heap = PriorityQueue()
 
 	def is_connected(self):
 		return self.client.is_connected()
@@ -72,5 +108,18 @@ class IRCBot():
 		return self.client.tell(target, message)
 
 	def tick(self):
+		now = datetime.datetime.now()
+
+		while not self.timer_heap.empty() and self.timer_heap.top().trigger_time <= now:
+			timer = self.timer_heap.pop()
+			timer.trigger()
+			if timer.recurring:
+				timer.reset()
+				self.timer_heap.push(timer)
+
 		self.client.tick()
 
+	def add_timer(self, delta, recurring, target, *args):
+		timer = TimedEvent(delta, recurring, target, args)
+
+		self.timer_heap.push(timer)

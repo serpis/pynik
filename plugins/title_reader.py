@@ -7,7 +7,6 @@ import re
 import utility
 from plugins import Plugin
 from commands import Command
-import command_catcher
 
 class URL():
 	url = ''

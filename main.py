@@ -3,12 +3,15 @@
 from ircbot import IRCBot
 from httpsrv import http_server
 import time
+import settings
+import datetime
 
-bot = IRCBot("stockholm.se.quakenet.org", 6667)
+bot = IRCBot(settings.server_address, settings.server_port, settings.nick, settings.username, settings.realname)
 
 web_server = http_server.HTTPServer(8000)
 
 botnik_picture_data = None
+
 
 def handle_request(request):
 	if request.request_path == "/botnik.png":
@@ -40,6 +43,8 @@ def handle_request(request):
 	web_server.respond_200(request, data)
 
 web_server.register_handle_request_callback(handle_request)
+	
+bot.add_timer(datetime.timedelta(0, 60), True, bot.send, "PRIVMSG #botnik :this is to keep me alive :O")
 
 while True:
 	bot.tick()

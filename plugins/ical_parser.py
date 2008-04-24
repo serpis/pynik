@@ -5,6 +5,9 @@ import pickle
 import datetime
 from commands import Command
 
+def get_plugins():
+	return [SchemaCommand()]
+
 class Event:
 	def __init__(self):
 		self.start = None
@@ -67,6 +70,9 @@ class iCalParser:
 class Schema(Command):
 	def __init__(self):
 		self.id_directory = {}
+
+	def get_triggers(self):
+		return { "schema": self.trig_schema }
 
 	def trig_schema(self, bot, source, target, trigger, argument):
 		if not argument:

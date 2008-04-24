@@ -10,7 +10,7 @@ def timestamp():
 	return datetime.datetime.now().strftime("[%H:%M:%S]")
 
 class IRCClient:
-	def __init__(self, address, port):
+	def __init__(self, address, port, nick, username, realname):
 		self.connected = False
 		self.active_session = False
 		self.temp_nick_list_channel = None
@@ -43,6 +43,10 @@ class IRCClient:
 
 		self.server_address = address;
 		self.server_port = port;
+
+		self.nick = nick
+		self.username = username
+		self.realname = realname
 
 	def connect(self, address, port):
 		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -243,5 +247,5 @@ class IRCClient:
 		else:
 			self.connect(self.server_address, self.server_port)
 			if self.connected:
-				self.send("USER botnik * * :botnik")
-				self.send("NICK botnik")
+				self.send("USER %s * * :%s" % (self.username, self.realname))
+				self.send("NICK %s" % self.nick)

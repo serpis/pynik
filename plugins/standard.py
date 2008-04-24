@@ -12,6 +12,9 @@ import random
 class EchoCommand(Command): 
 	def __init__(self):
 		pass
+
+	def get_triggers(self):
+		return { "echo": self.trig_echo }
 	
 	def trig_echo(self, bot, source, target, trigger, argument):
 		return argument
@@ -107,32 +110,17 @@ class WeekCommand(Command):
 		import datetime
 		return "Current week: %d." % (int(datetime.datetime.now().strftime("%W"))+1)
 
-def is_trigger(name):
-	m = re.search('^trig_.+', name)
-	if m:
-		return True
-	else:
-		return False
-
-def remove_first_five(text):
-	return text[5:]
-
 class CommandsCommand(Command):
+	def get_triggers(self):
+		return { "commands": self.trig_commands }
+
 	def trig_commands(self, bot, source, target, trigger, argument):
 		triggers = []
 		for command in Command.__subclasses__():
-			for trigger in command.triggers:
+			for trigger, command in command.instance.get_triggers().iteritems():
 				if trigger not in triggers:
 					triggers.append(trigger)
 
-			l = command.__dict__
-			l = filter(is_trigger, l)
-			l = map(remove_first_five, l)
-
-			for trigger in l:
-				if trigger not in triggers:
-					triggers.append(trigger)
-		
 		return "Commands: %s" % ", ".join(sorted(triggers))
 
 #	def can_trigger(self, source, trigger):
@@ -262,7 +250,8 @@ class WikipediaCommand(Command):
 			return url
 
 class AAOCommand(Command):
-	triggers = ['}{|', 'åäö', 'Ã¥Ã¤Ã¶']
+	def get_triggers(self):
+		return { "}{|": self.on_trigger, "åäö": self.on_trigger, "Ã¥Ã¤Ã¶": self.on_trigger }
 
 	def on_trigger(self, bot, source, target, trigger, argument):
 		if target == '#c++.se':
