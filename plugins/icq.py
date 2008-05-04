@@ -31,9 +31,6 @@ def icq_lookup(icqid):
 		if country:
 			result = result + ", " + country
 		return result
-
-		else:
-			return None
 	else:
 		return None
 				
