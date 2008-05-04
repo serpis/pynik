@@ -123,3 +123,6 @@ class IRCBot():
 		timer = TimedEvent(delta, recurring, target, args)
 
 		self.timer_heap.push(timer)
+
+	def add_background_job(self, name, callback, target, args):
+		pass

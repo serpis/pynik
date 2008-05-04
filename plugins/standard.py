@@ -195,26 +195,33 @@ class GoogleCommand(Command):
 
 		data = response["data"]
 
-		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><\/td><td>&nbsp;<\/td><td nowrap><font size=\+1><b>(.*?)<\/b>', data)
-
+		# try to extract calculator result
+		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><\/td><td>&nbsp;<\/td><td nowrap><h2 class=r><font size=\+1><b>(.*?)<\/b>', data)
 		if m:
 			answer = m.group(1)
 			answer = answer.replace(' &#215;', '×').replace('<sup>', '^')
 			answer = re.sub('<.+?>', '', answer)
 			return answer
+
+		# try to extract definition
+		m = re.search('<img src=\/images\/dictblue\.gif width=40 height=30 alt=""><td valign=top><font size=-1>(.*?)<br>', data)
+		if m:
+			definition = utility.unescape(m.group(1))
+			definition = re.sub('<.+?>', '', definition)
+			return definition
+		
+		# try to extract first hit
+		m = re.search('<div class=g><a href="(.*?)" class=l>(.*?)<\/a>(.*?)</div>', data)
+		if m:
+
+			text = utility.unescape(m.group(2))
+			text = re.sub('<.+?>', '', text)
+
+			link = m.group(1)
+
+			return "%s - %s | %s" % (text, link, url)
 		else:
-			m = re.search('<div class=g><a href="(.*?)" class=l>(.*?)<\/a>(.*?)</div>', data)
-
-			if m:
-
-				text = utility.unescape(m.group(2))
-				text = re.sub('<.+?>', '', text)
-
-				link = m.group(1)
-	
-				return "%s - %s | %s" % (text, link, url)
-			else:
-				return url
+			return url
 
 class WikipediaCommand(Command):
 	def wp_get(self, item):
