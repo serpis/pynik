@@ -1,0 +1,9 @@
+Botnik bugs
+===========
+
+Serious shit
+============
+Timer events happen even when botnik is disconnected. This may cause him to try to send data on a closed socket => crash.
+
+Small
+=====
