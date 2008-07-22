@@ -36,12 +36,12 @@ class NextEpisodeCommands(Command):
 			response = utility.read_url(url)
 			data = response["data"]
 
-			m = re.search('<b>(Latest|Last) Episode: <\/b><\/td><td>.*?<a href=\'.*?\'>(\d+: )?(\d+x\d+|\S+) (\||--) (.*?)<\/a> \((.*?)\)</td>', data)
+			m = re.search('<b>(Latest|Last) Episode: <\/b><\/td><td>.*?<a href=\'.*?\'>(\d+: )?(\d+x\d+|\S+) (\||--) (.*?)<\/a> \((.*?)\)', data)
 
 			if m:
 				last_ep = Episode(m.group(3), m.group(5), m.group(6))
 
-			m = re.search('<b>Next Episode: <\/b><\/td><td>.*?<a href=\'.*?\'>(\d+: )?(\d+x\d+|\S+) (\||--) (.*?)<\/a> \((.*?)\)</td>', data)
+			m = re.search('<b>Next Episode: <\/b><\/td><td>.*?<a href=\'.*?\'>(\d+: )?(\d+x\d+|\S+) (\||--) (.*?)<\/a> \((.*?)\)', data)
 
 			if m:
 				next_ep = Episode(m.group(2), m.group(4), m.group(5))

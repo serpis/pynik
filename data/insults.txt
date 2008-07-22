@@ -247,4 +247,10 @@ aS'.addinsult %s \xe4r r\xe4tt dum.'
 p123
 aS'.addinsult %%s \xe4r som %s'
 p124
+aS'%s gillar inte chips'
+p125
+aS'%s \xe4r inte det minsta n\xf6rdig'
+p126
+aS'%s luktar kaffe'
+p127
 a.

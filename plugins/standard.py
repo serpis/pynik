@@ -196,9 +196,9 @@ class GoogleCommand(Command):
 		data = response["data"]
 
 		# try to extract calculator result
-		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><\/td><td>&nbsp;<\/td><td nowrap><h2 class=r><font size=\+1><b>(.*?)<\/b>', data)
+		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><\/td><td>&nbsp;<\/td><td nowrap( dir=ltr)?>(<h2 class=r>)?<font size=\+1><b>(.*?)<\/b>', data)
 		if m:
-			answer = m.group(1)
+			answer = m.group(3)
 			answer = answer.replace(' &#215;', '×').replace('<sup>', '^')
 			answer = re.sub('<.+?>', '', answer)
 			return answer

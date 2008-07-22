@@ -5,6 +5,7 @@ import socket
 import re
 import time
 import datetime
+import errno
 
 def timestamp():
 	return datetime.datetime.now().strftime("[%H:%M:%S]")
@@ -216,7 +217,10 @@ class IRCClient:
 		print 'the irc server informs of an error:', message
 
 		if "host is trying to (re)connect too fast" in message:
-			self.wait_until = datetime.datetime.now() + datetime.timedelta(0, 120)
+			self.idle_for(120)
+
+	def idle_for(self, seconds):
+		self.wait_until = datetime.datetime.now() + datetime.timedelta(0, seconds)
 
 	def tick(self):
 		if self.wait_until and self.wait_until > datetime.datetime.now():
@@ -241,11 +245,17 @@ class IRCClient:
 								self.message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
 
 			except socket.error, (error_code, error_message):
-				if error_code != 35:
+				if error_code != errno.EWOULDBLOCK:
 					self.connected = False
 					print (error_code, error_message)
 		else:
-			self.connect(self.server_address, self.server_port)
+			try:
+				self.connect(self.server_address, self.server_port)
+			except socket.error, (error_code, error_message):
+				print "I got an error while trying to connect... Is it wrong to just return now?", (error_code, error_message)
+				self.idle_for(60)
+				return
+
 			if self.connected:
 				self.send("USER %s * * :%s" % (self.username, self.realname))
 				self.send("NICK %s" % self.nick)
