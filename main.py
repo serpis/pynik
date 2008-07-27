@@ -45,6 +45,7 @@ def handle_request(request):
 web_server.register_handle_request_callback(handle_request)
 	
 bot.add_timer(datetime.timedelta(0, 60), True, bot.send, "PRIVMSG #botnik :this is to keep me alive :O")
+bot.add_timer(datetime.timedelta(0, 5*60), True, bot.send, "PRIVMSG #d2a :NU ÄR DET #d3a SOM GÄLLER! JOINA ELLER DÖ")
 
 while True:
 	bot.tick()

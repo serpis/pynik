@@ -253,4 +253,64 @@ aS'%s \xe4r inte det minsta n\xf6rdig'
 p126
 aS'%s luktar kaffe'
 p127
+aS'%s \xe4r fulare \xe4n perlkod'
+p128
+aS'%s har k\xf6nsherpes i \xf6rat'
+p129
+aS'%s gillar tjockisar'
+p130
+aS'%s kan skriva hello world p\xe5 10 minuter.'
+p131
+aS'%s t\xe4nder p\xe5 ZEROblue '
+p132
+aS'%s vet inte hur man anv\xe4nder en br\xf6drost'
+p133
+aS'%s har klarat ut Daikatana 22 g\xe5nger.'
+p134
+aS'%s kommer att d\xf6 ensam'
+p135
+aS'%s \xe4r f\xf6r dum f\xf6r bubble sort'
+p136
+aS'%s f\xc3\xb6rst\xc3\xa5r inte svenska.'
+p137
+aS'%s sk\xf6ter inte sin intimhygien'
+p138
+aS'%s \xe4r kristen'
+p139
+aS'%s \xe4r ett f\xf6rbannat j\xe4vla r\xf6vh\xe5l med liten penis. %s borde d\xf6 och brinna i helvetet'
+p140
+aS'%s har blivit v\xe5ldtagen av hello world :('
+p141
+aS'%s b\xc3\xb6rjade precis med programmering, och blir v\xc3\xa5ldtagen h\xc3\xa5rd av hello wordl :('
+p142
+aS'%s \xe4r ganska v\xe4rdALL GLORY TO THE HYPNOTOAD!'
+p143
+aS'%s kodar BASIC hela n\xc3\xa4tterna.'
+p144
+aS'%s \xe4r %ss pappa'
+p145
+aS'%s and Babsan up in a tree. F U C K i N G'
+p146
+aS'%s \xe4r s\xe5 dum att han f\xe5r skr\xe4p i tangentbordet p\xe5 sin iPhone.'
+p147
+aS'%s \xe4r s\xe5 dum att han k\xf6pte en iphone'
+p148
+aS'%s \xc3\xa4r dum.'
+p149
+aS'%s mamma s\xe4ljer sin kropp p\xe5 pricerunner'
+p150
+aS'%s f\xc3\xa5r inte g\xc3\xa5 p\xc3\xa5 LAN-party f\xc3\xb6r %ss mamma.'
+p151
+aS'%s tror att insultfunktionen \xe4r til lf\xf6r chat'
+p152
+aS'%ss mamma anv\xe4nder macintosh!'
+p153
+aS'%s \xe4r b\xe4st'
+p154
+aS'%s har r\xe4tt'
+p155
+aS'%s saboterar f\xc3\xb6rol\xc3\xa4mningsdatabasen.'
+p156
+aS'%s saboterar f\xc3\xb6rol\xc3\xa4mpningsdatabasen.'
+p157
 a.
