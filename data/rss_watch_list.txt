@@ -71,4 +71,14 @@ ag4
 p41
 tp42
 Rp43
+aa(lp44
+S'Taurmindo'
+p45
+aS'http://xkcd.com/rss.xml'
+p46
+ag4
+(S'\x00\x01\x01\x01\x00\x00\x00\x00\x00\x00'
+p47
+tp48
+Rp49
 aa.

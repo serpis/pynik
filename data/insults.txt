@@ -313,4 +313,18 @@ aS'%s saboterar f\xc3\xb6rol\xc3\xa4mningsdatabasen.'
 p156
 aS'%s saboterar f\xc3\xb6rol\xc3\xa4mpningsdatabasen.'
 p157
+aS'%s g\xe5r konstigt'
+p158
+aS'det var %s som kasta'
+p159
+aS'%s \xc3\xa4r muslim'
+p160
+aS'%s \xe4r religi\xf6s'
+p161
+aS'%s har unixsk\xe4gg.'
+p162
+aS'%s fick U p\xe5 en filfak kurs'
+p163
+aS'%s har inte alla poler i h\xf6ger halvplan'
+p164
 a.
