@@ -90,7 +90,7 @@ class Nil:
 		return None.__hash__()
 
 	def __eq__(self, other):
-		return isinstance(other, None)
+		return isinstance(other, Nil)
 
 	def __repr__(self):
 		return "nil"
@@ -111,6 +111,21 @@ class Name:
 	def __repr__(self):
 		return "%s" % self.name
 
+class String:
+	def __init__(self, value):
+		self.value = value
+
+	def eval(self, env):
+		return self
+
+	def __hash__(self):
+		return self.value.__hash__()
+
+	def __eq__(self, other):
+		return self.value.__eq__(other.value)
+
+	def __repr__(self):
+		return '"%s"' % self.value
 class Integer:
 	def __init__(self, value):
 		self.value = value
@@ -154,7 +169,7 @@ class List:
 		rest = self.rest()
 
 		if isinstance(first, Name) and first.name == "lambda":
-			return Lambda(rest)
+			return Lambda(env, rest)
 
 		return FunctionCall(first, rest).eval(env)
 
@@ -183,7 +198,8 @@ class List:
 		return s
 
 class Lambda:
-	def __init__(self, expressions):
+	def __init__(self, env, expressions):
+		self.env = env
 		self.parameters = expressions.first()
 		self.expression = ExpressionBody(expressions.rest())
 
@@ -191,6 +207,7 @@ class Lambda:
 		return self
 
 	def apply(self, env, args):
+		env = self.env
 		eval_assert(len(self.parameters) == len(args), "wrong number of arguments to function")
 
 		for i in range(len(args)):
@@ -232,6 +249,7 @@ class FunctionCall:
 def tokenize(text):
 	token_descriptions = [
 	("whitespace", "(\s+)"),
+	("string", '"((?:\\.|[^"])*)"'),
 	("name", "([a-zA-Z]+)"),
 	("leftparenthesis", "(\()"),
 	("rightparenthesis", "(\))"),
@@ -267,7 +285,9 @@ def get_expressions(tokens, start_index, end_index):
 	i = start_index
 	while i <= end_index:
 		token = tokens[i]
-		if (token.name == "integer"):
+		if (token.name == "string"):
+			expressions.append(String(token.value))
+		elif (token.name == "integer"):
 			expressions.append(Integer(int(token.value)))
 		elif (token.name == "name"):
 			expressions.append(Name(token.value))

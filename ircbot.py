@@ -11,6 +11,9 @@ class PriorityQueue:
 	def __init__(self):
 		self.internal_array = []
 
+	def clear(self):
+		self.internal_array = []
+
 	def push(self, item):
 		heappush(self.internal_array, item)
 
@@ -110,12 +113,15 @@ class IRCBot():
 	def tick(self):
 		now = datetime.datetime.now()
 
-		while not self.timer_heap.empty() and self.timer_heap.top().trigger_time <= now:
-			timer = self.timer_heap.pop()
-			timer.trigger()
-			if timer.recurring:
-				timer.reset()
-				self.timer_heap.push(timer)
+		if not self.timer_heap.empty() and not self.client.connected:
+			print "ATTENTION! We are not connected. Skipping timers!"
+		else:
+			while not self.timer_heap.empty() and self.timer_heap.top().trigger_time <= now:
+				timer = self.timer_heap.pop()
+				timer.trigger()
+				if timer.recurring:
+					timer.reset()
+					self.timer_heap.push(timer)
 
 		self.client.tick()
 

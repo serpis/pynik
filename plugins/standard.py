@@ -211,7 +211,7 @@ class GoogleCommand(Command):
 			return definition
 		
 		# try to extract first hit
-		m = re.search('<div class=g><a href="(.*?)" class=l>(.*?)<\/a>(.*?)</div>', data)
+		m = re.search('<li class=g><h3 class=r><a href="(.*?)" class=l>(.*?)<\/a>(.*?)</div>', data)
 		if m:
 
 			text = utility.unescape(m.group(2))

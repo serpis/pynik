@@ -327,4 +327,14 @@ aS'%s fick U p\xe5 en filfak kurs'
 p163
 aS'%s har inte alla poler i h\xf6ger halvplan'
 p164
+aS'%s k\xf6r med julnick i november, vilket homo'
+p165
+aS'%ss pappa ringde, han ar gravid'
+p166
+aS'%s, HAHAHAHAHAHAHAH'
+p167
+aS'%s............. fniss'
+p168
+aS'%s har v\xe4rldens st\xf6rsta labia'
+p169
 a.
