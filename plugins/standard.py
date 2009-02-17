@@ -139,6 +139,7 @@ class CommandsCommand(Command):
 #		return source in ['serp!~serp@85.8.2.181.se.wasadata.net']
 
 asciilize = string.maketrans("åäöÅÄÖ", "aaoAAO")
+asciilizeutf8 = { "Ã¥": "a", "Ã¤": "a", "Ã¶": "o", "Ã…": "A", "Ã„": "A", "Ã–": "O" }
 
 _get_temp_re = re.compile('^\s*(.+)\s*$')
 class TempCommand(Command):
@@ -157,6 +158,17 @@ class TempCommand(Command):
 
 		argument_text = argument
 		argument = argument.translate(asciilize)
+
+		source = argument
+		to = ""
+		while source:
+			if source[0] in asciilizeutf8:
+				to += asciilizeutf8[source[0]]
+			else:
+				to += source[0]
+			source = source[1:]
+
+		argument = to
 
 		url = "http://www.temperatur.nu/termo/%s/temp.txt" % argument
 		response = utility.read_url(url)
@@ -195,6 +207,8 @@ class GoogleCommand(Command):
 
 		data = response["data"]
 
+		print data
+
 		# try to extract calculator result
 		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><\/td><td>&nbsp;<\/td><td nowrap( dir=ltr)?>(<h2 class=r>)?<font size=\+1><b>(.*?)<\/b>', data)
 		if m:
@@ -211,13 +225,14 @@ class GoogleCommand(Command):
 			return definition
 		
 		# try to extract first hit
-		m = re.search('<li class=g><h3 class=r><a href="(.*?)" class=l>(.*?)<\/a>(.*?)</div>', data)
+		m = re.search('<li class=g><h3 class=r><a href="(.*?)".*?>(.*?)<\/a>(.*?)</div>', data)
 		if m:
-
 			text = utility.unescape(m.group(2))
 			text = re.sub('<.+?>', '', text)
 
 			link = m.group(1)
+
+			print "zomg", url
 
 			return "%s - %s | %s" % (text, link, url)
 		else:
@@ -276,7 +291,7 @@ class AAOCommand(Command):
 			if trigger == 'åäö':
 				return source+": Du använder nog latin-1 eller liknande. Fast det är OK. För den här gången."
 			elif trigger == '}{|':
-				return source+": Du använder nog ISO-646. Uhm."
+				return source+": Du anvÃnder nog ISO-646. Uhm."
 			else:
 				return source+": Du använder nog utf-8. Bra shit, mannen!"
 		else:

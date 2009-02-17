@@ -43,7 +43,7 @@ class TimedEvent:
 	def __cmp__(self, other):
 		return cmp(self.trigger_time, other.trigger_time)
 
-class IRCBot():
+class IRCBot:
 	def __init__(self, address, port, nick, username, realname):
 		self.client = IRCClient(address, port, nick, username, realname)
 		self.client.callbacks = { "on_connected": self.on_connected, "on_join": self.on_join, "on_nick_change": self.on_nick_change, "on_notice": self.on_notice, "on_part": self.on_part, "on_privmsg": self.on_privmsg, "on_quit": self.on_quit }

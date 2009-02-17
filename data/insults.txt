@@ -337,4 +337,8 @@ aS'%s............. fniss'
 p168
 aS'%s har v\xe4rldens st\xf6rsta labia'
 p169
+aS'%s har 7bitar i sin byte'
+p170
+aS'%s har skrivit botnik !'
+p171
 a.
