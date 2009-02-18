@@ -207,7 +207,7 @@ class GoogleCommand(Command):
 
 		data = response["data"]
 
-		print data
+		#print data
 
 		# try to extract calculator result
 		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><\/td><td>&nbsp;<\/td><td nowrap( dir=ltr)?>(<h2 class=r>)?<font size=\+1><b>(.*?)<\/b>', data)
@@ -223,6 +223,27 @@ class GoogleCommand(Command):
 			definition = utility.unescape(m.group(1))
 			definition = re.sub('<.+?>', '', definition)
 			return definition
+
+		# try to extract weather
+		m = re.search('<b>Weather<\/b> for <b>(.+?)<\/b>.+?<b>(-?\d+).*C<\/b>.+?Current: <b>(.+?)<\/b>', data)
+
+		if m:
+			location = m.group(1)
+			temperature = m.group(2)
+			weather = m.group(3)
+			return "%s: %s - %s" % (location, temperature, weather)
+
+		# try to extract time
+		m = re.search('alt="Clock"><\/td><td valign=middle><b>(.*?)<\/b> .+?day \((.*?)\) - <b>Time</b> in (.*?)<\/td>', data)
+
+		if m:
+			time = m.group(1)
+			timezone = m.group(2)
+			location = m.group(3)
+
+			return "Time in %s: %s (%s)" % (location, time, timezone)
+			
+		
 		
 		# try to extract first hit
 		m = re.search('<li class=g><h3 class=r><a href="(.*?)".*?>(.*?)<\/a>(.*?)</div>', data)
@@ -231,8 +252,6 @@ class GoogleCommand(Command):
 			text = re.sub('<.+?>', '', text)
 
 			link = m.group(1)
-
-			print "zomg", url
 
 			return "%s - %s | %s" % (text, link, url)
 		else:
