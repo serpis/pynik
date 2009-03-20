@@ -20,7 +20,7 @@ def posten_kolli_query(KolliID):
 		status = search.group(2)
 
 		if date and status:
-		   result = date + ":" + re.sub("<.+?>", "", status)
+		   result = "%s: %s - %s" % (date, re.sub("<.+?>", "", status), url)
 		   return result
 		else:
 			return None

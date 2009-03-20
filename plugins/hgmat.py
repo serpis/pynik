@@ -6,7 +6,8 @@ from commands import Command
 from datetime import datetime
 
 def hg_menu():
-	url = "http://www.hg.se/kommande_meny.php"
+	#url = "http://www.hg.se/kommande_meny.php"
+	url = "http://www.hg.se/?restaurang/kommande"
 	response = utility.read_url(url)
 	data = response["data"]
 
