@@ -5,6 +5,7 @@ from plugins import Plugin
 import htmlentitydefs
 import re
 import signal
+import string
 
 class TimeoutException(Exception):
 	pass
@@ -32,6 +33,22 @@ def escape(str):
 		s = s.replace(key, t[key])
 
 	return s
+
+latin1_aao_trans = string.maketrans("\xe5\xe4\xf6\xc5\xc4\xd6", "aaoAAO")
+utf8_aao_dict = { "å": "a", "ä": "a", "ö": "o", "Å": "A", "Ä": "A", "Ö": "O" }
+
+def asciilize(aaostr):
+	source = aaostr.translate(latin1_aao_trans)
+	to = ""
+	while source:
+		if source[0:2] in utf8_aao_dict:
+			to += utf8_aao_dict[source[0:2]]
+			source = source[2:]
+		else:
+			to += source[0]
+			source = source[1:]
+
+	return to
 	
 def get_all_subclasses(c):
 	l = [c]
