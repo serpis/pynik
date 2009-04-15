@@ -76,8 +76,8 @@ class IRCClient:
 		return self.connected
 
 	def tell(self, target, string):
-		if len(string) > 250:
-			string = string[0:250]
+		if len(string) >= 399:
+			string = string[0:399]
 
 		split = len(string) - 1
 
