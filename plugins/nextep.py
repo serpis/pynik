@@ -4,51 +4,40 @@ from __future__ import with_statement
 from commands import Command
 import re
 import utility
-
-class Episode:
-	def __init__(self, episode, name, date):
-		self.episode = episode
-		self.name = name
-		self.date = date
-
-	def __str__(self):
-		return "%s - %s (%s)" % (self.episode, self.name, self.date)
+import urllib
 
 class NextEpisodeCommands(Command):
+	TVRAGE_URL = "http://www.tvrage.com/quickinfo.php?show=%s"
+	PATTERN = re.compile(r"(.*?)@(.*)")
 	def __init__(self):
 		pass
 
+	def fetch_tv_info(self,show):
+		info = {}
+		f = urllib.urlopen(self.TVRAGE_URL % urllib.quote(show))
+		for line in f:
+			m = self.PATTERN.search(line)
+			if m != None:
+				info[m.group(1)] = m.group(2)
+		return info
+
+
 	def trig_nextep(self, bot, source, target, trigger, argument):
-		url = 'http://tvrage.com/search.php?search=' + argument.replace(' ', '+')
-
-		response = utility.read_url(url)
-		data = response["data"]
-
-		m = re.search('<tr bgcolor=\'#FFFFFF\'  id="brow"><td class=\'b1\'><img width=\'15\' height=\'10\' style=\'border: 1px solid black;\' src=\'http:\/\/images.tvrage.net\/flags\/.*?.gif\'> <a  href=\'(.*?)\' >(.*?)<\/a>(<\/td>|<br>)', data)
-
-		if m:
-			url = m.group(1)
-			show_name = m.group(2)
-
-			last_ep = None
-			next_ep = None
-
-			response = utility.read_url(url)
-			data = response["data"]
-
-			m = re.search('<b>(Latest|Last) Episode: <\/b><\/td><td>.*?<a href=\'.*?\'>(\d+: )?(\d+x\d+|\S+) (\||--) (.*?)<\/a> \((.*?)\)', data)
-
-			if m:
-				last_ep = Episode(m.group(3), m.group(5), m.group(6))
-
-			m = re.search('<b>Next Episode: <\/b><\/td><td>.*?<a href=\'.*?\'>(\d+: )?(\d+x\d+|\S+) (\||--) (.*?)<\/a> \((.*?)\)', data)
-
-			if m:
-				next_ep = Episode(m.group(2), m.group(4), m.group(5))
-
-			if last_ep or next_ep:
-				return "%s: Last Episode: %s | Next Episode: %s" % (show_name, last_ep, next_ep)
+		if len(argument): 			
+			info = self.fetch_tv_info(argument)
+			if "Show Name" in info:
+				if "Next Episode" in info:
+					next_ep = info["Next Episode"].replace("^", ", ")
+				else:
+					next_ep = "No Info"
+					
+				if "Latest Episode" in info:
+					last_ep = info["Latest Episode"].replace("^", ", ")
+				else:
+					last_ep = "No Info"
+			
+				name = info["Show Name"]
+			
+				return "(%s): Latest: %s | Next: %s" % (name,last_ep,next_ep)
 			else:
-				return "Show found, but I couldn't find any relevant episode data. :("
-		else:
-			return "Show not found."
+				return "Show not found."

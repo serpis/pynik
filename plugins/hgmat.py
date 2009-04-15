@@ -14,11 +14,17 @@ def hg_menu():
 	data = utility.unescape(data.replace("\n", ""))
 
 	menu = []
-	for entry in re.findall('<p class="(even|odd)"><b>(.*?)<\/b><br \/>(.*?)<\/p>', data):
-		day = entry[1]
+	for entry in re.findall('\<h2\>(.+?dag)en den .+?\<\/h2\>(.+?)(?=(\<h2\>|\<em\>))', data):
+		day = entry[0]
 		dishes = []
-		for dish in re.findall('(?!<br \/>)(.*?)\t?<br \/>', entry[2]):
-			dishes.append(dish)
+		#print entry
+		for dish in re.findall('\<p\>(.+?)\<br\>(.+?(\d+? kr))?', entry[1]):
+			if dish[1]:
+				#print dish
+				dishes.append(dish[0].strip() + " (" + dish[2] + ")")
+			else:
+				#print dish
+				dishes.append(dish[0].strip())
 		
 		menu.append((day, dishes))
 	return menu

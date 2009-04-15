@@ -44,53 +44,56 @@ class PickCommand(Command):
 			return None
 
 class InsultCommand(Command): 
-    def __init__(self): 
-        pass 
+	def __init__(self): 
+		pass 
  
-    def trig_insult(self, bot, source, target, trigger, argument): 
-        t = source 
-        if argument: 
-            m = re.search('(\S+)', argument) 
+	def trig_insult(self, bot, source, target, trigger, argument): 
+		if source == "Iradieh":
+			return None
+		
+		t = source 
+		if argument: 
+			m = re.search('(\S+)', argument) 
  
-            if m: 
-                t = m.group(1) 
+			if m: 
+				t = m.group(1) 
  
-        import random; 
-        insult = random.sample(self.insults, 1)[0] 
-        try: 
-            return insult.replace('%s', t)
-            
-        except: 
-            return "Improper insult, check your data" 
-         
-    def trig_addinsult(self, bot, source, target, trigger, argument): 
-        if not "%s" in argument: 
-            return "Trying to add an improper insult, booo!" 
-        elif argument in self.insults: 
-            return "That insult already exists!" 
-        self.insults.append(argument) 
-        self.save() 
-        return "Added insult: %s" % argument.replace('%s', source)
-     
-    def save(self): 
-        f = open(os.path.join("data", "insults.txt"), "w") 
-        p = pickle.Pickler(f) 
-        p.dump(self.insults) 
-        f.close() 
-     
-    def on_load(self): 
-        self.insults = [] 
+		import random; 
+		insult = random.sample(self.insults, 1)[0] 
+		try: 
+			return insult.replace('%s', t)
+			
+		except: 
+			return "Improper insult, check your data" 
+		 
+	def trig_addinsult(self, bot, source, target, trigger, argument): 
+		if not "%s" in argument: 
+			return "Trying to add an improper insult, booo!" 
+		elif argument in self.insults: 
+			return "That insult already exists!" 
+		self.insults.append(argument) 
+		self.save() 
+		return "Added insult: %s" % argument.replace('%s', source)
+	 
+	def save(self): 
+		f = open(os.path.join("data", "insults.txt"), "w") 
+		p = pickle.Pickler(f) 
+		p.dump(self.insults) 
+		f.close() 
+	 
+	def on_load(self): 
+		self.insults = [] 
  
-        try:
-            f = open(os.path.join("data", "insults.txt"), "r") 
-            unpickler = pickle.Unpickler(f) 
-            self.insults = unpickler.load() 
-            f.close() 
-        except:
-            pass
-         
-    def on_unload(self): 
-        self.insults = None
+		try:
+			f = open(os.path.join("data", "insults.txt"), "r") 
+			unpickler = pickle.Unpickler(f) 
+			self.insults = unpickler.load() 
+			f.close() 
+		except:
+			pass
+		 
+	def on_unload(self): 
+		self.insults = None
 
 class RawCommand(Command):
 	def trig_raw(self, bot, source, target, trigger, argument):
@@ -263,6 +266,9 @@ class WikipediaCommand(Command):
 
 		response = utility.read_url(url)
 
+		if not response:
+			return (None, None)
+
 		data = response["data"]
 		url = response["url"]
 		
@@ -300,7 +306,7 @@ class WikipediaCommand(Command):
 		if data:
 			return "%s - %s" % (data, url)
 		else:
-			return url
+			return "I couldn't find an article... Try it yourself: %s" % url
 
 class AAOCommand(Command):
 	triggers = ['}{|', 'åäö', 'Ã¥Ã¤Ã¶']
