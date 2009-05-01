@@ -341,4 +341,24 @@ aS'%s har 7bitar i sin byte'
 p170
 aS'%s har skrivit botnik !'
 p171
+aS'%s ser ut som Linda Rosing!'
+p172
+aS'%s har inte internet'
+p173
+aS'%s har isdn'
+p174
+aS'%s gillar star trek'
+p175
+aS'%s gillar Madonna'
+p176
+aS'%s st\xe4nger av datorn p\xe5 power-knappen'
+p177
+aS'%s har turboknapp p\xc3\xa5 sin dator'
+p178
+aS'%s \xc3\xa4r en kebab'
+p179
+aS'%s \xe4r en kuf'
+p180
+aS'%s lyssnar p\xe5 \xe4ppelknyckarjazz'
+p181
 a.

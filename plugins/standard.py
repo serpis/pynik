@@ -138,6 +138,23 @@ class CommandsCommand(Command):
 		
 		return "Commands: %s" % ", ".join(sorted(triggers))
 
+class HelpCommand(Command):
+	def trig_help(self, bot, source, target, trigger, argument):
+		"""Help command. Use it to get information about other commands."""
+		trigger_found = False
+		for command in Command.__subclasses__():
+			for k in command.__dict__:
+				if k == "trig_" + argument:
+					trigger_found = True
+					f = command.__dict__[k]
+					if f.__doc__:
+						return "%s: %s" % (argument, f.__doc__)
+		
+		if trigger_found:
+			return "I can offer nothing."
+		else:
+			return "That's not a command! Try `help <command>`"
+
 #	def can_trigger(self, source, trigger):
 #		return source in ['serp!~serp@85.8.2.181.se.wasadata.net']
 
@@ -160,18 +177,19 @@ class TempCommand(Command):
 				argument = 'ryd'
 
 		argument_text = argument
-		argument = argument.translate(asciilize)
-
-		source = argument
-		to = ""
-		while source:
-			if source[0] in asciilizeutf8:
-				to += asciilizeutf8[source[0]]
-			else:
-				to += source[0]
-			source = source[1:]
-
-		argument = to
+		argument = utility.asciilize(argument)
+		#argument = argument.translate(asciilize)
+		#
+		#source = argument
+		#to = ""
+		#while source:
+		#	if source[0] in asciilizeutf8:
+		#		to += asciilizeutf8[source[0]]
+		#	else:
+		#		to += source[0]
+		#	source = source[1:]
+		#
+		#argument = to
 
 		url = "http://www.temperatur.nu/termo/%s/temp.txt" % argument
 		response = utility.read_url(url)
@@ -213,7 +231,7 @@ class GoogleCommand(Command):
 		#print data
 
 		# try to extract calculator result
-		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><td>&nbsp;<td nowrap( dir=ltr)?>(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
+		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><td>&nbsp;<td nowrap (dir=ltr)?>(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
 		if m:
 			answer = m.group(4)
 			answer = answer.replace(' &#215;', '×').replace('<sup>', '^')
