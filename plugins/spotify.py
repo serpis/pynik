@@ -6,9 +6,8 @@ import sys
 import re
 import utility
 from plugins import Plugin
-#from commands import Command
-#import command_catcher
-Command = object
+from commands import Command
+import command_catcher
 
 class Spot(object):
 	def __init__(self, protocol, spotify_resource):
