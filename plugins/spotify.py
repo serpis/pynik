@@ -39,12 +39,11 @@ class SpotifyConvertPlugin(Command):
 	
 	def trig_spotify(self, bot, source, target, trigger, argument):
 		if target in self.spots.keys():
-			m = self.spots[target].title
-
-			if m:
-				return m
+			m = self.spots[target]
+			if m.prot = 'http'
+				return "spotify:track:%s"%m.spot
 			else:
-				return 'I can\'t find a title for ' + self.urls[target].url
+				return "http://open.spotify.com/track/%s"%m.spot
 		else:
 			return 'I haven\'t seen any urls here yet.'
 
