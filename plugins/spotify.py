@@ -6,8 +6,9 @@ import sys
 import re
 import utility
 from plugins import Plugin
-from commands import Command
-import command_catcher
+#from commands import Command
+#import command_catcher
+Command = object
 
 class Spot(object):
 	def __init__(self, protocol, spotify_resource):
@@ -38,7 +39,17 @@ class SpotifyConvertPlugin(Command):
 		self.save_spots()
 	
 	def trig_spotify(self, bot, source, target, trigger, argument):
-		if target in self.spots.keys():
+		if argument:
+			m = re.search(r'http://open\.spotify\.com/track/(\w+)', argument)
+			if m: 
+				return "spotify:track:%s"%m.group(1)
+			else:
+				m = re.search(r'spotify:track:(\w+)', argument)
+				if m:
+					return "http://open.spotify.com/track/%s"%m.group(1)
+				else: 
+					return "invalid argument"
+		elif target in self.spots.keys():
 			m = self.spots[target]
 			if m.prot == 'http':
 				return "spotify:track:%s"%m.spot
@@ -53,7 +64,7 @@ class SpotifyConvertPlugin(Command):
 		p.dump(self.spot_list)
 		file.close()
 
-	def load_spot(self):
+	def load_spots(self):
 		try:
 			with open('data/spots.txt', 'r') as file:
 				self.spot_list = pickle.Unpickler(file).load()
