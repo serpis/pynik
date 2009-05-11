@@ -1,6 +1,7 @@
 plugins/mat: Merola
 plugins/lithcourse: Merola
 plugins/pi: Jonex
+plugins/spotify: Jonex
 plugins/qotd: teetow
 plugins/postnr: IcE^
 rest: serp
