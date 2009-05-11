@@ -40,7 +40,7 @@ class SpotifyConvertPlugin(Command):
 	def trig_spotify(self, bot, source, target, trigger, argument):
 		if target in self.spots.keys():
 			m = self.spots[target]
-			if m.prot = 'http'
+			if m.prot == 'http':
 				return "spotify:track:%s"%m.spot
 			else:
 				return "http://open.spotify.com/track/%s"%m.spot
@@ -53,7 +53,7 @@ class SpotifyConvertPlugin(Command):
 		p.dump(self.spot_list)
 		file.close()
 
-	def load_spotslf):
+	def load_spot(self):
 		try:
 			with open('data/spots.txt', 'r') as file:
 				self.spot_list = pickle.Unpickler(file).load()
