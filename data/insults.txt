@@ -361,4 +361,32 @@ aS'%s \xe4r en kuf'
 p180
 aS'%s lyssnar p\xe5 \xe4ppelknyckarjazz'
 p181
+aS'%s \xc3\xa4r en twittrare'
+p182
+aS'%s \xc3\xa4r en riktig twittrare han'
+p183
+aS'%s sent you an invitation using Hug Me on Facebook'
+p184
+aS'%s \xe4r lite eljest'
+p185
+aS'%s \xe4r snel'
+p186
+aS'%s \xc3\xa4r ett sprutluder'
+p187
+aS'%s anv\xe4nder rogaine f\xf6r sk\xe4ggv\xe4xten'
+p188
+aS'%s \xe4r s\xe4mre \xe4n Fi5KuS.'
+p189
+aS'Om %s heter pierre, s\xc3\xa5 \xc3\xa4r han s\xc3\xa4mst.'
+p190
+aS'%s njuter av att bli straffknullad av elefanter'
+p191
+aS'indierna i cyd-poolen luktar b\xc3\xa4ttre \xc3\xa4n %s'
+p192
+aS'%s gillar kulor'
+p193
+aS'%s programmerar i BASIC'
+p194
+aS'det var b\xc3\xa4ttre f\xc3\xb6rr, framf\xc3\xb6rallt innan %s f\xc3\xb6ddes'
+p195
 a.

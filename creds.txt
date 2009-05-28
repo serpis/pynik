@@ -1,7 +1,20 @@
-plugins/mat: Merola
-plugins/lithcourse: Merola
-plugins/pi: Jonex
-plugins/spotify: Jonex
-plugins/qotd: teetow
-plugins/postnr: IcE^
-rest: serp
+IcE^:
+plugins/postnr
+
+Jonex:
+plugins/pi
+plugins/spotify
+
+Merola:
+plugins/lithcourse
+plugins/mat
+plugins/prisjakt
+
+pilt:
+plugins/tenta
+
+teetow:
+plugins/qotd
+
+serp:
+rest
