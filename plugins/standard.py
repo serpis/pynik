@@ -324,7 +324,7 @@ class WikipediaCommand(Command):
 		if data:
 			return "%s - %s" % (data, url)
 		else:
-			return "I couldn't find an article... Try it yourself: %s" % url
+			return "I couldn't find an article... :("
 
 class AAOCommand(Command):
 	triggers = ['}{|', 'едц', 'ГҐГ¤Г¶']

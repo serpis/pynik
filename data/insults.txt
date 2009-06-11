@@ -389,4 +389,12 @@ aS'%s programmerar i BASIC'
 p194
 aS'det var b\xc3\xa4ttre f\xc3\xb6rr, framf\xc3\xb6rallt innan %s f\xc3\xb6ddes'
 p195
+aS'\x01ACTION g\xc3\xb6r en rej\xc3\xa4l facepalm vid blotta tanken p\xc3\xa5 %s\x01'
+p196
+aS'%s \xe4r socialdemokrat'
+p197
+aS'%s har ett konto p\xe5 fragbite'
+p198
+aS'%s tycker magnus betn\xe9r \xe4r rolig'
+p199
 a.
