@@ -11,6 +11,7 @@ plugins/mat
 plugins/prisjakt
 
 pilt:
+plugins/stava
 plugins/tenta
 
 teetow:
