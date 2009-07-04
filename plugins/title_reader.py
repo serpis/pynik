@@ -22,7 +22,8 @@ class URL():
 		if self.nick and re.search(searchword, self.nick, re.IGNORECASE):
 			return True
 		return False
-	
+
+
 def get_title(url):
 	import urllib
 	if not re.search('http', url):
@@ -41,14 +42,18 @@ def get_title(url):
 	else:
 		return None
 
-class TitleReaderPlugin(Command): 
-	hooks = ['on_privmsg']   
+
+class TitleReaderPlugin(Command):
+	hooks = ['on_privmsg']
 	urls = {}
 	url_list = []
+	url_masks = {}
+
 
 	def __init__(self):
 		pass
-	
+
+
 	def on_privmsg(self, bot, source, target, message):
 		m = re.search('((http:\/\/|www.)\S+)', message, re.IGNORECASE)
 
@@ -61,9 +66,11 @@ class TitleReaderPlugin(Command):
 			self.urls[target].title = get_title(url)
 			self.save_last_url(target)
 
+
 	def save_last_url(self, target):
 		self.url_list.append(self.urls[target])
 		self.save_urls()
+
 
 	def trig_urlsearch(self, bot, source, target, trigger, argument):
 		resultlist = []
@@ -92,22 +99,28 @@ class TitleReaderPlugin(Command):
 		else:
 			return 'Usage: .urlsearch <search string>'
 
+
 	def trig_title(self, bot, source, target, trigger, argument):
 		if target in self.urls.keys():
 			m = self.urls[target].title
 
 			if m:
-				return m
+				if argument.strip() != '':
+					return self.clean(argument, m)
+				else:
+					return self.clean(self.urls[target].url, m)
 			else:
 				return 'I can\'t find a title for ' + self.urls[target].url
 		else:
 			return 'I haven\'t seen any urls here yet.'
+
 
 	def save_urls(self):
 		file = open('data/urls.txt', 'w')
 		p = pickle.Pickler(file)
 		p.dump(self.url_list)
 		file.close()
+
 
 	def load_urls(self):
 		try:
@@ -116,11 +129,82 @@ class TitleReaderPlugin(Command):
 		except IOError:
 			pass
 
+
 	def on_load(self):
 		self.load_urls()
+		self.mask_load()
+
 
 	def save(self):
 		pass
 
+
 	def on_modified_options(self):
 		self.save()
+
+
+	def clean(self, url, title):
+		sitematch = re.match(r'(?:http://|https://|)*(?:www\.)*(.+?)(?:\/.*|$)', url)
+
+		if sitematch != None and sitematch.lastindex >= 1:
+			site = sitematch.group(1)
+		else:
+			return(title)
+
+		print(site)
+		if site in self.url_masks.keys():
+			result = re.match(self.url_masks[site], title)
+
+			if result != None and result.lastindex >= 1: # we need at least one group
+				return result.group(1)
+			else:
+				return title + " (full title)"
+
+		else:
+			# try partial matches. slow as shit, but whaddayagonnado.
+			for eSite, eMask in self.url_masks.items():
+				match = url.find(eSite)
+				if (match != -1):
+					return re.search(eMask, title).group(1)
+  		return(title)
+
+
+	def mask_load(self):
+		try:
+			with open('data/urlmasks.txt', 'r') as file:
+				self.url_masks = pickle.Unpickler(file).load()
+		except IOError:
+			pass
+
+
+	def mask_save(self):
+		file = open('data/urlmasks.txt', 'w')
+		p = pickle.Pickler(file)
+		p.dump(self.url_masks)
+		file.close()
+
+
+	def trig_titlemask(self, bot, source, target, trigger, argument):
+		m = re.match(r'([^ ]+) *(.*)$', argument)
+		site = m.group(1)
+		mask = m.group(2)
+
+		if (mask.strip() == ''):
+			del self.url_masks[site]
+			self.mask_save()
+			return 'mask cleared for ' + site
+
+		site = 	re.match(r'(?:http://|https://|)*(?:www\.)*(.+?)(?:\/.*|$)', site).group(1)
+		self.url_masks[site] = mask
+		self.mask_save()
+		return 'mask '+ mask + ' saved for ' + site
+
+
+	def trig_reloadtitlemasks(self, bot, source, target, trigger, argument):
+		self.mask_load()
+		return 'reloaded.'
+
+
+
+
+

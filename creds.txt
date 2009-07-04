@@ -15,7 +15,9 @@ plugins/stava
 plugins/tenta
 
 teetow:
+plugins/kolli
 plugins/qotd
-
+plugins/title (titlemask functionality)
+        
 serp:
 rest
