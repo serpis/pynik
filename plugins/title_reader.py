@@ -151,7 +151,6 @@ class TitleReaderPlugin(Command):
 		else:
 			return(title)
 
-		print(site)
 		if site in self.url_masks.keys():
 			result = re.match(self.url_masks[site], title)
 
