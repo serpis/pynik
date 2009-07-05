@@ -193,7 +193,7 @@ class TitleReaderPlugin(Command):
 			if site in self.url_masks:
 				return 'mask for ' + site + ' is ' + self.url_masks[site]
 			else:
-				return site + ' has no stored title mask. Why not create one?'
+				return site + ' has no stored title mask.'
 		try:
 			compiledMask = re.compile(mask)
 		except re.error:
