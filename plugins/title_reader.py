@@ -184,7 +184,8 @@ class TitleReaderPlugin(Command):
 
 
 	def trig_titlemask(self, bot, source, target, trigger, argument):
-		m = re.match(r'([^ ]+) *(.*)$', argument)
+		sArg = argument.strip()
+		m = re.match(r'([^ ]+) *(.*)$', sArg)
 		site = m.group(1)
 		mask = m.group(2)
 
@@ -199,10 +200,10 @@ class TitleReaderPlugin(Command):
 		    return 'invalid regex for ' + site
 
 		if compiledMask.groups < 1:
-			return 'Needs at least one capturing group.'
+			return 'Needs exactly one capturing group.'
 
 		if compiledMask.groups > 1:
-			return 'Too many capturing groups. Use non-capturing groups (?:pattern)'
+			return 'Too many capturing groups. Use (?:pattern).'
 
 		site = 	re.match(r'(?:http://|https://|)*(?:www\.)*(.+?)(?:\/.*|$)', site).group(1)
 		self.url_masks[site] = mask
@@ -217,6 +218,8 @@ class TitleReaderPlugin(Command):
 
 	def trig_cleartitlemask(self, bot, source, target, trigger, argument):
 		site = argument.strip()
+		if site == '':
+			return "You forgot to specify a site. Silly hoo-man."
 		if site in self.url_masks:
 			del self.url_masks[site]
 			self.mask_save()
