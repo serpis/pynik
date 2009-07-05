@@ -189,9 +189,20 @@ class TitleReaderPlugin(Command):
 		mask = m.group(2)
 
 		if (mask.strip() == ''):
-			del self.url_masks[site]
-			self.mask_save()
-			return 'mask cleared for ' + site
+			if site in self.url_masks:
+				return 'mask for ' + site + ' is ' + self.url_masks[site]
+			else:
+				return site + ' has no stored title mask. Why not create one?'
+		try:
+			compiledMask = re.compile(mask)
+		except re.error:
+		    return 'invalid regex for ' + site
+
+		if compiledMask.groups < 1:
+			return 'Needs at least one capturing group.'
+
+		if compiledMask.groups > 1:
+			return 'Too many capturing groups. Use non-capturing groups (?:pattern)'
 
 		site = 	re.match(r'(?:http://|https://|)*(?:www\.)*(.+?)(?:\/.*|$)', site).group(1)
 		self.url_masks[site] = mask
@@ -203,6 +214,31 @@ class TitleReaderPlugin(Command):
 		self.mask_load()
 		return 'reloaded.'
 
+
+	def trig_cleartitlemask(self, bot, source, target, trigger, argument):
+		site = argument.strip()
+		if site in self.url_masks:
+			del self.url_masks[site]
+			self.mask_save()
+			return 'mask cleared for ' + site
+		else:
+			return site + ' not found in title mask database.'
+
+
+	def trig_clearmask(self, bot, source, target, trigger, argument):
+		return self.trig_cleartitlemask(bot, source, target, trigger, argument)
+
+	def trig_deltitlemask(self, bot, source, target, trigger, argument):
+		return self.trig_cleartitlemask(bot, source, target, trigger, argument)
+
+	def trig_delmask(self, bot, source, target, trigger, argument):
+		return self.trig_cleartitlemask(bot, source, target, trigger, argument)
+
+	def trig_titleunmask(self, bot, source, target, trigger, argument):
+		return self.trig_cleartitlemask(bot, source, target, trigger, argument)
+
+	def trig_removetitlemask(self, bot, source, target, trigger, argument):
+		return self.trig_cleartitlemask(bot, source, target, trigger, argument)
 
 
 
