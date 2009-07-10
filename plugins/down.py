@@ -21,12 +21,13 @@ class down(Command):
 		response = utility.read_url(url)
 		data = response["data"]
 
-		search = re.search('<title>(.+)</title>', data)
+		search = re.search(r'<div id\=\"container\">\s+(.+)<p>.+?<\/p>.+<\/div>', data, re.S)
 
 		if search:
 			message = search.group(1)
-
+			message = re.sub(r'<[^>]*?>', '', message)
 			return message
+
 		else:
 			return "No result. downforeveryoneorjustme.com might be down. Oh, the irony."
 
