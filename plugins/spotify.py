@@ -14,18 +14,51 @@ class Spot(object):
 		self.prot = protocol
 		self.spot = spotify_resource
 
-class SpotifyConvertPlugin(Command): 
-	hooks = ['on_privmsg']   
+class SpotifyConvertPlugin(Command):
+	hooks = ['on_privmsg']
 	spots = {}
 	spot_list = []
 
 	def __init__(self):
 		pass
-	
+
+	def spot_lookup(self, type, hash):
+
+		url = "http://spotify.url.fi/%s/%s" % (type, hash)
+		response = utility.read_url(url)
+		data = response["data"]
+
+		# Commence data mining
+
+		artist = re.search(r"<span>Artist</span>\s*<a.*?>(?P<artist>.+?)</a>", data, re.DOTALL)
+		if artist: artist = artist.group(1)
+		album = re.search(r"<span>Album</span>\s*<a.+?>(?P<album>.+?)</a>", data, re.DOTALL)
+		if album: album = album.group(1)
+		year = re.search(r"<span>Year</span>\s*(?P<year>.+?)\s*</p>", data, re.DOTALL)
+		if year: year = year.group(1)
+		track = re.search(r"<span>Track</span>\s*<a.+?>(?P<track>.+?)</a>", data, re.DOTALL)
+		if track: track = track.group(1)
+		length = re.search("<span>Length</span>\s*(?P<length>.+?)\s*</p>", data, re.DOTALL)
+		if length: length = length.group(1)
+
+		output = "%s: %s | %s (%s)" % (artist, track, album, year)
+
+		if not track:
+			output = "%s: %s (%s)" % (artist, album, year)
+
+		if not album:
+			output = "%s" % artist
+
+		if not artist:
+			return "couldn't find shit, captain!"
+
+		return output
+
+
 	def on_privmsg(self, bot, source, target, message):
 		m = re.search(r'http://open\.spotify\.com/track/(\w+)', message)
 		prot = 'http'
-		if not m: 
+		if not m:
 			prot = 'spotify'
 			m = re.search(r'spotify:track:(\w+)', message)
 		if m:
@@ -36,18 +69,20 @@ class SpotifyConvertPlugin(Command):
 	def save_last_spot(self, target):
 		self.spot_list.append(self.spots[target])
 		self.save_spots()
-	
+
 	def trig_spotify(self, bot, source, target, trigger, argument):
 		if argument:
-			m = re.search(r'http://open\.spotify\.com/track/(\w+)', argument)
-			if m: 
-				return "spotify:track:%s"%m.group(1)
+			m = re.search(r'http://open\.spotify\.com/(?P<type>.+?)/(?P<hash>\w+)', argument)
+
+			if (not m):
+				m = re.search(r'spotify:(?P<type>.+?):(?P<hash>\w+)', argument)
+
+			if m:
+				return self.spot_lookup(m.group("type"), m.group("hash"))
+
 			else:
-				m = re.search(r'spotify:track:(\w+)', argument)
-				if m:
-					return "http://open.spotify.com/track/%s"%m.group(1)
-				else: 
-					return "invalid argument"
+				return "couldn't make sense of that."
+
 		elif target in self.spots.keys():
 			m = self.spots[target]
 			if m.prot == 'http':
