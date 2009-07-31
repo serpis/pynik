@@ -330,20 +330,12 @@ class AAOCommand(Command):
 	triggers = ['}{|', 'åäö', 'Ã¥Ã¤Ã¶']
 
 	def on_trigger(self, bot, source, target, trigger, argument):
-		if target == '#c++.se':
 			if trigger == 'åäö':
-				return source+": Du använder nog latin-1 eller liknande. Fast det är OK. För den här gången."
+				return source+": Du använder nog Latin-1"
 			elif trigger == '}{|':
-				return source+": Du anvÃnder nog ISO-646. Uhm."
+				return source+": Du använder nog ISO-646"
 			else:
-				return source+": Du använder nog utf-8. Bra shit, mannen!"
-		else:
-			if trigger == 'åäö':
-				return source+": Du använder nog latin-1 eller liknande."
-			elif trigger == '}{|':
-				return source+": Du använder nog ISO-646."
-			else:
-				return source+": Du använder nog utf-8."
+				return source+": Du använder nog UTF-8"
 			
 class CollectCommand(Command):
 	def trig_collect(self, bot, source, target, trigger, argument):
