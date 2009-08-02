@@ -22,7 +22,7 @@ def decode_characters(encoded_string):
 			decoded_string += encoded_string[i]
 			i += 1
 	
-	if i == (strlen - 5):
+	if i != strlen:
 		decoded_string += encoded_string[i:strlen]
 	
 	return decoded_string
