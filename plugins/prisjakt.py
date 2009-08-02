@@ -75,8 +75,8 @@ def prisjakt_search(query_string):
 		price_pattern = "\\<span class=\\\\\"pris\\\\\"\>(\\d+:-)\\<\\\\\/span\\>"
 		product_price = re.search(price_pattern, data).group(1)
 
-		# Done, return info string
-		return product_title + ", " + product_price + \
+		# Done, return info string (latin-1 to make IRCClient.send() happy)
+		return product_title.encode('latin-1', 'replace') + ", " + product_price + \
 				", http://www.prisjakt.nu/" + url_type + ".php?p=" + product_id + \
 				" | All results: http://www.prisjakt.nu/search.php?query=" + query_string
 	else:
