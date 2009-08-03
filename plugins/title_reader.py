@@ -34,7 +34,7 @@ def get_title(url):
 
 	data = data.replace("\r", "").replace("\n", "")
 
-	m = re.search('<title>\s*(.+?)\s*<\/title>', data, re.IGNORECASE|re.MULTILINE)
+	m = re.search('<title[^>]*>\s*(.+?)\s*<\/title>', data, re.IGNORECASE|re.MULTILINE)
 
 	if m:
 		title = m.group(1)
@@ -63,8 +63,11 @@ class TitleReaderPlugin(Command):
 			self.urls[target].url = m.group(1)
 			self.urls[target].nick = source
 			self.urls[target].timestamp = 'test'
-			self.urls[target].title = get_title(url)
+			title = get_title(url)
+			self.urls[target].title = title
 			self.save_last_url(target)
+			if target == '#c++.se':
+				bot.tell(target, self.clean(url, title))
 
 
 	def save_last_url(self, target):

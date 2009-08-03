@@ -78,8 +78,11 @@ class SpotifyConvertPlugin(Command):
 		if m:
 			type = m.group('type')
 			hash = m.group('hash')
-			self.spots[target] = Spot(type, hash, prot)
+			spot = Spot(type, hash, prot)
+			self.spots[target] = spot
 			self.save_last_spot(target)
+
+			bot.tell(target, self.spot_lookup_direct(spot))
 
 
 	def save_last_spot(self, target):

@@ -397,4 +397,22 @@ aS'%s har ett konto p\xe5 fragbite'
 p198
 aS'%s tycker magnus betn\xe9r \xe4r rolig'
 p199
+aS'%s skriver rubrikerna till extra \xc3\xb6sterg\xc3\xb6tland'
+p200
+aS'%s r\xc3\xb6stade p\xc3\xa5 kungen i senaste riksdagsvalet'
+p201
+aS'%s anv\xc3\xa4nder ord/uttryck p\xc3\xa5 ett felaktigt s\xc3\xa4tt som hen h\xc3\xb6rt p\xc3\xa5 bussen.'
+p202
+aS'%s anv\xc3\xa4nder fat16'
+p203
+aS'%s \xc3\xa4r redan bload'
+p204
+aS'inneh\xe5llet i %s skalle g\xe5r att komprimera b\xe4ttre \xe4n en bmp-bild'
+p205
+aS'%s s\xe4ger cd-skiva'
+p206
+aS'dum-%s \xc3\xa4r en tautologi'
+p207
+aS'%s \xe4r distr\xe4'
+p208
 a.

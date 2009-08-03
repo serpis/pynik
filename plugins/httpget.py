@@ -65,7 +65,7 @@ def read_http_data(s, length):
 	return data
 
 def read_url(url):
-	m = re.match("^(.{3,5}):\/\/(.+?)(:?\d*)(\/.*?)?$", url)
+	m = re.match("^(.{3,5}):\/\/([^\/]*)(:?\d*)(\/.*?)?$", url)
 	if m:
 		protocol, address, port, file = m.group(1, 2, 3, 4)
 

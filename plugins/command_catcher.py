@@ -49,7 +49,9 @@ class CommandCatcherPlugin(Plugin):
 				except utility.TimeoutException:
 					return "Command '%s' took too long to execute." % trigger
 				except:
-					bot.tell('#pynik', "%s triggered an error by typing \'%s %s\': %s." % (source, trigger, arguments, sys.exc_info()))
+					boll = list(traceback.extract_tb(sys.exc_info()[2]))
+					bolliStr =  ", ".join(map(lambda x: str(x), boll))
+					bot.tell('#botnik', "%s triggered an error by typing \'%s %s\': %s. %s" % (source, trigger, arguments, sys.exc_info(), bolliStr))
 
 					print sys.exc_info()
 					print 'Error when executing command \'', trigger, '\':', traceback.extract_tb(sys.exc_info()[2])

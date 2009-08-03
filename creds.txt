@@ -1,5 +1,6 @@
 IcE^:
 plugins/postnr
+fixes to httpget and title_reader
 
 Jonex:
 plugins/pi
