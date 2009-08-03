@@ -9,6 +9,7 @@ plugins/spotify
 Merola:
 plugins/lithcourse
 plugins/mat
+plugins/notes
 plugins/prisjakt
 
 pilt:

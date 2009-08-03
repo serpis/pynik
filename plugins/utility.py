@@ -1,5 +1,7 @@
 # coding: utf-8
 
+from __future__ import with_statement
+import pickle
 import sys
 from plugins import Plugin
 import htmlentitydefs
@@ -95,3 +97,16 @@ def read_url(url):
 	socket.setdefaulttimeout(timeout_time)
 
 	return data
+
+def save_data(filename, data):
+	handle = open('data/' + filename, 'w')
+	p = pickle.Pickler(handle)
+	p.dump(data)
+	handle.close()
+
+def load_data(filename):
+	try:
+		with open('data/' + filename, 'r') as handle:
+			return pickle.Unpickler(handle).load()
+	except IOError:
+		pass
