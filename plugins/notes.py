@@ -13,7 +13,7 @@ class Notebook(Command):
 		pass
 
 	def on_load(self):
-		utility.load_data('notes.txt', self.notebook)
+		self.notebook = utility.load_data('notes.txt')
 
 	def set_notes(self, nick, text):
 		self.notebook[nick] = text
