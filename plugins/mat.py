@@ -152,6 +152,8 @@ class MatCommand(Command):
 		pass
 	
 	def trig_mat(self, bot, source, target, trigger, argument):
+		"""Hämtar dagens (eller en annan dags) meny från vald restaurangs hemsida."""
+		
 		# Split arguments
 		argument = argument.strip()
 		args = argument.split(' ', 2)

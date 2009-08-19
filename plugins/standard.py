@@ -46,26 +46,22 @@ class PickCommand(Command):
 class InsultCommand(Command): 
 	def __init__(self): 
 		pass 
- 
+
 	def trig_insult(self, bot, source, target, trigger, argument): 
 		if source == "Iradieh":
 			return None
 		
-		t = source 
-		if argument: 
-			m = re.search('(\S+)', argument) 
- 
-			if m: 
-				t = m.group(1) 
- 
-		import random; 
-		insult = random.sample(self.insults, 1)[0] 
-		try: 
+		t = argument.strip()
+		if not t:
+			t = source
+		
+		insult = random.sample(self.insults, 1)[0]
+		try:
 			return insult.replace('%s', t)
 			
-		except: 
-			return "Improper insult, check your data" 
-		 
+		except:
+			return "We all know %s sucks, but so does the insult I tried to use." % t
+
 	def trig_addinsult(self, bot, source, target, trigger, argument): 
 		if not "%s" in argument: 
 			return "Trying to add an improper insult, booo!" 
@@ -97,7 +93,7 @@ class InsultCommand(Command):
 
 class RawCommand(Command):
 	def trig_raw(self, bot, source, target, trigger, argument):
-		if source == 'serp' or source == 'teetow':
+		if has_admin_privileges(source, target):
 			bot.send(argument)
 
 class TimeCommand(Command):

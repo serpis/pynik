@@ -8,12 +8,15 @@ from commands import Command
 
 class Notebook(Command):
 	notebook = {}
+	usage = "Usage: .notes show | .notes add <text> | .notes remove <number> | .notes clear"
 	
 	def __init__(self):
 		pass
 
 	def on_load(self):
 		self.notebook = utility.load_data('notes.txt')
+		if not self.notebook:
+			self.notebook = {}
 
 	def set_notes(self, nick, text):
 		self.notebook[nick] = text
@@ -23,13 +26,14 @@ class Notebook(Command):
 		return self.notebook.get(nick, [])
 		
 	def trig_notes(self, bot, source, target, trigger, argument):
+		"""A personal notebook (one for each IRC nick). Use it to save small (non-secret) notes."""
+		
 		argument = argument.strip().lower()
 		args = argument.split(' ', 1)
 		
 		# Show usage
 		if not args[0]:
-			return "Your personal (but not so private) notebook! " + \
-				"Usage: show | add <text> | remove <number> | clear"
+			return "Your personal (but not so private) notebook! " + self.usage
 				
 		# Show notes
 		elif args[0] == 'show':
@@ -38,7 +42,7 @@ class Notebook(Command):
 			if not notes:
 				return "You have no saved notes :/"
 			else:
-				return " | ".join(notes)
+				return "[ " + " ][ ".join(notes) + " ]"
 		
 		# Add note
 		elif args[0] == 'add':
@@ -47,9 +51,9 @@ class Notebook(Command):
 			
 			notes = self.get_notes(source)
 			if notes:
-				maxlen = 400 - len(" | ".join(notes)) - len(" | ")
+				maxlen = 390 - len(" ][ ".join(notes)) - len("[ " + " ]")
 			else:
-				maxlen = 400
+				maxlen = 390
 			
 			if maxlen <= 0:
 				return "No space left for more notes :("
@@ -68,7 +72,7 @@ class Notebook(Command):
 				return "You have to specify a note number!"
 			elif not args[1].isdigit():
 				return "That is not a number :("
-				
+			
 			notes = self.get_notes(source)
 			numnotes = len(notes)
 			index = int(args[1])
@@ -77,6 +81,8 @@ class Notebook(Command):
 				return "You have no saved notes!"
 			elif index > numnotes:
 				return "You only have %s notes!" % numnotes
+			elif index == 0:
+				return "1 is the first number!"
 			
 			note = notes.pop(index - 1)
 			self.set_notes(source, notes)
@@ -89,5 +95,5 @@ class Notebook(Command):
 		
 		# Unknown subcommand
 		else:
-			return "Unknown subcommand! Usage: show | add <text> | remove <number> | clear"
+			return "Unknown subcommand! " + self.usage
 

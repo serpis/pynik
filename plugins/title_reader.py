@@ -26,7 +26,7 @@ class URL():
 
 def get_title(url):
 	import urllib
-	if not re.search('http', url):
+	if not re.search('https?', url):
 		url = 'http://' + url
 
 	response = utility.read_url(url)
@@ -55,7 +55,7 @@ class TitleReaderPlugin(Command):
 
 
 	def on_privmsg(self, bot, source, target, message):
-		m = re.search('((http:\/\/|www.)\S+)', message, re.IGNORECASE)
+		m = re.search('((https?:\/\/|www.)\S+)', message, re.IGNORECASE)
 
 		if m:
 			url = m.group(1)

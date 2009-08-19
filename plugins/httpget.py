@@ -69,8 +69,24 @@ def read_url(url):
 	if m:
 		protocol, address, port, file = m.group(1, 2, 3, 4)
 
-		if protocol != 'http':
-			print "Only http is supported at this moment."
+		if protocol == 'https':
+			# Use the built-in functions
+			import urllib
+			
+			try:
+				file = urllib.urlopen(url)
+			except IOError:
+				return None
+			
+			result = { "url": file.geturl(),
+						"data": file.read(1024*1024),
+						"info": file.info() }
+			
+			file.close()
+			return result
+				
+		elif protocol != 'http':
+			print "Only http(s) is supported at this moment."
 			return None
 		else:
 			if not port:

@@ -9,23 +9,8 @@ import utility
 from commands import Command
 
 def decode_characters(encoded_string):
-	strlen = len(encoded_string)
-	decoded_string = ""
-	regex = re.compile("\\\\u[0-9a-f]{4}")
-	i = 0
-	
-	while i < (strlen - 5):
-		if regex.match(encoded_string[i:i+6]):
-			decoded_string += unichr(int(encoded_string[i+2:i+6], 16))
-			i += 6
-		else:
-			decoded_string += encoded_string[i]
-			i += 1
-	
-	if i != strlen:
-		decoded_string += encoded_string[i:strlen]
-	
-	return decoded_string
+	decoded_string = encoded_string.decode('unicode_escape')
+	return re.sub(r'\\(.)', r'\1', decoded_string)
 	
 def prisjakt_search(query_string):
 	# Build URLs
@@ -112,10 +97,12 @@ class PrisjaktCommand(Command):
 		pass
 		
 	def trig_prisjakt(self, bot, source, target, trigger, argument):
+		"""Command used to search the Swedish price comparison web site www.prisjakt.nu"""
+		
 		# Sanitize argument
 		argument = argument.strip()
 		if not argument:
-			return "Usage: .prisjakt <product name> | <product page url>"
+			return "Usage: .prisjakt <product name> | .prisjakt <product page url>"
 		
 		if re.match("http:\/\/www\.prisjakt\.nu\/(bok|produkt).php\?\w+=\d+", argument):
 			# Parse product page
