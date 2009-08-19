@@ -1,4 +1,4 @@
-# coding: latin-1
+# -*- coding: latin-1 -*-
 
 # Plugin created by Merola, heavily based on HGMat
 
