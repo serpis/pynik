@@ -93,7 +93,7 @@ class InsultCommand(Command):
 
 class RawCommand(Command):
 	def trig_raw(self, bot, source, target, trigger, argument):
-		if has_admin_privileges(source, target):
+		if utility.has_admin_privileges(source, target):
 			bot.send(argument)
 
 class TimeCommand(Command):
