@@ -112,7 +112,7 @@ def load_data(filename):
 		return none
 
 def has_admin_privileges(source, target):
-	return source in ['serp', 'teetow', 'merola']
+	return source in ['serp', 'teetow', 'Merola']
 
 def currency_conversion(amount, source, target):
 	url = 'http://www.google.com/search?rls=en&q=' + str(amount) + '+' + source + '+in+' + target + '&ie=UTF-8&oe=UTF-8'
