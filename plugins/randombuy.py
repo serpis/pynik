@@ -36,13 +36,12 @@ class RandomBuyCommand(Command):
 		pass
 		
 	def on_privmsg(self, bot, source, target, message):
-		m = re.match(r'.k(ö|Ã¶)+p( (^ )+)?', message)
+		m = re.match(r'\.k((ö|Ã¶)+)p(.*)', message)
 		if not m:
 			return # Not a trigger
 		
 		# Collect arguments
-		argument = argument.strip()
-		args = [m.group(1), m.group(3)]
+		args = [m.group(1), m.group(3).strip()]
 		
 		# Show usage
 		if not args[1]:
@@ -51,8 +50,10 @@ class RandomBuyCommand(Command):
 		# Ensure max price is a number
 		elif not args[1].isdigit():
 			bot.tell(target, "That is not a number :(")
-				
+			
 		# dealextreme.com
 		else:
-			bot.tell(target, random_product_dealextreme(args[1], (len(args[0]) > 1)))
+			# Length varies depending on encoding, so this is not a good way to do it
+			hardcore = (len(args[0]) > 3)
+			bot.tell(target, random_product_dealextreme(args[1], hardcore))
 
