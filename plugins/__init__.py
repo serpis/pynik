@@ -5,4 +5,4 @@ __all__ = ['plugins', 'command_catcher', 'first_plugin', 'auto_join',
             'give', 'reminder', 'kolli', 'imdb', 'mat', 'timezone',
             'ical_parser', 'icq', 'pylisp', 'lithcourse', 'scale', 'postnr',
             'tenta', 'prisjakt', 'spotify', 'stava', 'down', 'metacritic',
-            'notes', 'fml', 'systembolaget']
+            'notes', 'fml', 'systembolaget', 'randombuy']
