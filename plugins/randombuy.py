@@ -46,13 +46,13 @@ class RandomBuyCommand(Command):
 		
 		# Show usage
 		if not args[1]:
-			return self.usage
+			bot.tell(target, self.usage)
 		
 		# Ensure max price is a number
 		elif not args[1].isdigit():
-			return "That is not a number :("
+			bot.tell(target, "That is not a number :(")
 				
 		# dealextreme.com
 		else:
-			return random_product_dealextreme(args[1], (len(args[0]) > 1))
+			bot.tell(target, random_product_dealextreme(args[1], (len(args[0]) > 1)))
 
