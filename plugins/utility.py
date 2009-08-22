@@ -114,3 +114,14 @@ def load_data(filename):
 def has_admin_privileges(source, target):
 	return ((source == 'serp') or (source == 'teetow') or (source == 'merola'))
 
+def currency_conversion(amount, source, target):
+	url = 'http://www.google.com/search?rls=en&q=' + str(amount) + '+' + source + '+in+' + target + '&ie=UTF-8&oe=UTF-8'
+	response = read_url(url)
+	data = response["data"]
+	
+	m = re.search('\<b\>\d+(\.\d+)? [^=]+= (\d+(\.\d+)?)[^\<]+\<\/b\>', data)
+	if m:
+		return float(m.group(2))
+	else:
+		return None
+

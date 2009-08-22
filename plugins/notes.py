@@ -28,7 +28,7 @@ class Notebook(Command):
 	def trig_notes(self, bot, source, target, trigger, argument):
 		"""A personal notebook (one for each IRC nick). Use it to save small (non-secret) notes."""
 		
-		argument = argument.strip().lower()
+		argument = argument.strip()
 		args = argument.split(' ', 1)
 		
 		# Show usage
@@ -36,7 +36,7 @@ class Notebook(Command):
 			return "Your personal (but not so private) notebook! " + self.usage
 				
 		# Show notes
-		elif args[0] == 'show':
+		elif args[0].lower() == 'show':
 			notes = self.get_notes(source)
 			
 			if not notes:
@@ -45,7 +45,7 @@ class Notebook(Command):
 				return "[ " + " ][ ".join(notes) + " ]"
 		
 		# Add note
-		elif args[0] == 'add':
+		elif args[0].lower() == 'add':
 			if len(args) < 2:
 				return "You cannot add empty notes!"
 			
@@ -67,7 +67,7 @@ class Notebook(Command):
 				return "Note successfully added: " + args[1]
 		
 		# Remove note
-		elif args[0] == 'remove':
+		elif args[0].lower() == 'remove':
 			if len(args) < 2:
 				return "You have to specify a note number!"
 			elif not args[1].isdigit():
@@ -89,7 +89,7 @@ class Notebook(Command):
 			return "Note removed: " + note
 		
 		# Clear all notes
-		elif args[0] == 'clear':
+		elif args[0].lower() == 'clear':
 			self.set_notes(source, [])
 			return "All your notes have been removed."
 		
