@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: latin-1 -*-
 
 # Plugin created by Merola
 
@@ -35,15 +35,17 @@ class RandomBuyCommand(Command):
 	def __init__(self):
 		pass
 		
-	def trig_buy(self, bot, source, target, trigger, argument):
-		"""Work in progress!"""
+	def on_privmsg(self, bot, source, target, message):
+		m = re.match(r'.k(ö|Ã¶)+p( (^ )+)?', message)
+		if not m:
+			return # Not a trigger
 		
-		# Sanitize argument
+		# Collect arguments
 		argument = argument.strip()
-		args = argument.split(' ', 1)
+		args = [m.group(1), m.group(3)]
 		
 		# Show usage
-		if (not args[0]) or (len(args) < 2):
+		if not args[1]:
 			return self.usage
 		
 		# Ensure max price is a number
@@ -51,13 +53,6 @@ class RandomBuyCommand(Command):
 			return "That is not a number :("
 				
 		# dealextreme.com
-		elif args[0].lower() == 'dx':
-			return random_product_dealextreme(args[1], False)
-				
-		# dealextreme.com, hardcore mode
-		elif args[0].lower() == 'dx!':
-			return random_product_dealextreme(args[1], True)
-		
-		# Unknown subcommand
 		else:
-			return "Unknown source! " + self.usage
+			return random_product_dealextreme(args[1], (len(args[0]) > 1))
+
