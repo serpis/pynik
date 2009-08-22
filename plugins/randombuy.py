@@ -9,7 +9,7 @@ from commands import Command
 def random_product_dealextreme(max_price, hardcore):
 	max_dollars = utility.currency_conversion(int(max_price), 'sek', 'usd')
 	if max_dollars == None:
-		return "Oops, something went wrong :("
+		return "Ajdå, nu gick något fel :("
 	
 	# Fetch the web page
 	response = utility.read_url("http://www.dealextreme.com/products.dx/random.gadgets")
@@ -23,14 +23,14 @@ def random_product_dealextreme(max_price, hardcore):
 	for match in product_iterator:
 		if float(match.group(3)) <= max_dollars:
 			if hardcore:
-				return "Gogogo! http://www.dealextreme.com/shoppingcart.dx/add." + match.group(1) + "~quantity.1#_ctl0_content_pCheckout"
+				return "Köööööp! http://www.dealextreme.com/shoppingcart.dx/add." + match.group(1) + "~quantity.1#_ctl0_content_pCheckout"
 			else:
 				return "$" + match.group(3) + ": " + match.group(2) + " | http://www.dealextreme.com/details.dx/sku." + match.group(1)
 	
-	return "No suitable product found :("
+	return "Ingen tillräckligt billig produkt hittades, öka gränsen eller försök igen!"
 
 class RandomBuyCommand(Command):
-	usage = "Work in progress! Usage: .buy dx <max price in sek> | .buy dx! <max price in sek>"
+	usage = "Användning: .köp <maxkostnad i SEK> | Många 'ö' ger direktlänk till kassan med produkt tillagd, istället för produktdetaljer."
 	
 	def __init__(self):
 		pass
@@ -49,7 +49,7 @@ class RandomBuyCommand(Command):
 		
 		# Ensure max price is a number
 		elif not args[1].isdigit():
-			bot.tell(target, "That is not a number :(")
+			bot.tell(target, "Maxkostnaden måste anges i hela svenska kronor!")
 			
 		# dealextreme.com
 		else:
