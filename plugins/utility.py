@@ -118,8 +118,9 @@ def currency_conversion(amount, source, target):
 	url = 'http://www.google.com/search?rls=en&q=' + str(amount) + '+' + source + '+in+' + target + '&ie=UTF-8&oe=UTF-8'
 	response = read_url(url)
 	data = response["data"]
+	data = data.replace('\xc2' + unescape("&nbsp;"), "") # Get rid of UTF-8 NBSP
 	
-	m = re.search('\<b\>\d+(\.\d+)? [^=]+= (\d+(\.\d+)?)[^\<]+\<\/b\>', data)
+	m = re.search('\<b\>\d+(\.\d+)? [^=]+ = (\d+(\.\d+)?)[^\<]+\<\/b\>', data)
 	if m:
 		return float(m.group(2))
 	else:
