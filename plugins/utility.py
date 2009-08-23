@@ -114,11 +114,14 @@ def load_data(filename):
 def has_admin_privileges(source, target):
 	return source in ['serp', 'teetow', 'Merola']
 
+nbsp_latin1 = utility.unescape("&nbsp;")
+nbsp_utf8 = nbsp_latin1.decode("latin-1").encode("utf-8")
+
 def currency_conversion(amount, source, target):
 	url = 'http://www.google.com/search?rls=en&q=' + str(amount) + '+' + source + '+in+' + target + '&ie=UTF-8&oe=UTF-8'
 	response = read_url(url)
 	data = response["data"]
-	data = data.replace('\xc2' + unescape("&nbsp;"), "") # Get rid of UTF-8 NBSP
+	data = data.replace(nbsp_utf8, "") # Get rid of UTF-8 NBSP
 	
 	m = re.search('\<b\>\d+(\.\d+)? [^=]+ = (\d+(\.\d+)?)[^\<]+\<\/b\>', data)
 	if m:

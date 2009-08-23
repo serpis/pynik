@@ -109,10 +109,15 @@ def read_url(url):
 			protocol, response_num, response_string, headers = read_http_headers(s)
 
 			if response_num == 301 or response_num == 302:
-				print "Site moved to: %s" % headers['Location']
 				s.close()
-	
-				return read_url(headers['Location'])
+				
+				# Let's do some simple loop detection...
+				if url == headers['Location']:
+					print "Redirect loop discovered at: %s" % headers['Location']
+					return None
+				else:
+					print "Site moved to: %s" % headers['Location']
+					return read_url(headers['Location'])
 			elif response_num == 200:
 				#print "Got response 200. Sweet!"
 				length = None
