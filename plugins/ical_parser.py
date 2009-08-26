@@ -114,7 +114,8 @@ class Schema(Command):
 			return "Added %s." % name.lower()
 			
 		elif m_url:
-			name, url = m_url.groups()
+			name = m_url.group(1)
+			url = m_url.group(1)
 			self.id_directory[name.lower()] = url
 			self.save()
 			return "Added %s." % name.lower()
