@@ -14,13 +14,13 @@ class Notebook(Command):
 		pass
 
 	def on_load(self):
-		self.notebook = utility.load_data('notes.txt')
+		self.notebook = utility.load_data('notes')
 		if not self.notebook:
 			self.notebook = {}
 
 	def set_notes(self, nick, text):
 		self.notebook[nick] = text
-		utility.save_data('notes.txt', self.notebook)
+		utility.save_data('notes', self.notebook)
 		
 	def get_notes(self, nick):
 		return self.notebook.get(nick, [])

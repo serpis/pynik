@@ -1,7 +1,6 @@
 from __future__ import with_statement
 import re
 import utility
-import pickle
 import datetime
 from commands import Command
 
@@ -65,17 +64,26 @@ class iCalParser:
 		return None
 
 class Schema(Command):
+	id_presets = {}
+	id_directory = {}
+
 	def __init__(self):
-		self.id_directory = {}
+		pass
 
 	def trig_schema(self, bot, source, target, trigger, argument):
 		if not argument:
-			argument = "d2a"
+			argument = self.id_presets.get(source.lower(), source.lower())
 		else:
 			argument = argument.lower()
+			self.id_presets[source] = argument
+			self.save()
 
 		if argument in self.id_directory:
-			response = utility.read_url("http://timeedit.liu.se/4DACTION/iCal_downloadReservations/timeedit.ics?branch=5&id1=%d&lang=1" % self.id_directory[argument])
+			url = self.id_directory[argument]
+			if isinstance(url, int):
+				url = "http://timeedit.liu.se/4DACTION/iCal_downloadReservations/timeedit.ics?branch=5&id1=%d&lang=1" % url
+			
+			response = utility.read_url(url)
 
 			parser = iCalParser()
 			parser.process(response["data"])
@@ -93,33 +101,37 @@ class Schema(Command):
 
 			return "%s: %s" % (argument, " | ".join(event_outputs))
 		else:
-			return "I don't have that group in my directory. Feel free to add it by typing .addschemaid <name> <timeedit id>."
+			return "I don't have the ID '" + argument + "' in my directory. Feel free to add it by typing .addschemaid <name> <url or timeedit id>."
 
 	def trig_addschemaid(self, bot, source, target, trigger, argument):
-		m = re.match("(\S+)\s+(\d+)", argument)
-		if m:
-			name, id = m.groups()
-			self.id_directory[name.lower()] = int(id)
+		m_num = re.match('(\S+)\s+(\d+)', argument)
+		m_url = re.match('(\S+)\s+((https?:\/\/|www.)\S+)', argument)
+		
+		if m_num:
+			name, num = m_num.groups()
+			self.id_directory[name.lower()] = int(num)
 			self.save()
-
 			return "Added %s." % name.lower()
+			
+		elif m_url:
+			name, url = m_url.groups()
+			self.id_directory[name.lower()] = url
+			self.save()
+			return "Added %s." % name.lower()
+			
 		else:
-			return "Try .addschemaid <name> <timeedit id>"
+			return "Try .addschemaid <name> <url or timeedit id>"
 
 	def save(self):
-		with open('data/schema_id.txt', 'w') as file:
-			p = pickle.Pickler(file)
-
-			p.dump(self.id_directory)
+		utility.save_data('schema_id', self.id_directory)
+		utility.save_data('schema_fav', self.id_presets)
 
 	def on_load(self):
-		self.id_directory = {}
-
-		try:
-			with open('data/schema_id.txt') as file:
-				unpickler = pickle.Unpickler(file)
-
-				self.id_directory = unpickler.load()
-		except:
-			pass
+		self.id_directory = utility.load_data('schema_id')
+		if not self.id_directory:
+			self.id_directory = {}
+			
+		self.id_presets = utility.load_data('schema_fav')
+		if not self.id_presets:
+			self.id_presets = {}
 

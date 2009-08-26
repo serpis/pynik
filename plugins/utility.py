@@ -98,15 +98,15 @@ def read_url(url):
 
 	return data
 
-def save_data(filename, data):
-	handle = open('data/' + filename, 'w')
+def save_data(name, data):
+	handle = open('data/' + name + '.txt', 'w')
 	p = pickle.Pickler(handle)
 	p.dump(data)
 	handle.close()
 
-def load_data(filename):
+def load_data(name):
 	try:
-		with open('data/' + filename, 'r') as handle:
+		with open('data/' + name + '.txt', 'r') as handle:
 			return pickle.Unpickler(handle).load()
 	except IOError:
 		return none
