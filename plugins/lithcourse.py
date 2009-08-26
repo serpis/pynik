@@ -31,25 +31,6 @@ def schedule_url(code, programme):
 		url = url + "&-Token.pmk=" + programme
 	return url
 
-class LithSH(Command):
-	def __init__(self):
-		pass
-	
-	def trig_lithsh(self, bot, source, target, trigger, argument):
-		args = argument.split(' ', 2)
-		
-		if len(args) > 1:
-			return "Usage: .lithsh [coursecode]"
-		
-		code = args[0]
-		
-		if not code:
-			return "http://www.lith.liu.se/sh/"
-		elif is_valid_course_code(code):
-			return sh_url(code)
-		else:
-			return "That doesn't look like a course code :O"
-
 class LithCourse(Command):
 	def __init__(self):
 		pass
@@ -142,10 +123,8 @@ class LithCourse(Command):
 				schedule_text = "Not scheduled."
 			
 			# Combine all the information and return it
-			return code + ": " + name + ", " + credits + " HP. " + schedule_text
-			
-			# TODO: maybe the link to the SH page should be included, but it seems
-			# that it would often be cut off by the message length limit
+			return code + ": " + name + ", " + credits + " HP. " + schedule_text + \
+					" | " + sh_url(code)
 			
 		else:
 			return "That doesn't look like a course code :O"
