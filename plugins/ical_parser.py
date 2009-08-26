@@ -75,7 +75,7 @@ class Schema(Command):
 			argument = self.id_presets.get(source.lower(), source.lower())
 		else:
 			argument = argument.lower()
-			self.id_presets[source] = argument
+			self.id_presets[source.lower()] = argument
 			self.save()
 
 		if argument in self.id_directory:
