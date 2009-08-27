@@ -44,9 +44,15 @@ class iCalParser:
 			self.parse_end(argument, extra_argument)
 		elif self.event:
 			if tag == "DTSTART":
-				self.event.start = datetime.datetime.strptime(argument, "%Y%m%dT%H%M%S")
+				if extra_argument:
+					self.event.start = datetime.datetime.strptime(argument, "%Y%m%dT%H%M%S")
+				else: # ical v2
+					self.event.start = datetime.datetime.strptime(argument, "%Y%m%dT%H%M%SZ")
 			elif tag == "DTEND":
-				self.event.end = datetime.datetime.strptime(argument, "%Y%m%dT%H%M%S")
+				if extra_argument:
+					self.event.end = datetime.datetime.strptime(argument, "%Y%m%dT%H%M%S")
+				else: # ical v2
+					self.event.end = datetime.datetime.strptime(argument, "%Y%m%dT%H%M%SZ")
 			elif tag == "SUMMARY":
 				self.event.summary = ", ".join(argument.split(", ")[0:2])
 			elif tag == "LOCATION":
