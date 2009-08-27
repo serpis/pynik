@@ -109,7 +109,9 @@ def load_data(name):
 		with open('data/' + name + '.txt', 'r') as handle:
 			return pickle.Unpickler(handle).load()
 	except IOError:
-		return none
+		return None
+	except EOFError:
+		return None
 
 def has_admin_privileges(source, target):
 	return source in ['serp', 'teetow', 'Merola']
