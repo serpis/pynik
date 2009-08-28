@@ -44,7 +44,8 @@ def read_http_headers(s):
 			break
 
 		m = re.match("^(.+?) (.+)$", line)
-		headers[m.group(1)[0:-1]] = m.group(2)
+		if m:
+			headers[m.group(1)[0:-1]] = m.group(2)
 
 	return (protocol, int(response_num), response_string, headers)
 
