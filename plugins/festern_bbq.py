@@ -22,7 +22,8 @@ class Festern_BBQ(Command):
 		return self.location
 		
 	def trig_grillern(self, bot, source, target, trigger, argument):
-		if target == '#festern':
+		# TODO Should be #festern, but botnik is not there :/
+		if target == '#d1d':
 			argument = argument.strip()
 			
 			if not argument:
