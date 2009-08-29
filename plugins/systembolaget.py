@@ -60,7 +60,7 @@ def system_status(product_id, store_id):
 	for match in product_iterator:
 		# An available packaging option has been found, let's calculate the APK value.
 		apk_value = float(percentage_text[:-2]) / 100  # He
-		apk_value *= float(match.group(2)[:-3]) / 1000 # V (expected to be in ml)
+		apk_value *= float(match.group(2)[:-3])        # V (expected to be in ml)
 		apk_value /= float(match.group(4))             # P
 		
 		# Add it to the list...
