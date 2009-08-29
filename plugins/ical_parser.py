@@ -134,11 +134,6 @@ class Schema(Command):
 		utility.save_data('schema_fav', self.id_presets)
 
 	def on_load(self):
-		self.id_directory = utility.load_data('schema_id')
-		if not self.id_directory:
-			self.id_directory = {}
-			
-		self.id_presets = utility.load_data('schema_fav')
-		if not self.id_presets:
-			self.id_presets = {}
+		self.id_directory = utility.load_data('schema_id', {})
+		self.id_presets = utility.load_data('schema_fav', {})
 

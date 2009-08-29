@@ -104,14 +104,13 @@ def save_data(name, data):
 	p.dump(data)
 	handle.close()
 
-def load_data(name):
+def load_data(name, default_value=None):
 	try:
 		with open('data/' + name + '.txt', 'r') as handle:
 			return pickle.Unpickler(handle).load()
-	except IOError:
-		return None
-	except EOFError:
-		return None
+	except:
+		print "Could not load data from file 'data/" + str(name) + ".txt' :("
+		return default_value
 
 def has_admin_privileges(source, target):
 	return source in ['serp', 'teetow', 'Merola']
