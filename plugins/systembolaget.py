@@ -58,9 +58,15 @@ def system_status(product_id, store_id):
 	product_list = []
 	
 	for match in product_iterator:
-		# An available packaging option has been found...
-		product_list.append("%s %s: %s kr (%s kr/l), %s st, hylla %s" % \
-								match.group(1, 2, 4, 3, 5, 6))
+		# An available packaging option has been found, let's calculate the APK value.
+		apk_value = float(percentage_text[:-2]) / 100  # He
+		apk_value *= float(match.group(2)[:-3]) / 1000 # V (expected to be in ml)
+		apk_value /= float(match.group(4))             # P
+		
+		# Add it to the list...
+		format_string = "%s %s: %s kr (%s kr/l, APK " + str(round(apk_value, 2)) + \
+				"), %s st, hylla %s"
+		product_list.append(format_string % match.group(1, 2, 4, 3, 5, 6))
 	
 	if not product_list:
 		# No available packaging options found
