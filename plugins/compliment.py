@@ -32,7 +32,7 @@ class ComplimentCommand(Command):
 			return "Trying to add an improper compliment, booo!" 
 		elif argument in self.compliments: 
 			return "That compliment already exists!" 
-		self.compliment.append(argument) 
+		self.compliments.append(argument) 
 		self.save() 
 		return "Added compliment: %s" % argument.replace('%s', source)
 	 
