@@ -10,4 +10,4 @@ class ExampleCommand(Command):
 		# This plugin does not work anymore.
 		if target[0] == '#': # is the first character in target a #? then, it's a channel!
 			#print bot.nick_lists[target]
-			return "Ohayou %s! %s is a channel with %s users!" % (source, target, "a number of"))
+			return "Ohayou %s! %s is a channel with %s users!" % (source, target, "a number of")

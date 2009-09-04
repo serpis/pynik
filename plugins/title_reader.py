@@ -66,7 +66,7 @@ class TitleReaderPlugin(Command):
 			title = get_title(url)
 			self.urls[target].title = title
 			self.save_last_url(target)
-			if target == '#c++.se':
+			if target == '#c++.se' or target == '#d1d' or target == '#lithen':
 				bot.tell(target, self.clean(url, title))
 
 

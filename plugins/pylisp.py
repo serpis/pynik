@@ -1,3 +1,6 @@
+from plugins import Plugin
+from commands import Command
+
 import re
 
 class LispError:
@@ -330,3 +333,8 @@ def lisp(text):
 	#globals[Name("no")] = Lambda(List([List([]), Name("nil")]))
 
 	return expressions[0].eval(globals)
+
+class LispCommand(Command): 
+	def trig_lisp(self, bot, source, target, trigger, argument):
+		return lisp(argument)
+
