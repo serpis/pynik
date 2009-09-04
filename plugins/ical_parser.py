@@ -83,7 +83,7 @@ class Schema(Command):
 		if not argument:
 			argument = self.id_presets.get(source.lower(), source.lower())
 		else:
-			argument = argument.lower()
+			argument = argument.strip().lower()
 			self.id_presets[source.lower()] = argument
 			self.save()
 
@@ -132,6 +132,29 @@ class Schema(Command):
 			
 		else:
 			return "Try .addschemaid <name> <url or timeedit id>"
+
+	def trig_addschemacourse(self, bot, source, target, trigger, argument):
+		argument = argument.replace(" ", "")
+		
+		if argument:
+			url = "http://timeedit.liu.se/4DACTION/WebShowSearch/5/2-0?wv_type=6&wv_search=" + argument
+			print url
+			response = utility.read_url(url)
+			data = response["data"].replace("\n", "")
+			print data
+			
+			m = re.search('\<a href=\'javascript:addObject\((\d+)\)\'\>\<img src=\'\/img\/plus\.gif\' width=\'12\' height=\'12\' border=\'0\' alt=\'\'\>\<\/a\>', data)
+			
+			if not m:
+				return "Course not found :("
+			
+			print m.group(1)
+			self.id_directory[argument.lower()] = int(m.group(1))
+			self.save()
+			return "Added %s: http://timeedit.liu.se/4DACTION/WebShowSearch/5/2-0?wv_obj1=%s&wv_graphic=Grafiskt+format If this is wrong, just re-add it." % (argument.lower(), m.group(1))
+			
+		else:
+			return "Try .addschemacourse <course code>"
 
 	def save(self):
 		utility.save_data('schema_id', self.id_directory)
