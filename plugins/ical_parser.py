@@ -11,6 +11,9 @@ class Event:
 		self.summary = None
 		self.location = None
 
+	def __cmp__(self, other):
+		return cmp(self.start, other.start)
+
 	def short_description(self):
 		return "%s-%s %s: %s" % (self.start.strftime("%H:%M"), self.end.strftime("%H:%M"), self.location, self.summary)
 
@@ -93,6 +96,7 @@ class Schema(Command):
 
 			parser = iCalParser()
 			parser.process(response["data"])
+			parser.events.sort()
 
 			relevant_events = parser.events[0:7]
 			event_outputs = []

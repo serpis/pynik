@@ -13,7 +13,7 @@ class OptionsCommand(Command):
 		pass
 	
 	def trig_options(self, bot, source, target, trigger, argument):
-		if source == 'serp' or source == 'teetow':
+		if utility.has_admin_privileges(source, target):
 			self.on_message(bot, source, target, trigger, argument)
 
 	def on_message(self, bot, source, target, trigger, argument):
