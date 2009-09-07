@@ -230,22 +230,3 @@ class TitleReaderPlugin(Command):
 		else:
 			return site + ' not found in title mask database.'
 
-
-	def trig_clearmask(self, bot, source, target, trigger, argument):
-		return self.trig_cleartitlemask(bot, source, target, trigger, argument)
-
-	def trig_deltitlemask(self, bot, source, target, trigger, argument):
-		return self.trig_cleartitlemask(bot, source, target, trigger, argument)
-
-	def trig_delmask(self, bot, source, target, trigger, argument):
-		return self.trig_cleartitlemask(bot, source, target, trigger, argument)
-
-	def trig_titleunmask(self, bot, source, target, trigger, argument):
-		return self.trig_cleartitlemask(bot, source, target, trigger, argument)
-
-	def trig_removetitlemask(self, bot, source, target, trigger, argument):
-		return self.trig_cleartitlemask(bot, source, target, trigger, argument)
-
-
-
-
