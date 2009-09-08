@@ -23,7 +23,7 @@ class metacritic(Command):
 		    return None
 
 
-	def trig_metacritic(self, bot, source, target, trigger, argument):
+	def trig_mc(self, bot, source, target, trigger, argument):
 		term = argument.strip()
 
 		if not term:
@@ -46,6 +46,3 @@ class metacritic(Command):
 
 		return "Found nothing. Try it yourself: " + 'http://apps.metacritic.com/search/process?ty=3&ts=' + utility.escape(term)
 
-
-	def trig_mc(self, bot, source, target, trigger, argument):
-		return self.trig_metacritic(bot, source, target, trigger, argument)

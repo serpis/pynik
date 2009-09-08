@@ -188,7 +188,11 @@ class TitleReaderPlugin(Command):
 
 	def trig_titlemask(self, bot, source, target, trigger, argument):
 		sArg = argument.strip()
+
 		m = re.match(r'([^ ]+) *(.*)$', sArg)
+		if not m:
+			return 'usage: .titlemask <host> <regex> | regex can only have one capturing group'
+
 		site = m.group(1)
 		mask = m.group(2)
 
@@ -219,7 +223,7 @@ class TitleReaderPlugin(Command):
 		return 'reloaded.'
 
 
-	def trig_cleartitlemask(self, bot, source, target, trigger, argument):
+	def trig_deltitlemask(self, bot, source, target, trigger, argument):
 		site = argument.strip()
 		if site == '':
 			return "You forgot to specify a site. Silly hoo-man."
