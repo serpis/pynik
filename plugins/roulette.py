@@ -44,7 +44,7 @@ class RussianRoulette(Command):
 		
 		# Reload
 		elif argument == 'reload':
-			return self.reload(target)
+			return self.reload_revolver(target)
 		
 		# Unknown subcommand
 		else:
