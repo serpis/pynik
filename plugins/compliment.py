@@ -12,13 +12,13 @@ class ComplimentCommand(Command):
 	def __init__(self): 
 		pass 
 
-	def trig_compliment(self, bot, source, target, trigger, argument): 
-		if target == "Iradieh":
-			return None
-		
+	def trig_compliment(self, bot, source, target, trigger, argument):
 		t = argument.strip()
 		if not t:
 			t = source
+			
+		if t == "Iradieh":
+			return None
 		
 		compliment = random.sample(self.compliments, 1)[0]
 		try:
