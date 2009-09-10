@@ -21,7 +21,7 @@ class RussianRoulette(Command):
 		contents = self.revolver_contents.get(channel, [])
 		
 		if not contents:
-			"Maybe it's time to reload..."
+			return "Maybe it's time to reload..."
 		elif contents.pop():
 			kick_command = "KICK %s %s BOOM!" % (channel, nickname)
 			bot.send(kick_command)
