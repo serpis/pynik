@@ -17,14 +17,14 @@ class RussianRoulette(Command):
 		self.revolver_contents[channel][random.randint(0, 5)] = True
 		return "Spinning the cylinder..."
 	
-	def pull_trigger(self, nickname, channel):
+	def pull_trigger(self, ircbot, nickname, channel):
 		contents = self.revolver_contents.get(channel, [])
 		
 		if not contents:
 			return "Maybe it's time to reload..."
 		elif contents.pop():
 			kick_command = "KICK %s %s BOOM!" % (channel, nickname)
-			bot.send(kick_command)
+			ircbot.send(kick_command)
 			return "Poor %s :(" % nickname
 		else:
 			return "You survive, you lucky bastard!"
@@ -40,7 +40,7 @@ class RussianRoulette(Command):
 				
 		# Play
 		elif argument == 'play':
-			return self.pull_trigger(source, target)
+			return self.pull_trigger(ircbot, source, target)
 		
 		# Reload
 		elif argument == 'reload':
