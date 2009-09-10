@@ -40,7 +40,7 @@ class RussianRoulette(Command):
 				
 		# Play
 		elif argument == 'play':
-			return self.pull_trigger(ircbot, source, target)
+			return self.pull_trigger(bot, source, target)
 		
 		# Reload
 		elif argument == 'reload':
