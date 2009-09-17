@@ -34,7 +34,6 @@ def eval_assert(expr, msg):
 	if not expr:
 		raise EvalError(msg)
 
-
 class Token:
 	def __init__(self, name, value):
 		self.name = name
@@ -54,7 +53,7 @@ class Environment:
 		elif self.parent:
 			return self.parent[key]
 		else:
-			eval_assert(False, "couldn't find key %s" % key)
+			eval_assert(False, "couldn't find key '%s'." % key)
 
 	def __setitem__(self, key, value):
 		self.dictionary[key] = value
@@ -98,7 +97,7 @@ class Nil:
 	def __repr__(self):
 		return "nil"
 			
-class Name:
+class Symbol:
 	def __init__(self, name):
 		self.name = name
 
@@ -112,7 +111,7 @@ class Name:
 		return self.name.__eq__(other.name)
 
 	def __repr__(self):
-		return "%s" % self.name
+		return self.name
 
 class String:
 	def __init__(self, value):
@@ -129,6 +128,7 @@ class String:
 
 	def __repr__(self):
 		return '"%s"' % self.value
+
 class Integer:
 	def __init__(self, value):
 		self.value = value
@@ -171,8 +171,11 @@ class List:
 		first = self.first()
 		rest = self.rest()
 
-		if isinstance(first, Name) and first.name == "lambda":
+		if isinstance(first, Symbol) and first.name == "lambda":
 			return Lambda(env, rest)
+
+		if isinstance(first, Symbol) and first.name == "setq":
+			return setq_func(env, restfirst(), rest.rest().first().eval(env))
 
 		return FunctionCall(first, rest).eval(env)
 
@@ -253,7 +256,7 @@ def tokenize(text):
 	token_descriptions = [
 	("whitespace", "(\s+)"),
 	("string", '"((?:\\.|[^"])*)"'),
-	("name", "([a-zA-Z]+)"),
+	("symbol", "([a-zA-Z+\-*/][a-zA-Z0-9+\-*/]*)"),
 	("leftparenthesis", "(\()"),
 	("rightparenthesis", "(\))"),
 	("integer", "(\d+)"),
@@ -282,59 +285,100 @@ def tokenize(text):
 
 	return tokens
 
-def get_expressions(tokens, start_index, end_index):
+def parse_list(token_stream):
+	parse_assert(token_stream.pop().name == "leftparenthesis", "missing ( when trying to parse list")
+
+	expressions = []
+	
+	while not token_stream.peek().name == "rightparenthesis":
+		expressions.append(parse_expression(token_stream))
+
+	parse_assert(token_stream.pop().name == "rightparenthesis", "missing ) when trying to parse list")
+
+	return List(expressions)
+
+def parse_symbol(token_stream):
+	if token_stream.peek().name == "symbol":
+		return Symbol(token_stream.pop().value)
+	else:
+		parse_assert(False, "invalid symbol")
+
+def parse_constant(token_stream):
+	if token_stream.peek().name == "string":
+		return String(token_stream.pop().value)
+	elif token_stream.peek().name == "integer":
+		return Integer(int(token_stream.pop().value))
+	else:
+		parse_assert(False, "invalid constant")
+
+def parse_expression(token_stream):
+	if token_stream.peek().name == "leftparenthesis":
+		return parse_list(token_stream)
+	elif token_stream.peek().name == "symbol":
+		return parse_symbol(token_stream)
+	elif token_stream.peek().name in ["string", "integer"]:
+		return parse_constant(token_stream)
+
+	parse_assert(False, "garbage found when trying to parse expression: %s of type %s" % (token_stream.peek().value, token_stream.peek().name))
+
+def parse_expression_list(token_stream):
 	expressions = []
 
-	i = start_index
-	while i <= end_index:
-		token = tokens[i]
-		if (token.name == "string"):
-			expressions.append(String(token.value))
-		elif (token.name == "integer"):
-			expressions.append(Integer(int(token.value)))
-		elif (token.name == "name"):
-			expressions.append(Name(token.value))
-		elif (token.name == "leftparenthesis"):
-			parenthesislevel = 0
-			for j in range(i, end_index+1):
-				if tokens[j].name == "leftparenthesis":
-					parenthesislevel += 1
-				elif tokens[j].name == "rightparenthesis":
-					parse_assert(parenthesislevel, "unexpected )")
-					parenthesislevel -= 1
-					if not parenthesislevel:
-						expressions.append(List(get_expressions(tokens, i+1, j-1)))
-
-						i = j
-						break
-			parse_assert(not parenthesislevel, "couldn't find matching )")
-		else:
-		  	parse_assert(False, "unknown token: %s (%s)" % (token.name, token.value))
-		i += 1
-
-	parse_assert(len(expressions), "no expressions found")
+	while not token_stream.empty():
+		expressions.append(parse_expression(token_stream))
 
 	return expressions
 
-def add_func(env, a, b):
+def sub_func(env, l):
+	a = l.first()
+	b = l.rest().first()
 	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
-	return Integer(a.value + b.value)
+	return Integer(a.value - b.value)
 
-def lisp(text):
+def setq_func(env, l):
+	s = l.first()
+	x = l.rest().first()
+	eval_assert(isinstance(s, Symbol), "must be 2 args with first being a symbol")
+	env[s] = x
+	return x
+
+class TokenStream:
+	def __init__(self, tokens):
+		self.tokens = tokens
+		self.current_index = 0
+
+	def peek(self):
+		return self.tokens[self.current_index]
+
+	def pop(self):
+		token = self.peek()
+		self.current_index += 1
+		return token
+
+	def empty(self):
+		return self.current_index == len(self.tokens)
+
+def lisp(env, text):
 	tokens = tokenize(text)
-	expressions = get_expressions(tokens, 0, len(tokens)-1)
+	expressions = parse_expression_list(TokenStream(tokens))
 
-	globals = Environment()
-	globals[Name("#t")] = True()
-	globals[Name("nil")] = Nil()
-	globals[Name("add")] = NativeFunction(add_func)
-	#globals[Name("inc")] = Lambda(List([List([Name("lol")]), Name("add"), Name("lol"), Integer(1)]))
-	#globals[Name("yes")] = Lambda(List([List([]), Name("#t")]))
-	#globals[Name("no")] = Lambda(List([List([]), Name("nil")]))
-
-	return expressions[0].eval(globals)
+	return expressions[0].eval(env)
 
 class LispCommand(Command): 
-	def trig_lisp(self, bot, source, target, trigger, argument):
-		return lisp(argument)
+	def __init__(self):
+		self.globals = Environment()
+		self.globals[Symbol("#t")] = True()
+		self.globals[Symbol("nil")] = Nil()
+		self.globals[Symbol("-")] = NativeFunction(sub_func)
+		#globals[Name("inc")] = Lambda(List([List([Name("lol")]), Name("add"), Name("lol"), Integer(1)]))
+		#globals[Name("yes")] = Lambda(List([List([]), Name("#t")]))
+		#globals[Name("no")] = Lambda(List([List([]), Name("nil")]))
 
+	def trig_lisp(self, bot, source, target, trigger, argument):
+		try:
+			return str(lisp(self.globals, argument))
+		except LispError as e:
+			return str(e)
+
+import sys
+print lisp(sys.argv[1])
