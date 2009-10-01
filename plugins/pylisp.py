@@ -500,17 +500,17 @@ def lisp(env, text):
 
 class LispCommand(Command): 
 	def __init__(self):
-		globals = Environment()
-		globals[Symbol("t")] = True()
-		globals[Symbol("nil")] = Nil()
-		globals[Symbol("-")] = NativeFunction(sub_func, "-", 2)
-		globals[Symbol("cons")] = NativeFunction(cons_func, "cons", 2)
-		globals[Symbol("car")] = NativeFunction(car_func, "car", 1)
-		globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
-		globals[Symbol("list")] = NativeFunction(list_func, "list", -1)
-		#globals[Name("inc")] = Lambda(List([List([Name("lol")]), Name("add"), Name("lol"), Integer(1)]))
-		#globals[Name("yes")] = Lambda(List([List([]), Name("#t")]))
-		#globals[Name("no")] = Lambda(List([List([]), Name("nil")]))
+		self.globals = Environment()
+		self.globals[Symbol("t")] = True()
+		self.globals[Symbol("nil")] = Nil()
+		self.globals[Symbol("-")] = NativeFunction(sub_func, "-", 2)
+		self.globals[Symbol("cons")] = NativeFunction(cons_func, "cons", 2)
+		self.globals[Symbol("car")] = NativeFunction(car_func, "car", 1)
+		self.globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
+		self.globals[Symbol("list")] = NativeFunction(list_func, "list", -1)
+		#self.globals[Name("inc")] = Lambda(List([List([Name("lol")]), Name("add"), Name("lol"), Integer(1)]))
+		#self.globals[Name("yes")] = Lambda(List([List([]), Name("#t")]))
+		#self.globals[Name("no")] = Lambda(List([List([]), Name("nil")]))
 
 	def trig_lisp(self, bot, source, target, trigger, argument):
 		try:
