@@ -1,3 +1,5 @@
+from __future__ import with_statement
+import pickle
 from plugins import Plugin
 from commands import Command
 
@@ -508,15 +510,39 @@ class LispCommand(Command):
 		self.globals[Symbol("car")] = NativeFunction(car_func, "car", 1)
 		self.globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
 		self.globals[Symbol("list")] = NativeFunction(list_func, "list", -1)
+
+		self.savable_environment = Environment(self.globals)
 		#self.globals[Name("inc")] = Lambda(List([List([Name("lol")]), Name("add"), Name("lol"), Integer(1)]))
 		#self.globals[Name("yes")] = Lambda(List([List([]), Name("#t")]))
 		#self.globals[Name("no")] = Lambda(List([List([]), Name("nil")]))
 
 	def trig_lisp(self, bot, source, target, trigger, argument):
 		try:
-			return str(lisp(self.globals, argument))
+			retn = str(lisp(self.savable_environment, argument))
+			self.save()
+			return retn
 		except LispError as e:
 			return str(e)
+
+	def save(self):
+		with open('data/lisp_state.txt', 'w') as file:
+			p = pickle.Pickler(file)
+
+			p.dump(self.savable_environment)
+
+	def on_load(self):
+		self.savable_environment = Environment(self.globals)
+
+		try:
+			with open('data/lisp_state.txt') as file:
+				unp = pickle.Unpickler(file)
+
+				self.savable_environment = unp.load()
+		except:
+			pass
+	
+	def on_unload(self):
+		self.savable_environment = Environment(self.globals)
 
 #import sys
 #
