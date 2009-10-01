@@ -518,15 +518,15 @@ class LispCommand(Command):
 		except LispError as e:
 			return str(e)
 
-import sys
-
-globals = Environment()
-globals[Symbol("t")] = True()
-globals[Symbol("nil")] = Nil()
-globals[Symbol("-")] = NativeFunction(sub_func, "-", 2)
-globals[Symbol("cons")] = NativeFunction(cons_func, "cons", 2)
-globals[Symbol("car")] = NativeFunction(car_func, "car", 1)
-globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
-globals[Symbol("list")] = NativeFunction(list_func, "list", -1)
-
-print lisp(globals, sys.argv[1])
+#import sys
+#
+#globals = Environment()
+#globals[Symbol("t")] = True()
+#globals[Symbol("nil")] = Nil()
+#globals[Symbol("-")] = NativeFunction(sub_func, "-", 2)
+#globals[Symbol("cons")] = NativeFunction(cons_func, "cons", 2)
+#globals[Symbol("car")] = NativeFunction(car_func, "car", 1)
+#globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
+#globals[Symbol("list")] = NativeFunction(list_func, "list", -1)
+#
+#print lisp(globals, sys.argv[1])
