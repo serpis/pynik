@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 
 # Plugin created by Merola, heavily based on HGMat
 
@@ -10,7 +10,7 @@ from datetime import datetime
 def menu(location):
 	# Set location-specific settings
 	if location == "[hg]" or location == "hg":
-		# Ryds Herrgård [hg], Linköping
+		# Ryds HerrgÃ¥rd [hg], LinkÃ¶ping
 		url = "http://www.hg.se/?restaurang/kommande"
 		
 		entry_regex = '\<h2\>(.+?dag)en den .+?\<\/h2\>(.+?)(?=(\<h2\>|\<em\>))'
@@ -22,7 +22,7 @@ def menu(location):
 		dish_price_index = 3
 	
 	elif location == "villevalla" or location == "vvp":
-		# VilleValla Pub, Linköping
+		# VilleValla Pub, LinkÃ¶ping
 		url = "http://www.villevallapub.se/"
 		
 		entry_regex = '\<td valign="top" style="padding-right: 2px;"\>\<strong\>(.+?dag)\<\/strong\>\<\/td\>\s*\<td\>(.+?)\<\/td\>'
@@ -34,7 +34,7 @@ def menu(location):
 		dish_price_index = 2
 	
 	elif location == "karallen" or location == "kara":
-		# Restaurang Kårallen, LiU
+		# Restaurang KÃ¥rallen, LiU
 		
 		# The URL is a bit unclear, possibly this will work
 		url = "http://www.cgnordic.com/sv/Eurest-Sverige/Restauranger/Restaurang-Karallen-Linkopings-universitet/Lunchmeny-"
@@ -51,20 +51,8 @@ def menu(location):
 		dish_name_index = 2
 		dish_price_index = 4 # Dummy index.
 		
-	elif location == "vallfarten" or location == "val":
-		# Restaurang Vallfarten, LiU
-		url = "http://www.fazergroup.com/templates/Fazer_RestaurantMenuPage.aspx?id=5618&epslanguage=SV"
-		
-		entry_regex = '(\<div class="menufactstext" \>\s+\<p\>|\<p\>\<br \/\>)(.+?dag) (\<br \/\>.+?)\<\/p\>'
-		entry_day_index = 1
-		entry_data_index = 2
-		
-		dish_regex = '(?<=\<br \/\>)(.+?) ((\d+?) kr|\Z)'
-		dish_name_index = 0
-		dish_price_index = 2
-		
 	elif location == "zenit":
-		# Restaurang & Café Zenit, LiU
+		# Restaurang & CafÃ© Zenit, LiU
 		url = "http://www.hors.se/restauranger/restaurant_meny.php3?UID=24"
 		
 		entry_regex = '\<tr\>\<td valign="top" colspan="3"\>\<b\>(.+?dag)\<\/b\>\<\/td\>\<\/tr>(.+?)\<tr\>\<td colspan="3"\>\<hr\>\<\/td\>\<\/tr\>'
@@ -76,7 +64,7 @@ def menu(location):
 		# However, something is needed in order to exclude the always available dishes.
 		# Cutting the entry in half at "Pris" in the regex above seems to fail
 		# if the restaurant is closed one day (closed days do not contain "Pris")
-		# \xa4 == ¤
+		# \xa4 == Â¤
 		dish_regex = '((\<td valign="top"\>|\<br \/\>\s*)\xa4 (.+?)(\<br \/\>|\<\/td\>)()|Pris:.+()()()())'
 		dish_name_index = 2
 		dish_price_index = 4 # Dummy index.
@@ -133,7 +121,7 @@ def food(location, day):
 
 		for i in range(loop_len):
 			if input_day[i] == entry_day[i]:
-				matching_chars += 1		
+				matching_chars += 1
 			else:
 				break
 
@@ -149,16 +137,60 @@ def food_str(location, day):
 	if day_menu:
 		return "%s: %s" % (day_menu[0], " | ".join(day_menu[1]))
 	else:
-		return "Hittade ingen meny för den platsen/dagen... :-("
+		return "Hittade ingen meny fÃ¶r den platsen/dagen... :("
+
+def liu_food_str(day):
+	karallen_menu = food("karallen", day)
+	zenit_menu = food("zenit", day)
+	result = ""
+	
+	if karallen_menu:
+		result += "KÃ¥rallen: "
+		
+		stripped_menu = []
+		
+		for item in karallen_menu[1]:
+			print item
+			dish_string = item.split(" med ", 2)[0]
+			dish_string = dish_string.replace("serveras", "").strip().capitalize()
+			stripped_menu.append(dish_string)
+		
+		result += " | ".join(stripped_menu)
+	
+	if zenit_menu:
+		if result:
+			result += " | "
+		result += "Zenit: "
+		
+		stripped_menu = []
+		
+		for item in zenit_menu[1]:
+			words = item.split(" ")
+			important_words = []
+			
+			for word in words:
+				if word.isupper():
+					important_words.append(word.replace(",", "").strip())
+			
+			print important_words
+			if important_words:
+				stripped_menu.append(", ".join(important_words).capitalize())
+		
+		result += " | ".join(stripped_menu)
+	
+	if result:
+		return result
+	else:
+		return "Hittade ingen LiU-mat den dagen :("
 
 class MatCommand(Command):
-	days = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"]
+	days = ["MÃ¥ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "LÃ¶rdag", "SÃ¶ndag"]
 
 	def __init__(self):
 		pass
 	
 	def trig_mat(self, bot, source, target, trigger, argument):
-		"""Hämtar dagens (eller en annan dags) meny från vald restaurangs hemsida."""
+		"""HÃ¤mtar dagens (eller en annan dags) meny frÃ¥n vald restaurangs hemsida."""
 		
 		# Split arguments
 		argument = argument.strip()
@@ -166,8 +198,8 @@ class MatCommand(Command):
 		
 		# Determine location and day
 		if (not argument) or (len(args) > 2):
-			return "Prova med \".mat plats [dag]\" - de platser jag känner till är: " + \
-				"HG, VilleValla, Kårallen, Vallfarten, Zenit"
+			return "Prova med \".mat plats [dag]\" - de platser jag kÃ¤nner till Ã¤r: " + \
+				"HG, VilleValla, KÃ¥rallen, Zenit"
 				# TODO automatically generated list?
 		elif len(args) == 1:
 			day = MatCommand.days[datetime.now().isoweekday()-1].lower()
@@ -176,4 +208,8 @@ class MatCommand(Command):
 		location = utility.asciilize(args[0]).lower()
 		
 		# Do stuff
-		return food_str(location, day)
+		if location == "liu":
+			return liu_food_str(day)
+		else:
+			return food_str(location, day)
+
