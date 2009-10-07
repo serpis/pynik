@@ -150,12 +150,11 @@ def liu_food_str(day):
 		stripped_menu = []
 		
 		for item in karallen_menu[1]:
-			print item
 			dish_string = item.split(" med ", 2)[0]
 			dish_string = dish_string.replace("serveras", "").strip().capitalize()
 			stripped_menu.append(dish_string)
 		
-		result += " | ".join(stripped_menu)
+		result += ", ".join(stripped_menu)
 	
 	if zenit_menu:
 		if result:
@@ -172,11 +171,14 @@ def liu_food_str(day):
 				if word.isupper():
 					important_words.append(word.replace(",", "").strip())
 			
-			print important_words
 			if important_words:
-				stripped_menu.append(", ".join(important_words).capitalize())
+				dish_string = " + ".join(important_words)
+				dish_string = dish_string.decode("latin-1").encode("utf-8").capitalize()
+				stripped_menu.append(dish_string)
 		
-		result += " | ".join(stripped_menu)
+		result += ", ".join(stripped_menu)
+	
+	# TODO str.capitalize does not work correctly with non-english letters!
 	
 	if result:
 		return result
