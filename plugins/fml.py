@@ -76,7 +76,9 @@ class FMLCommand(Command):
 			
 			if result:
 				# Return result (latin-1 to make IRCClient.send() happy)
-				return result.encode('latin-1', 'replace')
+				# TODO temporary solution to annoy flindeberg and stop the spam
+				bot.tell("flindeberg", result.encode('latin-1', 'replace'))
+				return None
 		
 		# Non-valid argument
 		return self.usage
