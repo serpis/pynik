@@ -281,18 +281,30 @@ def cons_func(env, car, cdr):
 	return ConsCell(car, cdr)
 
 def listp_func(env, thing):
-	return isinstance(thing, ConsCell) or isinstance(thing, Nil)
+	if isinstance(thing, ConsCell) or isinstance(thing, Nil):
+		return True()
+	else:
+		return Nil()
 
 def endp_func(env, thing):
 	eval_assert(isinstance(thing, ConsCell) or isinstance(thing, Nil), "argument to endp was not a list: %s" % thing)
 
-	return isinstance(thing, Nil)
+	if isinstance(thing, Nil):
+		return True()
+	else:
+		return Nil()
 
 def null_func(env, thing):
-	return isinstance(thing, Nil)
+	if isinstance(thing, Nil):
+		return True()
+	else:
+		return Nil()
 
 def atom_func(env, thing):
-	return isinstance(thing, Nil) or isinstance(thing, True) or isinstance(thing, Symbol) or isinstance(thing, Integer)
+	if isinstance(thing, Nil) or isinstance(thing, True) or isinstance(thing, Symbol) or isinstance(thing, Integer):
+		return True()
+	else:
+		return Nil()
 
 def list_func(env, *values):
 	if len(values) == 0:
