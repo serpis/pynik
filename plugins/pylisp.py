@@ -280,6 +280,20 @@ def cdr_func(env, cons_cell):
 def cons_func(env, car, cdr):
 	return ConsCell(car, cdr)
 
+def listp_func(env, thing):
+	return isinstance(thing, ConsCell) or isinstance(thing, Nil)
+
+def endp_func(env, thing):
+	eval_assert(isinstance(thing, ConsCell) or isinstance(thing, Nil), "argument to endp was not a list: %s" % thing)
+
+	return isinstance(thing, Nil)
+
+def null_func(env, thing):
+	return isinstance(thing, Nil)
+
+def atom_func(env, thing):
+	return isinstance(thing, Nil) or isinstance(thing, True) or isinstance(thing, Symbol) or isinstance(thing, Integer)
+
 def list_func(env, *values):
 	if len(values) == 0:
 		return Nil()
@@ -593,6 +607,10 @@ class LispCommand(Command):
 		self.globals[Symbol("not")] = NativeFunction(not_func, "not", 1)
 		self.globals[Symbol("and")] = NativeFunction(and_func, "and", 2)
 		self.globals[Symbol("or")] = NativeFunction(or_func, "or", 2)
+		self.globals[Symbol("listp")] = NativeFunction(listp_func, "listp", 1)
+		self.globals[Symbol("endp")] = NativeFunction(endp_func, "endp", 1)
+		self.globals[Symbol("atom")] = NativeFunction(atom_func, "atom", 1)
+		self.globals[Symbol("null")] = NativeFunction(null_func, "null", 1)
 
 		self.savable_environment = Environment(self.globals)
 		#self.globals[Name("inc")] = Lambda(List([List([Name("lol")]), Name("add"), Name("lol"), Integer(1)]))
