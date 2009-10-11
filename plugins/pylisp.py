@@ -423,12 +423,12 @@ def tokenize(text):
 	token_descriptions = [
 	("whitespace", "(\s+)"),
 	("string", '"((?:\\.|[^"])*)"'),
-	("symbol", "([a-zA-Z<>=+\-*/][a-zA-Z0-9<>=+\-*/]*)"),
 	("leftparenthesis", "(\()"),
 	("rightparenthesis", "(\))"),
 	("integer", "(\d+)"),
 	("quote", "(')"),
 	("dot", "(\.)"),
+	("symbol", "([^\"'\(\)\.]+)"), #("symbol", "([a-zA-Z<>=+\-*/][a-zA-Z0-9<>=+\-*/]*)"),
 	("INVALID", "(.+)")]
 
 	pattern = "|".join([token_pattern for (_, token_pattern) in token_descriptions])
