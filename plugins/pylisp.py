@@ -428,7 +428,7 @@ def tokenize(text):
 	("integer", "(\d+)"),
 	("quote", "(')"),
 	("dot", "(\.)"),
-	("symbol", "([^\"'\(\)\.]+)"), #("symbol", "([a-zA-Z<>=+\-*/][a-zA-Z0-9<>=+\-*/]*)"),
+	("symbol", "([^\"'\(\)\.\s]+)"), #("symbol", "([a-zA-Z<>=+\-*/][a-zA-Z0-9<>=+\-*/]*)"),
 	("INVALID", "(.+)")]
 
 	pattern = "|".join([token_pattern for (_, token_pattern) in token_descriptions])
