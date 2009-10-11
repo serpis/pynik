@@ -167,7 +167,7 @@ class ExpressionBody:
 	def __repr__(self):
 		s = ""
 		for expression in self.expressions:
-			s += expression.__repr__()
+			s += expression.__repr__() + " "
 
 		return s
 
@@ -229,14 +229,23 @@ class ConsCell:
 		first = self.first()
 		rest = self.rest()
 
+		if isinstance(first, Symbol) and first.name == "defmacro":
+			return setq_func(env, rest.first(), Macro(env, rest.rest().first(), rest.rest().rest().first().eval(env)))
+
+		if isinstance(first, Symbol) and first.name == "if":
+			if not isinstance(rest.first().eval(env), Nil):
+				return rest.rest().first().eval(env)
+			else:
+				return rest.rest().rest().first().eval(env)
+
 		if isinstance(first, Symbol) and first.name == "lambda":
-			return Lambda(env, rest)
+			return Lambda(env, rest.first(), rest.rest())
 
 		if isinstance(first, Symbol) and first.name == "setq":
 			return setq_func(env, rest.first(), rest.rest().first().eval(env))
 
-		if isinstance(first, ConsCell):
-			return first.eval(env).apply(env, rest)
+		#if isinstance(first, Symbol) and first.name == "if":
+		#	return 
 
 		return FunctionCall(first, rest).eval(env)
 
@@ -302,17 +311,41 @@ def make_list(expressions):
 	
 	return first
 
-class Lambda:
-	def __init__(self, env, expressions):
+class Macro:
+	def __init__(self, env, parameters, expression):
 		self.env = env
-		self.parameters = expressions.first()
-		self.expression = ExpressionBody(expressions.rest())
+		self.parameters = parameters
+		self.expression = expression
 
 	def eval(self, env):
 		return self
 
 	def apply(self, env, args):
-		env = self.env
+		#env = self.env
+		eval_assert(len(self.parameters) == len(args), "wrong number of arguments to macro")
+
+		for (param, arg) in zip(self.parameters, args):
+			env[param] = arg
+
+		return String("macros are not yet implemented...")
+
+		res = self.expression.eval(env)
+		return res.eval(env)
+
+	def __repr__(self):
+		return "<macro: %s, %s>" % (self.parameters, self.expression)
+
+class Lambda:
+	def __init__(self, env, parameters, expressions):
+		self.env = env
+		self.parameters = parameters
+		self.expression = ExpressionBody(expressions)
+
+	def eval(self, env):
+		return self
+
+	def apply(self, env, args):
+		#env = self.env
 		eval_assert(len(self.parameters) == len(args), "wrong number of arguments to lambda function")
 
 		for (param, arg) in zip(self.parameters, args):
@@ -321,7 +354,7 @@ class Lambda:
 		return self.expression.eval(env)
 
 	def __repr__(self):
-		return "<lambda function>"
+		return "<lambda function: %s, %s>" % (self.parameters, self.expression)
 	
 class NativeFunction:
 	def __init__(self, function, name, num_args):
@@ -353,7 +386,7 @@ class FunctionCall:
 	def eval(self, env):
 		function = self.function.eval(env)
 
-		eval_assert(isinstance(function, NativeFunction) or isinstance(function, Lambda), "attempt to call non-function: %s" % function);
+		eval_assert(isinstance(function, NativeFunction) or isinstance(function, Lambda) or isinstance(function, Macro), "attempt to call non-function: %s" % function);
 
 		return function.apply(Environment(env), self.args)
 
@@ -364,7 +397,7 @@ def tokenize(text):
 	token_descriptions = [
 	("whitespace", "(\s+)"),
 	("string", '"((?:\\.|[^"])*)"'),
-	("symbol", "([a-zA-Z+\-*/][a-zA-Z0-9+\-*/]*)"),
+	("symbol", "([a-zA-Z<>=+\-*/][a-zA-Z0-9<>=+\-*/]*)"),
 	("leftparenthesis", "(\()"),
 	("rightparenthesis", "(\))"),
 	("integer", "(\d+)"),
@@ -473,10 +506,53 @@ def sub_func(env, a, b):
 	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
 	return Integer(a.value - b.value)
 
+def mul_func(env, a, b):
+	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
+	return Integer(a.value * b.value)
+
 def setq_func(env, s, x):
 	eval_assert(isinstance(s, Symbol), "must be 2 args with first being a symbol")
 	env[s] = x
 	return x
+
+def print_func(env, str):
+	eval_assert(isinstance(str, String), "must be a string")
+	print str.value
+	return str
+
+def integer_eq_func(env, a, b):
+	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
+	
+	if a.value == b.value:
+		return True()
+	else:
+		return Nil()
+
+def integer_lt_func(env, a, b):
+	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
+
+	if a.value < b.value:
+		return True()
+	else:
+		return Nil()
+
+def not_func(env, x):
+	if isinstance(x, Nil):
+		return True()
+	else:
+		return Nil()
+
+def and_func(env, a, b):
+	if (not isinstance(a, Nil)) and (not isinstance(b, Nil)):
+		return True()
+	else:
+		return Nil()
+
+def or_func(env, a, b):
+	if (not isinstance(a, Nil)) or (not isinstance(b, Nil)):
+		return True()
+	else:
+		return Nil()
 
 class TokenStream:
 	def __init__(self, tokens):
@@ -506,10 +582,17 @@ class LispCommand(Command):
 		self.globals[Symbol("t")] = True()
 		self.globals[Symbol("nil")] = Nil()
 		self.globals[Symbol("-")] = NativeFunction(sub_func, "-", 2)
+		self.globals[Symbol("*")] = NativeFunction(mul_func, "*", 2)
 		self.globals[Symbol("cons")] = NativeFunction(cons_func, "cons", 2)
 		self.globals[Symbol("car")] = NativeFunction(car_func, "car", 1)
 		self.globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
 		self.globals[Symbol("list")] = NativeFunction(list_func, "list", -1)
+		self.globals[Symbol("print")] = NativeFunction(print_func, "print", 1)
+		self.globals[Symbol("=")] = NativeFunction(integer_eq_func, "=", 2)
+		self.globals[Symbol("<")] = NativeFunction(integer_lt_func, "<", 2)
+		self.globals[Symbol("not")] = NativeFunction(not_func, "not", 1)
+		self.globals[Symbol("and")] = NativeFunction(and_func, "and", 2)
+		self.globals[Symbol("or")] = NativeFunction(or_func, "or", 2)
 
 		self.savable_environment = Environment(self.globals)
 		#self.globals[Name("inc")] = Lambda(List([List([Name("lol")]), Name("add"), Name("lol"), Integer(1)]))
@@ -528,31 +611,28 @@ class LispCommand(Command):
 		with open('data/lisp_state.txt', 'w') as file:
 			p = pickle.Pickler(file)
 
+			self.savable_environment.parent = None
 			p.dump(self.savable_environment)
+			self.savable_environment.parent = self.globals
 
 	def on_load(self):
-		self.savable_environment = Environment(self.globals)
-
 		try:
 			with open('data/lisp_state.txt') as file:
 				unp = pickle.Unpickler(file)
 
 				self.savable_environment = unp.load()
 		except:
-			pass
+			self.savable_environment = Environment(self.globals)
+
+		self.savable_environment.parent = self.globals
 	
 	def on_unload(self):
 		self.savable_environment = Environment(self.globals)
 
-#import sys
-#
-#globals = Environment()
-#globals[Symbol("t")] = True()
-#globals[Symbol("nil")] = Nil()
-#globals[Symbol("-")] = NativeFunction(sub_func, "-", 2)
-#globals[Symbol("cons")] = NativeFunction(cons_func, "cons", 2)
-#globals[Symbol("car")] = NativeFunction(car_func, "car", 1)
-#globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
-#globals[Symbol("list")] = NativeFunction(list_func, "list", -1)
-#
-#print lisp(globals, sys.argv[1])
+import sys
+
+command = LispCommand()
+#print command.trig_lisp("bot", "source", "target", "trigger", sys.argv[1])
+#print command.savable_environment
+#print command.globals
+
