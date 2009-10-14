@@ -244,6 +244,9 @@ class ConsCell:
 		if isinstance(first, Symbol) and first.name == "setq":
 			return setq_func(env, rest.first(), rest.rest().first().eval(env))
 
+		if isinstance(first, Symbol) and first.name == "unsetq":
+			return unsetq_func(env, rest.first())
+
 		#if isinstance(first, Symbol) and first.name == "if":
 		#	return 
 
@@ -541,6 +544,18 @@ def setq_func(env, s, x):
 	env[s] = x
 	return x
 
+def unsetq_func(env, s):
+	eval_assert(isinstance(s, Symbol), "arg must be a symbol")
+
+	while env != None:
+		if s in env.dictionary:
+			del env.dictionary[s]
+			return True()
+		else:
+			env = env.parent
+		
+	return Nil()
+
 def print_func(env, str):
 	eval_assert(isinstance(str, String), "must be a string")
 	print str.value
@@ -562,6 +577,11 @@ def integer_lt_func(env, a, b):
 	else:
 		return Nil()
 
+def integer_div_func(env, a, b):
+	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
+
+	return Integer(a.value / b.value)
+
 def not_func(env, x):
 	if isinstance(x, Nil):
 		return True()
@@ -579,6 +599,7 @@ def or_func(env, a, b):
 		return True()
 	else:
 		return Nil()
+
 
 class TokenStream:
 	def __init__(self, tokens):
@@ -609,6 +630,7 @@ class LispCommand(Command):
 		self.globals[Symbol("nil")] = Nil()
 		self.globals[Symbol("-")] = NativeFunction(sub_func, "-", 2)
 		self.globals[Symbol("*")] = NativeFunction(mul_func, "*", 2)
+		self.globals[Symbol("/")] = NativeFunction(integer_div_func, "/", 2)
 		self.globals[Symbol("cons")] = NativeFunction(cons_func, "cons", 2)
 		self.globals[Symbol("car")] = NativeFunction(car_func, "car", 1)
 		self.globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
