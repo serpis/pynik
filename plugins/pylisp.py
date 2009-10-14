@@ -167,7 +167,9 @@ class ExpressionBody:
 	def __repr__(self):
 		s = ""
 		for expression in self.expressions:
-			s += expression.__repr__() + " "
+			if s:
+				s += " "
+			s += expression.__repr__()
 
 		return s
 
@@ -405,7 +407,7 @@ class NativeFunction:
 		return self.function(env, *evaled_args)
 
 	def __repr__(self):
-		return "%s" % self.function
+		return "%s (taking %d args)" % (self.function, self.num_args)
 
 class FunctionCall:
 	def __init__(self, function, args):
