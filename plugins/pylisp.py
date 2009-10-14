@@ -582,6 +582,11 @@ def integer_div_func(env, a, b):
 
 	return Integer(a.value / b.value)
 
+def str_append_func(env, a, b):
+	eval_assert(isinstance(a, String) and isinstance(b, String), "arguments must be strings")
+
+	return String(a.value + b.value)
+
 def not_func(env, x):
 	if isinstance(x, Nil):
 		return True()
@@ -631,6 +636,7 @@ class LispCommand(Command):
 		self.globals[Symbol("-")] = NativeFunction(sub_func, "-", 2)
 		self.globals[Symbol("*")] = NativeFunction(mul_func, "*", 2)
 		self.globals[Symbol("/")] = NativeFunction(integer_div_func, "/", 2)
+		self.globals[Symbol("str-append")] = NativeFunction(str_append_func, "str-append", 2)
 		self.globals[Symbol("cons")] = NativeFunction(cons_func, "cons", 2)
 		self.globals[Symbol("car")] = NativeFunction(car_func, "car", 1)
 		self.globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
