@@ -3,6 +3,9 @@ import pickle
 from plugins import Plugin
 from commands import Command
 
+import command_catcher
+import random
+
 import re
 
 class LispError:
@@ -380,7 +383,7 @@ class Lambda:
 
 	def apply(self, env, args):
 		#env = self.env
-		eval_assert(len(self.parameters) == len(args), "wrong number of arguments to lambda function")
+		eval_assert(len(self.parameters) == len(args), "wrong number of arguments to lambda function (%d instead of %d)" % (len(args), len(self.parameters)))
 
 		for (param, arg) in zip(self.parameters, args):
 			env[param] = arg.eval(env.parent)
@@ -562,9 +565,13 @@ def unsetq_func(env, s):
 	return Nil()
 
 def print_func(env, str):
-	eval_assert(isinstance(str, String), "must be a string")
+	eval_assert(isinstance(str, String), "argument must be a string")
 	print str.value
 	return str
+
+def rand_func(env, i):
+	eval_assert(isinstance(i, Integer), "argument must be an integer")
+	return Integer(random.randint(0, i.value-1))
 
 def integer_eq_func(env, a, b):
 	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
@@ -610,6 +617,13 @@ def or_func(env, a, b):
 	else:
 		return Nil()
 
+def command_func(env, command, argument):
+	eval_assert(isinstance(command, String) and isinstance(argument, String), "arguments must be strings")
+	retn = command_catcher.CommandCatcherPlugin.instance.on_command(env[Symbol("bot")], env[Symbol("source")].value, env[Symbol("target")].value, command.value, argument.value)
+	if retn:
+		return String(retn)
+	else:
+		return Nil()
 
 class TokenStream:
 	def __init__(self, tokens):
@@ -647,6 +661,7 @@ class LispCommand(Command):
 		self.globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
 		self.globals[Symbol("list")] = NativeFunction(list_func, "list", -1)
 		self.globals[Symbol("print")] = NativeFunction(print_func, "print", 1)
+		self.globals[Symbol("rand")] = NativeFunction(rand_func, "rand", 1)
 		self.globals[Symbol("=")] = NativeFunction(integer_eq_func, "=", 2)
 		self.globals[Symbol("<")] = NativeFunction(integer_lt_func, "<", 2)
 		self.globals[Symbol("not")] = NativeFunction(not_func, "not", 1)
@@ -657,6 +672,8 @@ class LispCommand(Command):
 		self.globals[Symbol("atom")] = NativeFunction(atom_func, "atom", 1)
 		self.globals[Symbol("null")] = NativeFunction(null_func, "null", 1)
 
+		self.globals[Symbol("command")] = NativeFunction(command_func, "command", 2)
+
 		self.savable_environment = Environment(self.globals)
 		#self.globals[Name("inc")] = Lambda(List([List([Name("lol")]), Name("add"), Name("lol"), Integer(1)]))
 		#self.globals[Name("yes")] = Lambda(List([List([]), Name("#t")]))
@@ -664,6 +681,10 @@ class LispCommand(Command):
 
 	def trig_lisp(self, bot, source, target, trigger, argument):
 		try:
+			self.globals[Symbol("bot")] = bot
+			self.globals[Symbol("source")] = String(source)
+			self.globals[Symbol("target")] = String(target)
+			self.globals[Symbol("trigger")] = String(trigger)
 			retn = str(lisp(self.savable_environment, argument))
 			self.save()
 			return retn
