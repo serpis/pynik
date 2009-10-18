@@ -104,18 +104,22 @@ class TitleReaderPlugin(Command):
 
 
 	def trig_title(self, bot, source, target, trigger, argument):
-		if target in self.urls.keys():
-			m = self.urls[target].title
-
-			if m:
-				if argument.strip() != '':
-					return self.clean(argument, m)
-				else:
-					return self.clean(self.urls[target].url, m)
-			else:
-				return 'I can\'t find a title for ' + self.urls[target].url
+		url = argument.strip()
+		
+		if not url:
+			if target not in self.urls.keys():
+				return 'I haven\'t seen any urls here yet.'
+			
+			url = self.urls[target].url
+			title = self.urls[target].title
+			
 		else:
-			return 'I haven\'t seen any urls here yet.'
+			title = get_title(argument)
+		
+		if not title:
+			return 'I can\'t find a title for ' + url
+		else:
+			return self.clean(url, title)
 
 
 	def save_urls(self):
