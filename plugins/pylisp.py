@@ -599,6 +599,23 @@ def str_append_func(env, a, b):
 
 	return String(a.value + b.value)
 
+def str_split_func(env, a, b):
+	eval_assert(isinstance(a, String) and isinstance(b, String), "arguments must be strings")
+
+	return make_list([String(x) for x in a.value.split(b.value)])
+
+def convert_to_integer_func(env, x):
+	eval_assert(isinstance(x, Integer) or isinstance(x, String), "argument must be integer or string")
+
+	return Integer(int(x.value))
+
+def convert_to_string_func(env, x):
+	eval_assert(isinstance(x, Integer) or isinstance(x, String), "argument must be integer or string")
+
+	return String(str(x.value))
+
+
+
 def not_func(env, x):
 	if isinstance(x, Nil):
 		return True()
@@ -656,6 +673,9 @@ class LispCommand(Command):
 		self.globals[Symbol("*")] = NativeFunction(mul_func, "*", 2)
 		self.globals[Symbol("/")] = NativeFunction(integer_div_func, "/", 2)
 		self.globals[Symbol("str-append")] = NativeFunction(str_append_func, "str-append", 2)
+		self.globals[Symbol("str-split")] = NativeFunction(str_split_func, "str-split", 2)
+		self.globals[Symbol("string")] = NativeFunction(convert_to_string_func, "string", 1)
+		self.globals[Symbol("integer")] = NativeFunction(convert_to_integer_func, "string", 1)
 		self.globals[Symbol("cons")] = NativeFunction(cons_func, "cons", 2)
 		self.globals[Symbol("car")] = NativeFunction(car_func, "car", 1)
 		self.globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
