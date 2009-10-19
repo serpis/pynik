@@ -65,13 +65,15 @@ class CommandCatcherPlugin(Plugin):
 				return favorites.FavoriteCommands.instance.trig_fav(bot, source, target, 'fav', trigger + ' ' + arguments)
 	
 	def on_privmsg(self, bot, source, target, message):
-		p = re.compile('^(\S)(\S+)\s?(.*?)$')
-
-		m = p.match(message)
-		
+		m = re.match(r'^(\S)((\S+)\s?(.*?))$', message)
 		if m and m.group(1) == '.':
-			trigger = m.group(2)
-			arguments = m.group(3)
+			body = m.group(2)
+			if body[0] == '(':
+				trigger = "lisp"
+				arguments = body
+			else:
+				trigger = m.group(3)
+				arguments = m.group(4)
 
 			ret_str = self.on_command(bot, source, target, trigger, arguments)
 			if ret_str:
