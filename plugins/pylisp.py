@@ -110,6 +110,13 @@ class Nil:
 
 	def __repr__(self):
 		return "nil"
+
+	def first(self):
+		return self
+
+	def rest(self):
+		return self
+
 			
 class Symbol:
 	def __init__(self, name):
