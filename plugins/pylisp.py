@@ -552,6 +552,9 @@ def parse_expression_list(token_stream):
 
 	return expressions
 
+def eval_func(env, x):
+	return x.eval(env)
+
 def sub_func(env, a, b):
 	#eval_assert(len(l) == 2, "function - takes exactly 2 arguments")
 
@@ -708,6 +711,7 @@ class LispCommand(Command):
 		self.globals[Symbol("endp")] = NativeFunction(endp_func, "endp", 1)
 		self.globals[Symbol("atom")] = NativeFunction(atom_func, "atom", 1)
 		self.globals[Symbol("null")] = NativeFunction(null_func, "null", 1)
+		self.globals[Symbol("eval")] = NativeFunction(eval_func, "eval", 1)
 
 		self.globals[Symbol("command")] = NativeFunction(command_func, "command", 2)
 
