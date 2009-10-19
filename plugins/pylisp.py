@@ -258,7 +258,7 @@ class ConsCell:
 
 		if isinstance(first, Symbol) and first.name in ["let", "let*"]:
 			bindings = rest.first()
-			code = rest.rest().first()
+			code = ExpressionBody(rest.rest())
 			
 			child_env = Environment(env)
 
