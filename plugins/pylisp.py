@@ -249,6 +249,20 @@ class ConsCell:
 		if isinstance(first, Symbol) and first.name == "lambda":
 			return Lambda(env, rest.first(), rest.rest())
 
+		if isinstance(first, Symbol) and first.name == "let":
+			bindings = rest.first()
+			code = rest.rest().first()
+			
+			child_env = Environment(env)
+
+			for binding in bindings:
+				symbol = binding.first()
+				value = binding.rest().first()
+
+				setq_func(child_env, symbol, value)
+
+			return code.eval(child_env)
+
 		if isinstance(first, Symbol) and first.name == "setq":
 			return setq_func(env, rest.first(), rest.rest().first().eval(env))
 
