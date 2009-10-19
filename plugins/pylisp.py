@@ -249,7 +249,7 @@ class ConsCell:
 		if isinstance(first, Symbol) and first.name == "lambda":
 			return Lambda(env, rest.first(), rest.rest())
 
-		if isinstance(first, Symbol) and first.name == "let":
+		if isinstance(first, Symbol) and first.name in ["let", "let*"]:
 			bindings = rest.first()
 			code = rest.rest().first()
 			
@@ -257,7 +257,10 @@ class ConsCell:
 
 			for binding in bindings:
 				symbol = binding.first()
-				value = binding.rest().first()
+				if first.name == "let":
+					value = binding.rest().first().eval(env)
+				else:
+					value = binding.rest().first().eval(child_env)
 
 				setq_func(child_env, symbol, value)
 
