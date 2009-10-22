@@ -18,7 +18,7 @@ class CommandCatcherPlugin(Plugin):
 		if source == "buffi":
 			return
 			
-		meth_name = 'trig_' + trigger
+		meth_name = 'trig_' + trigger.lower()
 		
 		pairs = []
 		
