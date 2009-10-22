@@ -82,9 +82,6 @@ class CommandCatcherPlugin(Plugin):
 					if target == source:
 						target = m.group(1)
 				
-				# CAPSLOCKDAY
-				ret_str = ret_str.upper()
-				
 				bot.tell(target, ret_str)
 
 
