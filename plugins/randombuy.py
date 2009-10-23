@@ -6,31 +6,72 @@ import re
 import utility
 from commands import Command
 
-def random_product_dealextreme(min_price, max_price, hardcore):
-	conversion_rate = utility.currency_conversion(1, 'usd', 'sek')
-	if conversion_rate == None:
-		return "Ajdå, nu gick något fel :("
-	
-	return "debug: " + conversion_rate + " " + min_price + " " + max_price
-	
+def random_product_list_dealextreme():
 	# Fetch the web page
 	response = utility.read_url("http://www.dealextreme.com/products.dx/random.gadgets")
 	data = response["data"].replace("\r\n", "")
-	#data = data.replace("&nbsp;", "")
+	
+	result = []
 	
 	product_pattern = "\<a href='\/details.dx\/sku.(\d+)' style=\" font-family: Verdana; font-size: 9pt;\"\>\s+(.+?)\s+\<\/a\>" + \
 			".+?" + "style=\"font-size: 11pt;\"\>\s+\$(\d+\.\d\d)\s+\<\/font\>"
 	product_iterator = re.finditer(product_pattern, data)
 	
 	for match in product_iterator:
-		cost = float(match.group(3)) * conversion_rate
-		if min_price <= cost and cost <= max_price:
-			if hardcore:
-				return "Köööööp! http://www.dealextreme.com/shoppingcart.dx/add." + match.group(1) + "~quantity.1#_ctl0_content_pCheckout"
-			else:
-				return "$" + match.group(3) + ": " + match.group(2) + " | http://www.dealextreme.com/details.dx/sku." + match.group(1)
+		result.append(match.groups([1, 2, 3]))
 	
-	return "Ingen produkt med lagom pris hittades, ändra dina krav eller försök igen!"
+	return result
+
+def random_product_dealextreme(min_price, max_price, hardcore):
+	conversion_rate = utility.currency_conversion(1, 'usd', 'sek')
+	if conversion_rate == None:
+		return "Ajdå, nu gick något fel :("
+	
+	#print "debug: " + str(conversion_rate) + " " + str(min_price) + " " + str(max_price) + " " + str(hardcore)
+	
+	products = random_product_list_dealextreme()
+	result_diff = 0
+	result_product = None
+	
+	if min_price == max_price:
+		# OK, let's try to find the closest match...
+		
+		closest_diff = 10000000000000000000000000000000000000
+		closest_product = None
+		
+		for product in products:
+			diff = float(product[2]) * conversion_rate - min_price
+			if abs(diff) < abs(closest_diff):
+				closest_diff = diff
+				closest_product = product
+		
+		if closest_product:
+			result_diff = closest_diff
+			result_product = closest_product
+		else:
+			return "Hmm, ingen produkt var närmast din önskade kostnad :S"
+	
+	else:
+		# We have an interval to match against.
+		
+		for product in products:
+			cost = float(product[2]) * conversion_rate
+			if min_price <= cost and cost <= max_price:
+				result_diff = cost - max_price
+				result_product = product
+				break
+		
+		if not result_product:
+			return "Ingen produkt med lagom pris hittades, ändra dina krav eller försök igen!"
+	
+	diff_string = str(round(result_diff, 2))
+	if result_diff > 0:
+		diff_string = "+" + diff_string
+	
+	if hardcore:
+		return "Köööööp! http://www.dealextreme.com/shoppingcart.dx/add." + result_product[0] + "~quantity.1#_ctl0_content_pCheckout (" + diff_string + " SEK i förhållande till maxpris)"
+	else:
+		return "$" + result_product[2] + " (" + diff_string + " SEK i förhållande till maxpris): " + result_product[1] + " | http://www.dealextreme.com/details.dx/sku." + result_product[0]
 
 class RandomBuyCommand(Command):
 	usage = "Användning: .köp <maxkostnad>|<intervall>|=<ungefärlig kostnad> | Många 'ö' ger direktlänk till kassan med produkt tillagd, istället för produktdetaljer. Kostnader anges i hela svenska kronor!"
@@ -54,22 +95,22 @@ class RandomBuyCommand(Command):
 		m = re.match(r'((\d+)-(\d+))|(\d+)|=(\d+)', args[1])
 		if m:
 			if m.group(1):
-				min_price = m.group(2)
-				max_price = m.group(3)
+				min_price = int(m.group(2))
+				max_price = int(m.group(3))
 			elif m.group(4):
 				min_price = 0
-				max_price = m.group(4)
+				max_price = int(m.group(4))
 			elif m.group(5):
-				min_price = m.group(5) - 7.5
-				max_price = m.group(5) + 7.5
+				min_price = int(m.group(5))
+				max_price = min_price
 			else:
 				bot.tell(target, "Ojoj, nu gick det fel igen :(")
 		else:
 			bot.tell(target, "Hörru, så gör man inte! " + self.usage)
-			
-		# Randomize from dealextreme.com
 		
 		# Length varies depending on encoding, so this is not a good way to do it
 		hardcore = (len(args[0]) > 3)
+		
+		# Randomize from dealextreme.com
 		bot.tell(target, random_product_dealextreme(min_price, max_price, hardcore))
 		
