@@ -11,7 +11,7 @@ def random_product_dealextreme(min_price, max_price, hardcore):
 	if conversion_rate == None:
 		return "Ajdå, nu gick något fel :("
 	
-	bot.tell("#botnik", "debug: " + conversion_rate + " " + min_price + " " + max_price)
+	return "debug: " + conversion_rate + " " + min_price + " " + max_price
 	
 	# Fetch the web page
 	response = utility.read_url("http://www.dealextreme.com/products.dx/random.gadgets")
