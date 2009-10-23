@@ -11,6 +11,8 @@ def random_product_dealextreme(min_price, max_price, hardcore):
 	if conversion_rate == None:
 		return "Ajdå, nu gick något fel :("
 	
+	bot.tell("#botnik", "debug: " + conversion_rate + " " + min_price + " " + max_price)
+	
 	# Fetch the web page
 	response = utility.read_url("http://www.dealextreme.com/products.dx/random.gadgets")
 	data = response["data"].replace("\r\n", "")
@@ -47,6 +49,7 @@ class RandomBuyCommand(Command):
 		# Show usage
 		if not args[1]:
 			bot.tell(target, self.usage)
+			return
 		
 		m = re.match(r'((\d+)-(\d+))|(\d+)|=(\d+)', args[1])
 		if m:
@@ -62,7 +65,7 @@ class RandomBuyCommand(Command):
 			else:
 				bot.tell(target, "Ojoj, nu gick det fel igen :(")
 		else:
-			bot.tell(target, "Hörru, så gör man inte!" + self.usage)
+			bot.tell(target, "Hörru, så gör man inte! " + self.usage)
 			
 		# Randomize from dealextreme.com
 		
