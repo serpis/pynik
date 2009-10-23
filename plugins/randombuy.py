@@ -71,7 +71,7 @@ def random_product_dealextreme(min_price, max_price, hardcore):
 	if hardcore:
 		return "Köööööp! http://www.dealextreme.com/shoppingcart.dx/add." + result_product[0] + "~quantity.1#_ctl0_content_pCheckout (" + diff_string + " SEK i förhållande till maxpris)"
 	else:
-		return "$" + result_product[2] + " (" + diff_string + " SEK i förhållande till maxpris): " + result_product[1] + " | http://www.dealextreme.com/details.dx/sku." + result_product[0]
+		return "$" + result_product[2] + ": " + result_product[1] + " | " + diff_string + " SEK i förhållande till maxpris | http://www.dealextreme.com/details.dx/sku." + result_product[0]
 
 class RandomBuyCommand(Command):
 	usage = "Användning: .köp <maxkostnad>|<intervall>|=<ungefärlig kostnad> | Många 'ö' ger direktlänk till kassan med produkt tillagd, istället för produktdetaljer. Kostnader anges i hela svenska kronor!"
