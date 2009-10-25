@@ -9,7 +9,8 @@ from commands import Command
 
 def tyda_lookup(word, lang):
 	# Assemble URL
-	url = "http://tyda.se/search?w=" + word + "&source_lang=" + lang
+	url = "http://tyda.se/search?w=" + utility.escape(word) + "&source_lang=" + \
+		utility.escape(lang)
 	
 	# Fetch result
 	response = utility.read_url(url)
@@ -25,7 +26,7 @@ def tyda_lookup(word, lang):
 	if not match:
 		return "No result found, maybe you should try searching manually: " + url
 	
-	base_word = match.group(1)
+	base_word = match.group(1).replace(" (", ", ").replace(")", "")
 	inflected_word_data = match.group(2)
 	inflected_words = []
 	translation_data = match.group(3)
@@ -35,7 +36,7 @@ def tyda_lookup(word, lang):
 	iterator = re.finditer(pattern, inflected_word_data)
 	
 	for match in iterator:
-		inflected_words.append(match.group(1))
+		inflected_words.append(match.group(1).replace(" (", ", ").replace(")", ""))
 	
 	if inflected_words:
 		inflected_words = " (" + ", ".join(inflected_words) + ")"
