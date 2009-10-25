@@ -20,16 +20,16 @@ def tyda_lookup(word, lang):
 		return "Ohnoes, nothing found."
 	
 	# Look for word
-	pattern = "\<span class=\"tyda_entry_base\" title=\"[^\"]+\"\>([^\<]+)\<\/span\>(.*?)\<\/td\>(.+?)\<\/table\>(\<table cellpadding=\"0\" cellspacing=\"0\" class=\"tyda_entry\"\>|\<script type=\"text\/javascript\"\>)"
+	pattern = "\<span class=\"tyda_entry_base\"( title=\"[^\"]+\")?\>([^\<]+)\<\/span\>(.*?)\<\/td\>(.+?)\<\/table\>(\<table cellpadding=\"0\" cellspacing=\"0\" class=\"tyda_entry\"\>|\<script type=\"text\/javascript\"\>)"
 	match = re.search(pattern, data)
 	
 	if not match:
 		return "No result found, maybe you should try searching manually: " + url
 	
-	base_word = match.group(1).replace(" (", ", ").replace(")", "")
-	inflected_word_data = match.group(2)
+	base_word = match.group(2).replace(" (", ", ").replace(")", "")
+	inflected_word_data = match.group(3)
 	inflected_words = []
-	translation_data = match.group(3)
+	translation_data = match.group(4)
 	translated_words = []
 	
 	pattern = "\<span class=\"tyda_entry_inflected\" title=\"[^\"]+\"\>([^\<]+)\<\/span\>"
@@ -49,7 +49,7 @@ def tyda_lookup(word, lang):
 	for match in iterator:
 		translated_words.append(match.group(1))
 	
-	return base_word + inflected_words + ": " + ", ".join(translated_words)
+	return base_word + inflected_words + ": " + ", ".join(translated_words) + " | " + url
 	
 class TydaCommand(Command):
 	usage = "Usage: .tyda <word> [<source language>]"
