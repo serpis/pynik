@@ -50,6 +50,20 @@ def menu(location):
 		dish_regex = '\<\/td\>\s+\<td\>(\s+\<p( align="[a-z]+")?\>)?(.+?)(\<\/p\>)?\<\/td\>\<\/tr\>()'
 		dish_name_index = 2
 		dish_price_index = 4 # Dummy index.
+	
+	elif location == "blamesen" or location == "galaxen":
+		# Restaurang Blåmesen, Galaxen, LiU
+		
+		url = "http://www.blamesen.se/Lunch.html"
+		
+		entry_regex = '\<span style="font-family: \'Comic Sans MS\'; font-size: 14pt;"\>(.+?dag)\<o:p\>\<\/o:p\>\<\/span\>(.+?)(?=(\<p class="MsoNormal"\>\<b style=""\>\<span style="font-family: \'Comic Sans MS\';"\>Hamburgertallrik\<o:p\>|\<span style="font-family: \'Comic Sans MS\'; font-size: 14pt;"\>(.+?dag)\<o:p\>\<\/o:p\>\<\/span\>))'
+		entry_day_index = 0
+		entry_data_index = 1
+		
+		dish_regex = '\<tr style=""\>.+?\<span style="font-family: \'Comic Sans MS\';"\>.+?<span style="font-family: \'Comic Sans MS\';"\>(.+?)\<o:p\>\<\/o:p\>\<\/span\>()'
+		
+		dish_name_index = 1
+		dish_price_index = 2 # Dummy index.
 		
 	elif location == "zenit":
 		# Restaurang & Café Zenit, LiU
