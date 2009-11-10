@@ -55,7 +55,7 @@ def menu(location):
 		# Restaurang Blåmesen, Galaxen, LiU
 		
 		url = "http://davidg.nu/lunch/blamesen.php?price"
-		entry_regex = '([A-Za-zåäö]{3,4}dag)(.+?)([A-Za-zåäö]{3,4}dag|$)'
+		entry_regex = '([A-Za-zåäö]{3,4}dag)(.+?)(?=([A-Za-zåäö]{3,4}dag|$))'
 		entry_day_index = 0
 		entry_data_index = 1
 		
@@ -98,12 +98,12 @@ def menu(location):
 	# Build the menu
 	menu = []
 	for entry in re.findall(entry_regex, data):
-		print entry
+		#print entry
 		day = entry[entry_day_index]
 		dishes = []
 		
 		for dish in re.findall(dish_regex, entry[entry_data_index]):
-			print dish
+			#print dish
 			dish_name = dish[dish_name_index].strip()
 			if not dish_name:
 				pass # Odd input or bad regex
