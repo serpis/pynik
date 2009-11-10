@@ -55,15 +55,16 @@ def menu(location):
 		# Restaurang Blåmesen, Galaxen, LiU
 		
 		url = "http://www.blamesen.se/Lunch.html"
-		
-		entry_regex = '\<span style="font-family: \'Comic Sans MS\'; font-size: 14pt;"\>(.+?dag)\<o:p\>\<\/o:p\>\<\/span\>(.+?)(?=(\<p class="MsoNormal"\>\<b style=""\>\<span style="font-family: \'Comic Sans MS\';"\>Hamburgertallrik\<o:p\>|\<span style="font-family: \'Comic Sans MS\'; font-size: 14pt;"\>(.+?dag)\<o:p\>\<\/o:p\>\<\/span\>))'
+		entry_regex = '\<SPAN\s+style="FONT-FAMILY: \'Comic Sans MS\'; FONT-SIZE: 14pt"\>(.{3,4}dag)\<o:p\>\<\/o:p\>\<\/SPAN\>(.+?)(?=(\<SPAN\s+style="FONT-FAMILY: \'Comic Sans MS\'"\>Hamburgertallrik\<o:p\>\<\/o:p\>\<\/SPAN\>|\<SPAN\s+style="FONT-FAMILY: \'Comic Sans MS\'; FONT-SIZE: 14pt"\>(.+?dag)\<o:p\>\<\/o:p\>\<\/SPAN\>))'
 		entry_day_index = 0
 		entry_data_index = 1
 		
-		dish_regex = '\<tr style=""\>.+?\<span style="font-family: \'Comic Sans MS\';"\>.+?<span style="font-family: \'Comic Sans MS\';"\>(.+?)\<o:p\>\<\/o:p\>\<\/span\>()'
+		#<P class=MsoNormal><SPAN       style="FONT-FAMILY: \'Comic Sans MS\'">Broccolisoppa<o:p></o:p></SPAN></P></TD></TR>
+		#\<TD\s+style="PADDING-BOTTOM: 0\.75pt; PADDING-LEFT: 0\.75pt; WIDTH: 62\.66%; PADDING-RIGHT: 0\.75pt; PADDING-TOP: 0\.75pt"\s+vAlign=top width="62%"\>\s+
+		dish_regex = '\<P class=MsoNormal\>(\<SPAN class=SpellE\>)?\<SPAN\s+style="FONT-FAMILY: \'Comic Sans MS\'[^"]*"[^>]*\>([^\<].+?)(\<\/SPAN\>\<\/SPAN\>)?(\<SPAN.+?)?\<o:p\>\<\/o:p\>\<\/SPAN\>\<\/P\>\<\/TD\>\<\/TR\>()'
 		
 		dish_name_index = 1
-		dish_price_index = 2 # Dummy index.
+		dish_price_index = 4 # Dummy index.
 		
 	elif location == "zenit":
 		# Restaurang & Café Zenit, LiU
@@ -91,8 +92,10 @@ def menu(location):
 	# Fetch the web page
 	response = utility.read_url(url)
 	data = response["data"]
-	data = utility.unescape(data.replace("\n", ""))
+	data = utility.unescape(data.replace("\n", "").replace("\r", ""))
 	data = data.replace(utility.unescape("&nbsp;"), " ")
+	
+	#return data
 	
 	# Build the menu
 	menu = []
@@ -102,7 +105,7 @@ def menu(location):
 		dishes = []
 		
 		for dish in re.findall(dish_regex, entry[entry_data_index]):
-			#print dish
+			print dish
 			dish_name = dish[dish_name_index].strip()
 			if not dish_name:
 				pass # Odd input or bad regex
