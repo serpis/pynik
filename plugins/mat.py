@@ -47,7 +47,7 @@ def menu(location):
 		entry_day_index = 0
 		entry_data_index = 1
 		
-		dish_regex = '\<\/td\>\s+\<td\>(\s+\<p( align="[a-z]+")?\>)?(.+?)(\<\/p\>)?\<\/td\>\<\/tr\>()'
+		dish_regex = '\<\/td\>\s+\<td\>(\s+\<p( align="[a-z]+")?\>)?([^\<]+?)(\<\/p\>)?\<\/td\>\<\/tr\>()'
 		dish_name_index = 2
 		dish_price_index = 4 # Dummy index.
 	
@@ -68,19 +68,16 @@ def menu(location):
 		# Restaurang & Café Zenit, LiU
 		url = "http://www.hors.se/restauranger/restaurant_meny.php3?UID=24"
 		
-		entry_regex = '\<tr\>\<td valign="top" colspan="3"\>\<b\>(.+?dag)\<\/b\>\<\/td\>\<\/tr>(.+?)\<tr\>\<td colspan="3"\>\<hr\>\<\/td\>\<\/tr\>'
+		entry_regex = '\<tr\>\<td valign="top" colspan="3"\>\<b\>(.+?dag)\<\/b\>\<\/td\>\<\/tr>(.+?)(\<tr\>\<td colspan="3"\>\<hr\>\<\/td\>\<\/tr\>|Veckans Bistro)'
 		entry_day_index = 0
 		entry_data_index = 1
 		
-		# TODO
-		# This is NOT a good solution, since it will generate one empty dish per entry.
-		# However, something is needed in order to exclude the always available dishes.
-		# Cutting the entry in half at "Pris" in the regex above seems to fail
-		# if the restaurant is closed one day (closed days do not contain "Pris")
+		# This used to be some clever (?) regex to handle special cases that are
+		# possibly not applicable now.
 		# \xa4 == ¤
-		dish_regex = '((\<td valign="top"\>|\<br \/\>\s*)\xa4 (.+?)(\<br \/\>|\<\/td\>)()|Pris:.+()()()())'
-		dish_name_index = 2
-		dish_price_index = 4 # Dummy index.
+		dish_regex = '(\<td valign="top"\>|\<br \/\>\s*)\xa4 (.+?)(\<br \/\>|\<\/td\>)()'
+		dish_name_index = 1
+		dish_price_index = 3 # Dummy index.
 		
 	else:
 		return [] # Not implemented yet
@@ -105,6 +102,8 @@ def menu(location):
 		for dish in re.findall(dish_regex, entry[entry_data_index]):
 			#print dish
 			dish_name = dish[dish_name_index].strip()
+			dish_name = re.sub('\s+', ' ', dish_name)
+			
 			if not dish_name:
 				pass # Odd input or bad regex
 			elif dish_name.find(">") != -1:
@@ -157,6 +156,7 @@ def food_str(location, day):
 def liu_food_str(day):
 	karallen_menu = food("karallen", day)
 	zenit_menu = food("zenit", day)
+	blamesen_menu = food("blamesen", day)
 	result = ""
 	
 	if karallen_menu:
@@ -186,6 +186,7 @@ def liu_food_str(day):
 				if word.isupper():
 					important_words.append(word.replace(",", "").strip())
 			
+			# TODO str.capitalize does not work correctly with non-english letters!
 			if important_words:
 				dish_string = " + ".join(important_words)
 				dish_string = dish_string.decode("latin-1").encode("utf-8").capitalize()
@@ -193,7 +194,19 @@ def liu_food_str(day):
 		
 		result += ", ".join(stripped_menu)
 	
-	# TODO str.capitalize does not work correctly with non-english letters!
+	if blamesen_menu:
+		if result:
+			result += " | "
+		result += "Blåmesen: "
+		
+		stripped_menu = []
+		
+		for item in blamesen_menu[1]:
+			dish_string = item.split(" m ", 2)[0]
+			dish_string = re.sub(' \(\d\d kr\)', '', dish_string).strip().capitalize()
+			stripped_menu.append(dish_string)
+		
+		result += ", ".join(stripped_menu)
 	
 	if result:
 		return result
