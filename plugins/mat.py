@@ -90,7 +90,7 @@ def menu(location):
 	# Fetch the web page
 	response = utility.read_url(url)
 	data = response["data"]
-	data = utility.unescape(data.replace("\n", "").replace("\r", ""))
+	data = utility.unescape(data.replace("\n", ""))
 	data = data.replace(utility.unescape("&nbsp;"), " ")
 	
 	#return data
