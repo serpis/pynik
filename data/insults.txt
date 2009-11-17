@@ -415,4 +415,468 @@ aS'dum-%s \xc3\xa4r en tautologi'
 p207
 aS'%s \xe4r distr\xe4'
 p208
+aS'%s defragmenterar sina SSD diskar.'
+p209
+aS'%s har startat en butik och s\xc3\xb6ker nu kassa medarbetare.'
+p210
+aS'%s startar butiker ist\xe4llet f\xf6r att \xf6ppna dem.'
+p211
+aS'%s bor i tyskland'
+p212
+aS'%s tycker om att spamma .insult'
+p213
+aS'%s lol'
+p214
+aS'%s argumenterar som Wendy Wright.'
+p215
+aS'%s vill sex-chatta med fr\xc3\xb6ken ur'
+p216
+aS'%s namn bakl\xe4nges blir "penis".'
+p217
+aS'emote kastar kottar p\xc3\xa5 %s'
+p218
+aS'Till och med rohmann \xc3\xa4r b\xc3\xa4ttre \xc3\xa4n %s......'
+p219
+aS'%sr s\xe4mst'
+p220
+aS'%s s\xe4mst'
+p221
+aS'void *%s = NULL; '
+p222
+aS'%s klickar p\xe5 banners'
+p223
+aS'%s blir lurad av maskin\xf6versatta phishing-mail'
+p224
+aS'%s s\xe4rskriver'
+p225
+aS'%s f\xf6ljer inte OSI-modellen'
+p226
+aS'%s k\xf6per cykel p\xe5 Biltema'
+p227
+aS'%s st\xf6djer bara IPX'
+p228
+aS'%s \xe4r emo och stolt \xf6ver det'
+p229
+aS'%s anv\xe4nder mIRC'
+p230
+aS'%s surfar med Internet Explorer'
+p231
+aS'%s fick ingen CD'
+p232
+aS'%s kan inte skriva program i C'
+p233
+aS'%s tycker att /s/ \xe4r en d\xe5lig image board'
+p234
+aS'%s har gr\xf6n text i sin terminal f\xf6r att det ska se "coolt" ut'
+p235
+aS'%s har en Matrix-sk\xe4rmsl\xe4ckare'
+p236
+aS'%s tycker att namn med utformningen smeknamN^ \xe4r coola'
+p237
+aS'%s skriver DCC SEND "startkeylogger" 0 0 0'
+p238
+aS'%s anv\xe4nder anti-virus'
+p239
+aS'%s anv\xe4nder rm -rf utan att t\xe4nka efter'
+p240
+aS'%s luktar ost'
+p241
+aS'%s \xe4r d\xe5lig'
+p242
+aS'%s gillar tentakler'
+p243
+aS'%s h\xe4nger p\xe5 /y/'
+p244
+aS'%s laddar ner gratis sk\xe4rmsl\xe4ckare'
+p245
+aS'%s tycker att Victoria Silvstedt ser bra ut'
+p246
+aS'%s anv\xe4nder www.free6.com som porrsida'
+p247
+aS'%s har msn.com som startsida'
+p248
+aS'%s lyssnar p\xe5 Rix FM'
+p249
+aS'%s lyssnar p\xe5 Basshunter'
+p250
+aS'%s g\xf6r kramrutor p\xe5 DH'
+p251
+aS'%s tycker att In Flames \xe4r det b\xe4sta bandet som finns'
+p252
+aS'%s g\xf6r hemsidor i ASP'
+p253
+aS'%s har sin skivsamling i Access'
+p254
+aS'%s \xe4r med i en CS-klan'
+p255
+aS'%s \xe4r inte level 80'
+p256
+aS'%s g\xe5r p\xe5 Plaza'
+p257
+aS'%s har inte f\xe5ngat alla Pok\xe9mon'
+p258
+aS'%s tycker kallar seriella portar f\xf6r "gammeldags portar".'
+p259
+aS'%s anv\xe4nder .addinsult utan att korrekturl\xe4sa'
+p260
+aS'%s kallar optiska m\xf6ss f\xf6r laserm\xf6ss.'
+p261
+aS'%s v\xe4ntar tills andra duschat f\xe4rdigt i allm\xe4nna duschar'
+p262
+aS'%s tycker att laserdome \xe4r kul'
+p263
+aS'%s f\xf6redrar airsoft framf\xf6r paintball'
+p264
+aS'%s har inte spelat Final Fantasy'
+p265
+aS'%s har varken h\xf6rt talas om eller spelat Myst.'
+p266
+aS'%s tycker att nya Need for Speed \xe4r b\xe4ttre \xe4n de gamla.'
+p267
+aS'%s spelar hellre spel \xe4n tweakar sitt operativsystem'
+p268
+aS'%s tycker att sex \xe4r b\xe4ttre \xe4n programmering.'
+p269
+aS'%s har bara 1 dator'
+p270
+aS'%s t\xe4nder p\xe5 falukorvsscenen i F\xe4bodj\xe4ntan.'
+p271
+aS'%s tycker att warez-scenen har coola regler och att alla d\xe4r \xe4r coola.'
+p272
+aS'%s seedar inte'
+p273
+aS'%s tycker att Fear of the Dark \xe4r Iron Maidens b\xe4sta l\xe5t.'
+p274
+aS'%s k\xf6per sin musik'
+p275
+aS'%s streamar filmer lagligt p\xe5 Internet.'
+p276
+aS'%s har bouncer-VHOST i stil med jag.aeger.pa.cs.nu'
+p277
+aS'%s h\xe4nger p\xe5 QuakeNet.'
+p278
+aS'%s anv\xe4nder font-taggen i HTML.'
+p279
+aS'%s anv\xe4nder blink-taggen i HTML.'
+p280
+aS'%s anv\xe4nder marquee-taggen i HTML.'
+p281
+aS'%s skrev inte sin f\xf6rsta hemsida i notepad'
+p282
+aS'%s g\xf6r hemsidor i Frontpage.'
+p283
+aS'%s tycker att Flash \xe4r bra.'
+p284
+aS'%s f\xe5r placebo-fyllor.'
+p285
+aS'%s raggar p\xe5 fjortisar.'
+p286
+aS'%s h\xe4nger i St\xe5ngebro.'
+p287
+aS'%s \xe4r vegetarian.'
+p288
+aS'%s har testat att dricka cider med sugr\xf6r.'
+p289
+aS'%s har f\xf6rs\xf6kt g\xf6ra r\xf6kbomber med salpeter, salt och toarullar.'
+p290
+aS'%s \xe4r dricker cider.'
+p291
+aS'%s dricker cider.'
+p292
+aS'%s anv\xe4nder alltid 2 sugr\xf6r "f\xf6r det smakar b\xe4ttre d\xe5"'
+p293
+aS'%s betalar TV-avgiften.'
+p294
+aS'%s ringer Dells support.'
+p295
+aS'%s har aldrig blivit sexuellt upphetsad av tv\xe5 stycken Voodoo2 i SLI.'
+p296
+aS'%s l\xe4mnar kvar After Eight papper i paketet'
+p297
+aS'%s har mj\xf6lk i kaffet.'
+p298
+aS'%s visste aldrig vilket ljudkort han skulle v\xe4lja n\xe4r han konfigurerade spel i MS-DOS.'
+p299
+aS'%s hade sv\xe5righeter med att h\xe4nga med i datorkunskapen i skolan.'
+p300
+aS'%s l\xe4nkar j\xe4mt dagens och g\xe5rddagens Tjuvlyssnat och xkcd fast man redan l\xe4st dem.'
+p301
+aS'%s tycker att mp3 l\xe5ter bra.'
+p302
+aS'...och f\xf6rloraren \xe4r: %s!'
+p303
+aS'%s spelar Tomb Raider bara f\xf6r att Lara Croft har stora br\xf6st.'
+p304
+aS'%s l\xe4ser IDG.'
+p305
+aS'%s trycker p\xe5 alla knappar helt slumpm\xe4ssigt i fighting-spel.'
+p306
+aS'%s kan inte h\xe4rma hur ett uppringt modem l\xe5ter.'
+p307
+aS'%s anv\xe4nder manuell v\xe4xling i racingsimulatorer f\xf6r att verka tuff'
+p308
+aS'%s f\xf6rst\xe5r inte sk\xe4mten i xkcd.'
+p309
+aS'%s spelar spel p\xe5 Facebook'
+p310
+aS'%s k\xf6r program med namn i stil med Registry Cleaner XP Pro.'
+p311
+aS'%s har en Tokio Hotel-t-shirt.'
+p312
+aS'%s tycker att kajal \xe4r snyggt p\xe5 killar.'
+p313
+aS'%s vet vad kajal \xe4r.'
+p314
+aS'%s sover p\xe5 LAN'
+p315
+aS'%s s\xe5g ofta p\xe5 Kanal Lokal n\xe4r det fanns.'
+p316
+aS'%s anv\xe4nder ordet "d\xe5ligare"'
+p317
+aS'%s anv\xe4nder ordet "gamlare"'
+p318
+aS'%s vet inte var alla fl\xf6jtarna finns i f\xf6rsta v\xe4rlden i Supera Mario Bros 3.'
+p319
+aS'%s st\xe4nger av datorn n\xe4r %s ska sova'
+p320
+aS'%s l\xe4gger allt nerladdat p\xe5 skrivbordet'
+p321
+aS'%s har ett skrivbord p\xe5 datorn.'
+p322
+aS'%ss mamma \xe4r en pappa.'
+p323
+aS'Den d\xe4r bortgl\xf6mda jackan i kapprummet \xe4r %ss.'
+p324
+aS'%s slarvar med indenteringen.'
+p325
+aS'%s f\xe5r segmenteringsfel.'
+p326
+aS'%s vet inte n\xe4r han ska anv\xe4nda "de" respektive "dem"'
+p327
+aS'%s: ett nej \xe4r ett nej!'
+p328
+aS'%s har inget b\xc3\xa4ttre f\xc3\xb6r sig \xc3\xa4n att l\xc3\xa4gga till insults'
+p329
+aS'%s \xc3\xa4r lika ostabil som en b\xc3\xa5t byggd av Mare.'
+p330
+aS'%s vet inte vem Erik Persson var.'
+p331
+aS'%s \xe4r med i MUF.'
+p332
+aS'%s kan inte h\xc3\xa4fva \xc3\xb6l'
+p333
+aS'%s p\xc3\xa5minner om Gudrun Schyman'
+p334
+aS'%s sk\xf6t Palme.'
+p335
+aS'%s har ingen ugn'
+p336
+aS'%s har sin spis ovanp\xe5 kylsk\xe5pet.'
+p337
+aS'%s sitter ner och kissar.'
+p338
+aS'%s kan inte stava till "addinsult".'
+p339
+aS'%s \xc3\xa4r en one minute man'
+p340
+aS'%s taggar inte!'
+p341
+aS'%ss mamma \xc3\xa4r lurvig'
+p342
+aS'%ss mamma \xc3\xa4r laggar'
+p343
+aS'%s g\xc3\xb6r s\xc3\xa4mre l\xc3\xa5tar \xc3\xa4n Markoolio'
+p344
+aS'%s kommer inte fr\xc3\xa5n Stockholm.'
+p345
+aS'%s kommer fr\xc3\xa5n Stockholm'
+p346
+aS'%ss f\xc3\xb6r\xc3\xa4ldrar \xc3\xa4r syskon'
+p347
+aS'%s \xc3\xa4r en feeder'
+p348
+aS'%s g\xc3\xb6r musik i Fruity Loops'
+p349
+aS'%s f\xe5r kallsup vid \xf6lh\xe4fvning'
+p350
+aS'%s \xe4r ett litet cp-mongo!'
+p351
+aS'%s tror pi b\xf6rjar p\xe5 3.99!'
+p352
+aS'Ibland undrar man om %s ens vet om att jorden \xe4r rund.'
+p353
+aS'%s ditt lilla fittluder..'
+p354
+aS'%s luktar curry blandat med banans\xe5s.'
+p355
+aS'Den d\xe4r %s borde upps\xf6ka v\xe5rd innan han skadar sin omgivning med sin tr\xf6ghet.'
+p356
+aS'%s: hej hopp det feta nylle'
+p357
+aS'%s: hej hopp ditt feta nylle'
+p358
+aS'%s har ingen profilbild p\xe5 Facebook'
+p359
+aS'%s \xc3\xa4r s\xc3\xa4mst'
+p360
+aS'%s \xc3\xa4r verkligen j\xc3\xa4ttekass'
+p361
+aS'%s \xe4r smutsig.'
+p362
+aS'%s tar botniks insults seri\xc3\xb6st och f\xc3\xb6rsvarar sig'
+p363
+aS'%s traverscapsar hela tiden.'
+p364
+aS'%s rukar till efterlyst'
+p365
+aS'%s runkar till efterlyst'
+p366
+aS'it is not the case that %s \xc3\xa4lskar k\xc3\xb6tt som fan'
+p367
+aS'%s surfar med IE6'
+p368
+aS'%s surfar med Mosaic.'
+p369
+aS'%s dricker kaffe med lillfingret ut i v\xe4dret'
+p370
+aS'%s l\xe4gger till d\xe5liga insults'
+p371
+aS'%s \xc3\xa4r s\xc3\xa5 tjock att han fyller upp /dev/null'
+p372
+aS'%s \xc3\xa4r banne mig bra p\xc3\xa5 det mesta.'
+p373
+aS'%s \xe4r av noll och intet v\xe4rde'
+p374
+aS'%s \xc3\xa4r O(\xea\x9d\x8e)'
+p375
+aS'%s har sm\xc3\xa5 f\xc3\xb6tter'
+p376
+aS'%s vet inte hur man faltar tv\xc3\xa5 funktioner'
+p377
+aS'%s har en liten snopp'
+p378
+aS'%s k\xc3\xb6r med suspensoar'
+p379
+aS'%s luktar fl\xc3\xa4der.'
+p380
+aS'%s fights like a dairy farmer'
+p381
+aS'%ss mamma \xe4r s\xe5 ful att n\xe4r hon skulle t\xe4vla i en t\xe4vling f\xf6r fula sade domaren "Ledsen, inga proffs".'
+p382
+aS'%s skriver wiki n\xe4r han menar wikipedia, vilken j\xe4vla kamel'
+p383
+aS'%s h\xe4nger p\xe5 Lunarstorm.'
+p384
+aS'%s brukar avbryta konversationer med "Hej, urs\xe4kta att jag st\xf6r igen men jag ville bara ber\xe4tta att..."'
+p385
+aS'%s vill inte ha bild.'
+p386
+aS'Hej, %s! Jag tr\xe4ffade dina f\xf6r\xe4ldrar ig\xe5r, det var riktigt trevliga killar!'
+p387
+aS'%s gillar TDDC10'
+p388
+aS'%s \xc3\xa4r en one second man'
+p389
+aS'%s \xe4r skribent p\xe5 Metro.'
+p390
+aS'%s tycker att Susanne M\xf6ller \xe4r en bra spelreporter'
+p391
+aS'%ss stj\xc3\xa4rt \xc3\xa4r en INOUT'
+p392
+aS'%s.Loves.Cock.XXX.DVDRip.XviD-XCiTE'
+p393
+aS"(is-%s '%s) -> nil"
+p394
+aS'det finns ett %s-k\xc3\xa4rl p\xc3\xa5 \xc3\xa5tervinningsstationerna'
+p395
+aS'botnik failar med regex och det \xc3\xa4r ditt fel, %s'
+p396
+aS'Alla barnern lekte gruppsex f\xc3\xb6rutom %s, f\xc3\xb6r han hade f\xc3\xb6r liten snopp'
+p397
+aS'%s dricker kaffe'
+p398
+aS'%s%s%s%s%s%s, faen, d\xc3\xa4r svor jag igen'
+p399
+aS'rm -rf /home/%s/porn/ funkar inte, d\xc3\xa5 bibloteket \xc3\xa4r f\xc3\xb6r stort'
+p400
+aS'%s jobbar \xc3\xa5t staten'
+p401
+aS'%s: NEJ!'
+p402
+aS'%s kan inte skilja p\xc3\xa5 en PMOS- respektive NMOS-transistor'
+p403
+aS'%s gillar printf i php'
+p404
+aS'%s tycker att JavaScript \xc3\xa4r ett vackert, cleant spr\xc3\xa5k.'
+p405
+aS'%s mamma har en oavg\xf6rbar utrymmeskomplexitet'
+p406
+aS'%s pickar scout i AP.'
+p407
+aS'%s vet inte var C4 ligger'
+p408
+aS'%s g\xc3\xa5r ofta vilse p\xc3\xa5 Internet'
+p409
+aS'%s jobbar som support hos Telia'
+p410
+aS'%s \xc3\xa4r f\xc3\xb6r tjock f\xc3\xb6r att se sin egen snopp'
+p411
+aS'%s spelar FPS p\xe5 konsol'
+p412
+aS'%s har mobil med kontantkort'
+p413
+aS'%s l\xc3\xa4ser sin e-post p\xc3\xa5 www.hotmale.com'
+p414
+aS'%ss n\xc3\xa4sa luktar!'
+p415
+aS'Tacka inte %s, tacka Skycab!'
+p416
+aS'%s plockar upp saker fr\xc3\xa5n hans f\xc3\xb6tter och \xc3\xa4ter dem mitt framf\xc3\xb6r en stor publik.'
+p417
+aS'%s tycker att hampy \xe4r b\xe4st'
+p418
+aS'%s borde jobba p\xe5 industri'
+p419
+aS'k\xf6tthuvud %s'
+p420
+aS'%s blir varm i brallan av teletubbies'
+p421
+aS'%s har en liten kuk, precis som % juh.'
+p422
+aS'%s har en liten kuk, precis som %s juh.'
+p423
+aS'%s \xc3\xa4r h\xc3\xa4r. serp \xc3\xa4r d\xc3\xa5lig.'
+p424
+aS'%s spelar oboe'
+p425
+aS'%s \xe4r muslim'
+p426
+aS'%s \xc3\xa4r ful p\xc3\xa5 insidan'
+p427
+aS'%s s\xc3\xa4rskriver \xc3\xa4ndam\xc3\xa5l till enda m\xc3\xa5l'
+p428
+aS'%s vet inte ens om att jorden \xe4r rund.'
+p429
+aS'%s \xe4r duktig'
+p430
+aS'%s \xe4r scientolog.'
+p431
+aS'%s vet inte skillnad p\xc3\xa5 car och cdr'
+p432
+aS'%s b\xc3\xb6rjade med morfin f\xc3\xb6r att bli en Power Ranger'
+p433
+aS'%s tycker att C++ \xc3\xa4r ett bra programmeringsspr\xc3\xa5k'
+p434
+aS'%s k\xc3\xb6re med longjmp, for speed'
+p435
+aS'%s anv\xc3\xa4nder magnetband som cacheminne'
+p436
+aS'Bara Nyken \xe4r s\xe4mre \xe4n %s.'
+p437
+aS'%s exekverar stacken'
+p438
+aS"ett anagram av '%s' \xe4r 's\xe4mst'"
+p439
+aS'%s har nedsatt intelligens'
+p440
 a.

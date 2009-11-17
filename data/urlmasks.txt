@@ -1,0 +1,70 @@
+(dp0
+S'shacknews.com'
+p1
+S'^(.+?) - Shacknews - (?:.+)'
+p2
+sS'en.wikipedia.org'
+p3
+S'(.+?) - Wikipedia, the(?:.*)'
+p4
+sS'tv4play.se'
+p5
+S'(.+?) - (?:.*)'
+p6
+sS'theonion.com'
+p7
+S'(.+) \\| The Onion'
+p8
+sS'explosm.net'
+p9
+S'()'
+p10
+sS'svd.se'
+p11
+S'(.+?) \\| .*'
+p12
+sS'youtube.com'
+p13
+S'YouTube - (.+)'
+p14
+sS'wulffmorgenthaler.com'
+p15
+S'()'
+p16
+sS'myspace.com'
+p17
+S'(.+?) p\xc3\xa5 .*'
+p18
+sS'sweclockers.com'
+p19
+S'Sweclockers.com - (.+)'
+p20
+sS'slashdot.org'
+p21
+S'Slashdot(?:.*)\\| (.+)'
+p22
+sS'independent.co.uk'
+p23
+S'(.+) -.+?- The Independent'
+p24
+sS'global.ebay.com'
+p25
+S'Hitta (.+?) p\xc3\xa5'
+p26
+sS'aftonbladet.se'
+p27
+S'(.+?)\\|.*'
+p28
+sS'google.com'
+p29
+S'().*'
+p30
+sS'prisjakt.nu'
+p31
+S'(.+) - Hitta .*'
+p32
+sS'guardian.co.uk'
+p33
+S'(.+?)\\|.*'
+p34
+s.
