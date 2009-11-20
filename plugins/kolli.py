@@ -21,7 +21,7 @@ def posten_kolli_query(kolli_id):
 		weight = search.group(5)
 		
 		if date and status:
-			result = "%s från %s | %s: %s | %s" % (weight, sender, date, re.sub("<.+?>", "", status), url)
+			result = "%s fr\xe5n %s | %s: %s | %s" % (weight, sender, date, re.sub("<.+?>", "", status), url)
 			return result
 		else:
 			return None
@@ -36,7 +36,7 @@ class kolli(Command):
 		result = posten_kolli_query(argument)
 		
 		if result == None:
-			return "No result returned."
+			return "Hittade ingen information."
 		else:
 			fixedline = re.sub("\s+"," ", result)
 			return fixedline
