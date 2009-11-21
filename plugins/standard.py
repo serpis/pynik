@@ -226,6 +226,14 @@ class GoogleCommand(Command):
 
 		#print data
 
+		# try to extract video result
+		m = re.search(r'Video results for <em>.*?<\/em>.*?<td valign=top style="padding-right:10px"><a href="(.*?)" class=l.*?>(.*?)</a><br>',data)
+		if m:
+			text = utility.unescape(m.group(2))
+			text = re.sub('<.+?>', '', text) 
+			link = m.group(1)
+			return "%s - %s | %s" % (text, link, url) 
+
 		# try to extract calculator result
 		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><td>&nbsp;<td nowrap (dir=ltr)?>(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
 		if m:
