@@ -112,5 +112,11 @@ class RandomBuyCommand(Command):
 		hardcore = (len(args[0]) > 3)
 		
 		# Randomize from dealextreme.com
-		bot.tell(target, random_product_dealextreme(min_price, max_price, hardcore))
+		result = random_product_dealextreme(min_price, max_price, hardcore)
+		
+		# Tell the appropriate target
+		if target[0] == '#':
+			bot.tell(target, result)
+		else:
+			bot.tell(source, result)
 		
