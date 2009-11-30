@@ -44,7 +44,7 @@ class Notebook(Command):
 				numbered_notes = []
 				
 				for note in notes:
-					numbered_notes.append(str(index) + ": " + note)
+					numbered_notes.append("#" + str(index++) + " " + note)
 				
 				return "[ " + " ][ ".join(numbered_notes) + " ]"
 		
