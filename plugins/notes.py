@@ -40,12 +40,13 @@ class Notebook(Command):
 			if not notes:
 				return "You have no saved notes :/"
 			else:
+				# Let's use some ugly code!
 				index = 1
 				numbered_notes = []
 				
 				for note in notes:
 					numbered_notes.append("#" + str(index) + " " + note)
-					index++
+					index = index + 1
 				
 				return "[ " + " ][ ".join(numbered_notes) + " ]"
 		
