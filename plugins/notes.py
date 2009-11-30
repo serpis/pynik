@@ -40,7 +40,13 @@ class Notebook(Command):
 			if not notes:
 				return "You have no saved notes :/"
 			else:
-				return "[ " + " ][ ".join(notes) + " ]"
+				index = 1
+				numbered_notes = []
+				
+				for note in notes:
+					numbered_notes.append(str(index) + ": " + note)
+				
+				return "[ " + " ][ ".join(numbered_notes) + " ]"
 		
 		# Add note
 		elif args[0].lower() == 'add':
@@ -49,7 +55,7 @@ class Notebook(Command):
 			
 			notes = self.get_notes(source)
 			if notes:
-				maxlen = 390 - len(" ][ ".join(notes)) - len("[ " + " ]")
+				maxlen = 390 - len(" ][ 99: ".join(notes)) - len("[ " + " ]")
 			else:
 				maxlen = 390
 			
