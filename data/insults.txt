@@ -879,4 +879,10 @@ aS"ett anagram av '%s' \xe4r 's\xe4mst'"
 p439
 aS'%s har nedsatt intelligens'
 p440
+aS".lisp (setq %s 'dum_i_huvet)"
+p441
+aS'%s kan allt om produkterna i TV-shops sortiment!'
+p442
+aS'%s har gr\xf6na kullar mot en bl\xe5 himmel som bakgrundsbild'
+p443
 a.
