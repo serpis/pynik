@@ -457,7 +457,7 @@ class FunctionCall:
 def tokenize(text):
 	token_descriptions = [
 	("whitespace", "(\s+)"),
-	("string", '"((?:\\.|[^"])*)"'),
+	("string", r'("(?:\\.|[^"])*")'), # hack for allowing empty strings, cont'd below
 	("leftparenthesis", "(\()"),
 	("rightparenthesis", "(\))"),
 	("integer", "(\d+)"),
@@ -465,7 +465,7 @@ def tokenize(text):
 	("dot", "(\.)"),
 	("symbol", "([^\"'\(\)\.\s]+)"), #("symbol", "([a-zA-Z<>=+\-*/][a-zA-Z0-9<>=+\-*/]*)"),
 	("INVALID", "(.+)")]
-
+	
 	pattern = "|".join([token_pattern for (_, token_pattern) in token_descriptions])
 
 	matches = re.findall(pattern, text)
@@ -476,6 +476,8 @@ def tokenize(text):
 		i = 0
 		for group in match:
 			if i > 0 and group:
+				if token_descriptions[i][0] == "string":
+					group = group[1:-1] # hack for allowing empty strings, cont'd
 				tokens.append(Token(token_descriptions[i][0], group))
 				break
 			i += 1
