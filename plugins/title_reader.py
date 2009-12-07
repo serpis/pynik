@@ -38,6 +38,7 @@ def get_title(url):
 
 	if m:
 		title = m.group(1)
+		title = re.sub('\s+', ' ', title)
 		return utility.unescape(re.sub('<.+?>', '', title))
 	else:
 		return None
