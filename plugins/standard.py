@@ -154,9 +154,6 @@ class HelpCommand(Command):
 #	def can_trigger(self, source, trigger):
 #		return source in ['serp!~serp@85.8.2.181.se.wasadata.net']
 
-asciilize = string.maketrans("Â‰ˆ≈ƒ÷", "aaoAAO")
-asciilizeutf8 = { "√•": "a", "√§": "a", "√∂": "o", "√Ö": "A", "√Ñ": "A", "√ñ": "O" }
-
 _get_temp_re = re.compile('^\s*(.+)\s*$')
 class TempCommand(Command):
 	def __init__(self):
@@ -174,18 +171,7 @@ class TempCommand(Command):
 
 		argument_text = argument
 		argument = utility.asciilize(argument)
-		#argument = argument.translate(asciilize)
-		#
-		#source = argument
-		#to = ""
-		#while source:
-		#	if source[0] in asciilizeutf8:
-		#		to += asciilizeutf8[source[0]]
-		#	else:
-		#		to += source[0]
-		#	source = source[1:]
-		#
-		#argument = to
+		argument = utility.escape(argument)
 
 		url = "http://www.temperatur.nu/termo/%s/temp.txt" % argument
 		response = utility.read_url(url)
