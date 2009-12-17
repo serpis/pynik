@@ -169,11 +169,18 @@ class TempCommand(Command):
 			else:
 				argument = 'ryd'
 
+
 		argument_text = argument
 		argument = utility.asciilize(argument)
 		argument = utility.escape(argument)
 
-		url = "http://www.temperatur.nu/termo/%s/temp.txt" % argument
+		# awesome hack to include avesta!
+		if argument.lower() == "avesta":
+			actual_argument = "fors"
+		else:
+			actual_argument = argument
+
+		url = "http://www.temperatur.nu/termo/%s/temp.txt" % actual_argument
 		response = utility.read_url(url)
 		data = response["data"]
 
