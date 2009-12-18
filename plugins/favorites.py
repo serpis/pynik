@@ -15,7 +15,7 @@ class FavoriteCommands(Command):
 
 	def trig_delfav(self, bot, source, target, trigger, argument):
 		if utility.has_admin_privileges(source, target):
-			m = re.search('^(\w+)', argument)
+			m = re.search('^([^\s]+)', argument)
 		
 			if m:
 				fav_trig = m.group(1)
