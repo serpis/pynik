@@ -14,7 +14,7 @@ class FavoriteCommands(Command):
 		return ['favorites']
 
 	def trig_delfav(self, bot, source, target, trigger, argument):
-		if source == 'serp':
+		if utility.has_admin_privileges(source, target):
 			m = re.search('^(\w+)', argument)
 		
 			if m:
@@ -28,7 +28,7 @@ class FavoriteCommands(Command):
 					return "Favorite %s deleted." % fav_trig
 
 	def trig_setfav(self, bot, source, target, trigger, argument):
-		m = re.search('^(\w+)\s+((ftp:\/\/|http:\/\/|https:\/\/)[^\s]+)$', argument)
+		m = re.search('^([^\s]+)\s+((ftp:\/\/|http:\/\/|https:\/\/)[^\s]+)$', argument)
 		
 		if m:
 			fav_trig, fav_url = m.group(1, 2)
