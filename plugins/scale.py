@@ -59,6 +59,13 @@ class ScaleCommand(Command):
 				str(score/10.0) + " - " + descriptions[score/10]
 			argument = "Richter"
 			
+		elif argument.lower() == "internet": # Rigged "Internet" scale
+			num_choices = 101
+			num_slots = 10
+			print_score_fun = lambda score: \
+				str(score + 9000) + "%"
+			argument = "Internet"
+			
 		else: # Normal percentage scale
 			num_choices = 101
 			num_slots = 10
