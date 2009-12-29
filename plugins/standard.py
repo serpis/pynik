@@ -236,7 +236,7 @@ class GoogleCommand(Command):
 			return answer
 
 		# try to extract definition
-		m = re.search('<img src=\/images\/dictblue\.gif width=40 height=30 alt=""><td valign=top><font size=-1>(.*?)<br>', data)
+		m = re.search('<img src="\/images\/dictblue\.gif" width=40 height=30 alt=""><td valign=top.*?>(.*?)<br>', data)
 		if m:
 			definition = utility.unescape(m.group(1))
 			definition = re.sub('<.+?>', '', definition)
@@ -252,12 +252,13 @@ class GoogleCommand(Command):
 			return "%s: %s - %s" % (location, temperature, weather)
 
 		# try to extract time
-		m = re.search('alt="Clock"><\/td><td valign=middle><b>(.*?)<\/b> .+?day \((.*?)\) - <b>Time</b> in (.*?)<\/td>', data)
+		m = re.search('alt=""><td valign=middle><b>(.*?)<\/b> .+?day \((.*?)\) - <b>Time</b> in (.*?)<\/table>', data)
 
 		if m:
 			time = m.group(1)
 			timezone = m.group(2)
 			location = m.group(3)
+			location = re.sub('<.+?>', '', location)
 
 			return "Time in %s: %s (%s)" % (location, time, timezone)
 			
