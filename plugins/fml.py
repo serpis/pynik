@@ -25,7 +25,7 @@ def get_fml_dom(identifier, lang):
 	return minidom.parseString(data)
 
 def base_fml_url(lang):
-	if lang = "se":
+	if lang == "se":
 		return "http://www.fanformittliv.com/"
 	else:
 		return "http://www.fmylife.com/"
@@ -35,7 +35,7 @@ def fml_entry(identifier, lang):
 	result = ""
 	
 	if dom.getElementsByTagName("code")[0] == "0":
-		if lang = "se":
+		if lang == "se":
 			result = "Idag lyckades jag inte använda API:et. FFML"
 		else:
 			result =  "Today, I could not use the API. FML"
@@ -44,7 +44,7 @@ def fml_entry(identifier, lang):
 	items = dom.getElementsByTagName("items")[0].getElementsByTagName("item")
 	
 	if not items:
-		if lang = "se":
+		if lang == "se":
 			result = "Idag lyckades jag inte hitta något resultat. FFML"
 		else:
 			result = "Today, I could not find a result. FML"
