@@ -40,7 +40,7 @@ def random_product_dealextreme(min_price, max_price, hardcore, removal_filter):
 		closest_product = None
 		
 		for product in products:
-			if (not removal_filter) or (not re.match(removal_filter, product[1])):
+			if (not removal_filter) or (not re.match(removal_filter, product[1].lower())):
 				diff = float(product[2]) * conversion_rate - min_price
 				if abs(diff) < abs(closest_diff):
 					closest_diff = diff
@@ -56,7 +56,7 @@ def random_product_dealextreme(min_price, max_price, hardcore, removal_filter):
 		# We have an interval to match against.
 		
 		for product in products:
-			if (not removal_filter) or (not re.match(removal_filter, product[1])):
+			if (not removal_filter) or (not re.match(removal_filter, product[1].lower())):
 				cost = float(product[2]) * conversion_rate
 				if min_price <= cost and cost <= max_price:
 					result_diff = cost - max_price
