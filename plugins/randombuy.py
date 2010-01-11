@@ -18,11 +18,11 @@ def random_product_list_dealextreme():
 	product_iterator = re.finditer(product_pattern, data)
 	
 	for match in product_iterator:
-		result.append(match.groups([1, 2, 3]))
+		result.append(match.groups([1, 2, 3])) # [sku, title, price]
 	
 	return result
 
-def random_product_dealextreme(min_price, max_price, hardcore):
+def random_product_dealextreme(min_price, max_price, hardcore, removal_filter):
 	conversion_rate = utility.currency_conversion(1, 'usd', 'sek')
 	if conversion_rate == None:
 		return "Ajdå, nu gick något fel :("
@@ -40,10 +40,11 @@ def random_product_dealextreme(min_price, max_price, hardcore):
 		closest_product = None
 		
 		for product in products:
-			diff = float(product[2]) * conversion_rate - min_price
-			if abs(diff) < abs(closest_diff):
-				closest_diff = diff
-				closest_product = product
+			if removal_filter and (not re.match(removal_filter, product[1])):
+				diff = float(product[2]) * conversion_rate - min_price
+				if abs(diff) < abs(closest_diff):
+					closest_diff = diff
+					closest_product = product
 		
 		if closest_product:
 			result_diff = closest_diff
@@ -55,11 +56,12 @@ def random_product_dealextreme(min_price, max_price, hardcore):
 		# We have an interval to match against.
 		
 		for product in products:
-			cost = float(product[2]) * conversion_rate
-			if min_price <= cost and cost <= max_price:
-				result_diff = cost - max_price
-				result_product = product
-				break
+			if removal_filter and (not re.match(removal_filter, product[1])):
+				cost = float(product[2]) * conversion_rate
+				if min_price <= cost and cost <= max_price:
+					result_diff = cost - max_price
+					result_product = product
+					break
 		
 		if not result_product:
 			return "Ingen produkt med lagom pris hittades, ändra dina krav eller försök igen!"
@@ -92,7 +94,7 @@ class RandomBuyCommand(Command):
 			bot.tell(target, self.usage)
 			return
 		
-		m = re.match(r'((\d+)-(\d+))|(\d+)|=(\d+)', args[1])
+		m = re.match(r'((\d+)-(\d+))|(\d+)|=(\d+)(!)', args[1])
 		if m:
 			if m.group(1):
 				min_price = int(m.group(2))
@@ -105,6 +107,12 @@ class RandomBuyCommand(Command):
 				max_price = min_price
 			else:
 				bot.tell(target, "Ojoj, nu gick det fel igen :(")
+			
+			if m.group(5):
+				removal_filter = ".*batter(y|ies).*"
+			else:
+				removal_filter = None
+			
 		else:
 			bot.tell(target, "Hörru, så gör man inte! " + self.usage)
 		
@@ -112,7 +120,7 @@ class RandomBuyCommand(Command):
 		hardcore = (len(args[0]) > 3)
 		
 		# Randomize from dealextreme.com
-		result = random_product_dealextreme(min_price, max_price, hardcore)
+		result = random_product_dealextreme(min_price, max_price, hardcore, removal_filter)
 		
 		# Tell the appropriate target
 		if target[0] == '#':
