@@ -40,7 +40,7 @@ def random_product_dealextreme(min_price, max_price, hardcore, removal_filter):
 		closest_product = None
 		
 		for product in products:
-			if removal_filter and (not re.match(removal_filter, product[1])):
+			if (not removal_filter) or (not re.match(removal_filter, product[1])):
 				diff = float(product[2]) * conversion_rate - min_price
 				if abs(diff) < abs(closest_diff):
 					closest_diff = diff
@@ -56,7 +56,7 @@ def random_product_dealextreme(min_price, max_price, hardcore, removal_filter):
 		# We have an interval to match against.
 		
 		for product in products:
-			if removal_filter and (not re.match(removal_filter, product[1])):
+			if (not removal_filter) or (not re.match(removal_filter, product[1])):
 				cost = float(product[2]) * conversion_rate
 				if min_price <= cost and cost <= max_price:
 					result_diff = cost - max_price
@@ -94,21 +94,21 @@ class RandomBuyCommand(Command):
 			bot.tell(target, self.usage)
 			return
 		
-		m = re.match(r'((\d+)-(\d+))|(\d+)|=(\d+)(!)', args[1])
+		m = re.match(r'(((\d+)-(\d+))|(\d+)|=(\d+))(!?)', args[1])
 		if m:
-			if m.group(1):
-				min_price = int(m.group(2))
-				max_price = int(m.group(3))
-			elif m.group(4):
-				min_price = 0
+			if m.group(2):
+				min_price = int(m.group(3))
 				max_price = int(m.group(4))
 			elif m.group(5):
-				min_price = int(m.group(5))
+				min_price = 0
+				max_price = int(m.group(5))
+			elif m.group(6):
+				min_price = int(m.group(6))
 				max_price = min_price
 			else:
 				bot.tell(target, "Ojoj, nu gick det fel igen :(")
 			
-			if m.group(5):
+			if m.group(7):
 				removal_filter = ".*batter(y|ies).*"
 			else:
 				removal_filter = None
