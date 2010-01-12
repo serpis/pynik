@@ -47,8 +47,13 @@ def prisjakt_search(query_string):
 		product_id = id_match.group(1)
 
 		# Get title
-		title_pattern = "class=\\\\\"ikon(14)?\\\\\"( alt=\\\\\"\\\\\")?\\> (.+?) \\\\n"
-		encoded_title = re.search(title_pattern, data).group(3)
+		if url_type == "bok":
+			title_pattern = "class=\\\\\"ikon(14)?\\\\\"( alt=\\\\\"\\\\\")?\\> (.+?) \\\\n"
+			encoded_title = re.search(title_pattern, data).group(3)
+		else:
+			title_pattern = "onmouseout=\\\\\"ajaxpopup_hide\(\);\\\\\"\>\\\\n  (.+?) \\\\n"
+			encoded_title = re.search(title_pattern, data).group(1)
+		
 		# Remove HTML tags
 		encoded_title = string.replace(
 				encoded_title, '<span class=\\"search_hit\\">', '')
