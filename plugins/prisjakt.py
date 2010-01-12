@@ -62,6 +62,7 @@ def prisjakt_search(query_string):
 		product_title = decode_characters(encoded_title)
 
 		# Get price
+		data = data.replace("&nbsp;", "")
 		price_pattern = "\\<span class=\\\\\"pris\\\\\"\>(\\d+:-)\\<\\\\\/span\\>"
 		product_price = re.search(price_pattern, data).group(1)
 
