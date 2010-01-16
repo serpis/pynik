@@ -60,9 +60,13 @@ class IRCClient:
 			self.s.setblocking(False)
 
 		return self.connected
+
+	def log_line(self, line):
+		print line
+		self.lines.append(line)
 	
 	def send(self, line):
-		self.lines.append(timestamp() + " SENT: " + line)
+		self.log_line(timestamp() + " SENT: " + line)
 
 		data = line + "\r\n"
 
@@ -241,7 +245,7 @@ class IRCClient:
 						self.recv_buf = line
 					else:
 						line = line.rstrip("\r\n")
-						self.lines.append(timestamp() + " RECV: " + line)
+						self.log_line(timestamp() + " RECV: " + line)
 						m = self.irc_message_pattern.match(line)
 						if m:
 							if m.group(3) in self.message_handlers:
