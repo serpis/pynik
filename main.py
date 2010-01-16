@@ -5,6 +5,11 @@ from httpsrv import http_server
 import time
 import settings
 import datetime
+import sys
+
+if settings.nick == "CHANGEME":
+	print "---> Please customize settings.py and try again. <---"
+	sys.exit(0);
 
 bot = IRCBot(settings.server_address, settings.server_port, settings.nick, settings.username, settings.realname)
 

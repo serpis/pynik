@@ -85,10 +85,12 @@ class ReminderCommand(Command):
 	def on_load(self):
 		self.reminders = []
 
-		with open('data/reminders.txt') as file:
-			unp = pickle.Unpickler(file)
-
-			self.reminders = unp.load()
+		try:
+			with open('data/reminders.txt') as file:
+				unp = pickle.Unpickler(file)
+				self.reminders = unp.load()
+		except:
+			pass
 	
 	def on_unload(self):
 		self.reminders = []

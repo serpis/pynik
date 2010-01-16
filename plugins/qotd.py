@@ -57,22 +57,26 @@ class QuoteCollection:
         return DueQuotes;
 
     def LoadFromFiles(self):
-        indexCounter = 0
-        playlistfile = open(self.playlistfilename, 'r') 
-        with open(self.quotefilename, 'r') as quotefile:
-            for line in quotefile:
-                currentQuote = quote()
+		try:
+			indexCounter = 0
+			playlistfile = open(self.playlistfilename, 'r') 
+			with open(self.quotefilename, 'r') as quotefile:
+				for line in quotefile:
+					currentQuote = quote()
 
-                currentQuote.quote = string.strip(line)
-                played = playlistfile.readline()
-                try:
-                    currentQuote.played = int(played)
-                except:
-                    currentQuote.played = 0
-                currentQuote.index = indexCounter
-              
-                self.quotes.append(currentQuote)
-                indexCounter += 1
+					currentQuote.quote = string.strip(line)
+					played = playlistfile.readline()
+					try:
+						currentQuote.played = int(played)
+					except:
+						currentQuote.played = 0
+					currentQuote.index = indexCounter
+				  
+					self.quotes.append(currentQuote)
+					indexCounter += 1
+		except:
+			# this empty except block should be shot and killed.
+			pass
 
     def SaveQuotes(self):
         quotefile = open(self.quotefilename, "w")
