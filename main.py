@@ -8,7 +8,7 @@ import datetime
 
 bot = IRCBot(settings.server_address, settings.server_port, settings.nick, settings.username, settings.realname)
 
-web_server = http_server.HTTPServer(8000)
+#web_server = http_server.HTTPServer(8000)
 
 botnik_picture_data = None
 
@@ -42,11 +42,11 @@ def handle_request(request):
 
 	web_server.respond_200(request, data)
 
-web_server.register_handle_request_callback(handle_request)
+#web_server.register_handle_request_callback(handle_request)
 	
-bot.add_timer(datetime.timedelta(0, 60), True, bot.send, "PRIVMSG #botnik :this is to keep me alive :O")
+#bot.add_timer(datetime.timedelta(0, 60), True, bot.send, "PRIVMSG #botnik :this is to keep me alive :O")
 
 while True:
 	bot.tick()
-	web_server.tick()
+	#web_server.tick()
 	time.sleep(0.1)
