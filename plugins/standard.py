@@ -139,12 +139,12 @@ class HelpCommand(Command):
 		"""Help command. Use it to get information about other commands."""
 		trigger_found = False
 		for command in Command.__subclasses__():
-			for k in command.__dict__:
-				if k == "trig_" + argument:
-					trigger_found = True
-					f = command.__dict__[k]
-					if f.__doc__:
-						return "%s: %s" % (argument, f.__doc__)
+			fname = "trig_" + argument
+			if fname in command.__dict__:
+				trigger_found = True
+				f = command.__dict__[fname]
+				if f.__doc__:
+					return "%s: %s" % (argument, f.__doc__)
 		
 		if trigger_found:
 			return "I can offer nothing."
