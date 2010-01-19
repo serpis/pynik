@@ -161,6 +161,7 @@ class TempCommand(Command):
 
 	def trig_temp(self, bot, source, target, trigger, argument):
 		if argument:
+			argument = argument.strip()
 			self.places[source] = argument
 			self.save()
 		else:
@@ -182,12 +183,16 @@ class TempCommand(Command):
 
 		url = "http://www.temperatur.nu/termo/%s/temp.txt" % actual_argument
 		response = utility.read_url(url)
-		data = response["data"]
+		m = None
 
-		m = _get_temp_re.match(data)
+		if response:
+			data = response["data"]
+			m = _get_temp_re.match(data)
 
 		if m:
 			return "Temperature in %s: %s." % (argument_text, m.group(1))
+		else:
+			return "Temperature in %s: invalid place" % (argument_text)
 
 	def save(self): 
 		f = open(os.path.join("data", "places.txt"), "w") 
