@@ -58,14 +58,14 @@ class IRCBot:
 			try:
 				#if arguments:
 				#	print trigger
-				#	print("plugin.%s(self, %s)" % (trigger,", ".join(arguments)))
+				#       print("plugin.%s(self, %s) %s" % (trigger,", ".join(arguments),plugin.__class__ ))
 				#else:
 				#	print("plugin.%s(self)" % trigger)
 				plugin.__class__.__dict__[trigger](plugin, self, *arguments)
 			except KeyError:
 				pass
 			except:
-				print "argh", plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+				print "%s: argh", plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]) % (datetime.datetime.now().strftime("[%H:%M:%S]"))
 	
 	def on_connected(self):
 		self.execute_plugins("on_connected")
@@ -83,8 +83,6 @@ class IRCBot:
 		self.execute_plugins("on_part", nick, channel, reason)
 
 	def on_privmsg(self, nick, target, message):
-		#for plugin in plugin_handler.all_plugins():
-		#	plugin.on_privmsg(self, nick, target, message)
 		self.execute_plugins("on_privmsg", nick, target, message)
 
 	def on_quit(self, nick, reason):
