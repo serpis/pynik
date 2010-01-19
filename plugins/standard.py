@@ -233,7 +233,7 @@ class GoogleCommand(Command):
 		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><td>&nbsp;<td nowrap (dir=ltr)?>(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
 		if m:
 			answer = m.group(4)
-			answer = answer.replace(' &#215;', '×').replace('<sup>', '^')
+			answer = answer.replace(' &#215;', '\xd7').replace('<sup>', '^')
 			answer = re.sub('<.+?>', '', answer)
 			return answer
 
@@ -327,10 +327,10 @@ class WikipediaCommand(Command):
 			return "I couldn't find an article... :("
 
 class AAOCommand(Command):
-	triggers = ['}{|', 'åäö', 'Ã¥Ã¤Ã¶']
+	triggers = ['}{|', '\xe5\xe4\xf6', 'Ã¥Ã¤Ã¶']
 
 	def on_trigger(self, bot, source, target, trigger, argument):
-			if trigger == 'åäö':
+			if trigger == '\xe5\xe4\xf6':
 				return source+": Du använder nog Latin-1"
 			elif trigger == '}{|':
 				return source+": Du använder nog ISO-646"

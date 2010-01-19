@@ -22,12 +22,12 @@ def unescape(str):
 def escape(str):
 	import urllib
 	t = {
-		'%E5': 'å',
-		'%E4': 'ä',
-		'%F6': 'ö',
-		'%C5': 'Å',
-		'%C4': 'Ä',
-		'%D6': 'Ö'
+		'%E5': '\xe5',
+		'%E4': '\xe4',
+		'%F6': '\xf6',
+		'%C5': '\xc5',
+		'%C4': '\xc4',
+		'%D6': '\xd6'
 	}
 
 	s = urllib.quote_plus(str)

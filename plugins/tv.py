@@ -1,4 +1,4 @@
-# coding: utf-8
+# coding: iso-8859-15
 
 from commands import Command
 import re
