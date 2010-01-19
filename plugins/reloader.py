@@ -7,13 +7,15 @@ import utility
 class ReloadCommand(Command):
 	def trig_reload(self, bot, source, target, trigger, argument):
 		if utility.has_admin_privileges(source, target):
-			svnup_retn = " ".join(os.popen("svn up plugins --non-interactive").read().split("\n"))
 			bot.reload_plugins()
-			return "Reloaded and good to go! (%s)" % svnup_retn
+			return "Reloaded and good to go!"
 			
 class LoadCommand(Command):
 	def trig_load(self, bot, source, target, trigger, argument):
 		plugin = argument
 		if utility.has_admin_privileges(source, target):
-			bot.load_plugin(plugin)
+			try:
+				bot.load_plugin(plugin)
+			except ImportError as e:
+				return "Unable to load '%s', %s" % (plugin, e)
 			return "Plugin %s loaded. Use 'reload' to initialize it." % plugin

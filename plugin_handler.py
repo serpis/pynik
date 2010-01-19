@@ -60,6 +60,9 @@ def all_plugins():
 def load_plugin(plugin):
 	import re
 
+	if plugin == "":
+		raise ImportError('No module named given')
+
 	package = plugins_module
 
 	name = package.__name__ + '.' + plugin
@@ -70,7 +73,8 @@ def load_plugin(plugin):
 	except:
 		raise
 	finally:
-		file.close()
+		if file != None:
+			file.close()
 
 def plugins_on_load():
 	l = search_for_subclasses(plugins.Plugin) 
