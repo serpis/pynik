@@ -154,12 +154,12 @@ class ServerResponse:
 		return data
 
 class HTTPServer:
-	def __init__(self, port):
+	def __init__(self, port, host=""):
 		self.handle_request_callback = None
 
 		self.socket = socket.socket()
 		self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		self.socket.bind(("", port))
+		self.socket.bind((host, port))
 		self.socket.listen(10)
 
 		self.socket.setblocking(False)

@@ -13,7 +13,7 @@ if settings.nick == "CHANGEME":
 
 bot = IRCBot(settings.server_address, settings.server_port, settings.nick, settings.username, settings.realname)
 
-#web_server = http_server.HTTPServer(8000)
+#web_server = http_server.HTTPServer(host="127.0.0.1", port=8000)
 
 botnik_picture_data = None
 
