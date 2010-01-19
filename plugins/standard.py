@@ -48,9 +48,6 @@ class InsultCommand(Command):
 		pass 
 
 	def trig_insult(self, bot, source, target, trigger, argument): 
-		if source == "Iradieh":
-			return None
-		
 		t = argument.strip()
 		if not t:
 			t = source
@@ -150,9 +147,6 @@ class HelpCommand(Command):
 			return "I can offer nothing."
 		else:
 			return "That's not a command! Try `help <command>`"
-
-#	def can_trigger(self, source, trigger):
-#		return source in ['serp!~serp@85.8.2.181.se.wasadata.net']
 
 _get_temp_re = re.compile('^\s*(.+)\s*$')
 class TempCommand(Command):

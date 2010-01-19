@@ -16,10 +16,7 @@ class ComplimentCommand(Command):
 		t = argument.strip()
 		if not t:
 			t = source
-			
-		if t == "Iradieh":
-			return None
-		
+
 		compliment = random.sample(self.compliments, 1)[0]
 		try:
 			return compliment.replace('%s', t)

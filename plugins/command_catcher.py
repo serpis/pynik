@@ -15,11 +15,7 @@ class CommandCatcherPlugin(Plugin):
 		pass
 
 	def on_command(self, bot, source, target, trigger, arguments):
-		if source == "buffi":
-			return
-			
 		meth_name = 'trig_' + trigger.lower()
-		
 		pairs = []
 		
 		for command_class in commands.Command.__subclasses__():

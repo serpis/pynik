@@ -113,7 +113,7 @@ def load_data(name, default_value=None):
 		return default_value
 
 def has_admin_privileges(source, target):
-	return source in ['serp', 'teetow', 'Merola']
+	return source in [] # CHANGEME
 
 nbsp_latin1 = unescape("&nbsp;")
 nbsp_utf8 = nbsp_latin1.decode("latin-1").encode("utf-8")

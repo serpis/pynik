@@ -62,7 +62,7 @@ class RssCommand(Command):
 		self.next_beat = None
 		self.reader = RssReader()
 
-		self.watch_list = [['serp', 'http://www.starkast.net/index.rss', None], ['serp', 'http://rss.thepiratebay.org/0', None]]
+		self.watch_list = []
 
 	def get_options(self):
 		return ['subscribers']
