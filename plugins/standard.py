@@ -98,6 +98,9 @@ class TimeCommand(Command):
 		import datetime
 		return datetime.datetime.now().isoformat()
 
+	def trig_date(self, bot, source, target, trigger, argument):
+		return self.trig_time(bot, source, target, trigger, argument)
+
 class WeekCommand(Command):
 	def trig_week(self, bot, source, target, trigger, argument):
 		import datetime
