@@ -7,6 +7,7 @@ import favorites
 import commands
 import utility
 import traceback
+import settings
 
 class CommandCatcherPlugin(Plugin): 
 	hooks = ['on_privmsg']   
@@ -44,14 +45,15 @@ class CommandCatcherPlugin(Plugin):
 					return utility.timeout(method, 10, (bot, source, target, trigger, arguments))
 				except utility.TimeoutException:
 					return "Command '%s' took too long to execute." % trigger
+				except MemoryError:
+					return "Command '%s' used to much memory." % trigger
 				except:
-					boll = list(traceback.extract_tb(sys.exc_info()[2]))
-					bolliStr =  ", ".join(map(lambda x: str(x), boll))
-					bot.tell('#botnik', "%s triggered an error by typing \'%s %s\': %s. %s" % (source, trigger, arguments, sys.exc_info(), bolliStr))
-
-					print sys.exc_info()
-					print 'Error when executing command \'', trigger, '\':', traceback.extract_tb(sys.exc_info()[2])
-
+					bot.tell(settings.admin_channel, 
+						 "%s triggered an error by typing '%s %s': %s, tb: %s." % (source, trigger, 
+						 arguments, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])[-1] ))
+					
+					print "Error triggered by '%s' with command '%s', exinfo: '%s', traceback: '%s'" % (source, 
+					      trigger, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
 					return "Oops. Error logged."
 			else:
 				return "Bwaha. You can't trigger that!"
