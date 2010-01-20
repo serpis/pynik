@@ -5,7 +5,9 @@ from httpsrv import http_server
 import time
 import settings
 import datetime
+import os
 import sys
+import pdb
 
 if settings.nick == "CHANGEME":
 	print "---> Please customize settings.py and try again. <---"
@@ -50,8 +52,21 @@ def handle_request(request):
 #web_server.register_handle_request_callback(handle_request)
 	
 bot.add_timer(datetime.timedelta(0, 60), True, bot.send, "PING :iamabanana")
+sys.path += [os.path.join(sys.path[0], "httpsrv"), os.path.join(sys.path[0], "ircclient"),
+	     os.path.join(sys.path[0], "plugins")]
 
-while True:
-	bot.tick()
-	#web_server.tick()
-	time.sleep(0.1)
+def Tick():
+	while True:
+		try:
+			bot.tick()
+			#web_server.tick()
+			time.sleep(0.1)
+		except KeyboardInterrupt:
+			print ""
+			print "Entering debug mode, use c(ontinue) to exit. Don't stay here to long."
+			pdb.set_trace()
+		except:
+			raise
+
+# Run bot with debugger
+pdb.run(Tick())
