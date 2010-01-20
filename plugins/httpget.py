@@ -121,9 +121,9 @@ def read_url(url):
 					return read_url(headers['Location'])
 			elif response_num == 200:
 				#print "Got response 200. Sweet!"
-				length = None
+				length = 1024*1024 # max one megabyte
 				if "Content-Length" in headers:
-					length = min(1024*1024, int(headers["Content-Length"])) # max one megabyte
+					length = min(length, int(headers["Content-Length"]))
 
 				data = read_http_data(s, length)
 
