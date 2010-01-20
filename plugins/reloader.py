@@ -8,6 +8,7 @@ class ReloadCommand(Command):
 	def trig_reload(self, bot, source, target, trigger, argument):
 		if utility.has_admin_privileges(source, target):
 			bot.reload_plugins()
+			bot.reload()
 			return "Reloaded and good to go!"
 			
 class LoadCommand(Command):

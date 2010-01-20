@@ -6,29 +6,33 @@ import re
 
 from copy import copy
 
-prev = copy(sys.modules.values())
-from plugins import *
-new_modules = []
-plugins_module = None
+# Run the following code only on first import
+try:
+	plugins_module
+except NameError:
+	prev = copy(sys.modules.values())
+	from plugins import *
+	new_modules = []
+	plugins_module = None
 
-for module in sys.modules.values():
-	if not module:
-		continue
-	if module not in prev:
-		if module.__name__ == 'plugins':
-			plugins_module = module
-		
-		if module.__name__ == 'plugins.plugins':
-			new_modules.insert(0, module)
-		elif module.__name__ == 'plugins.commands':
-			if len(new_modules) == 0 or new_modules[0].__name__ != 'plugins.plugins':
+	for module in sys.modules.values():
+		if not module:
+			continue
+		if module not in prev:
+			if module.__name__ == 'plugins':
+				plugins_module = module
+
+			if module.__name__ == 'plugins.plugins':
 				new_modules.insert(0, module)
+			elif module.__name__ == 'plugins.commands':
+				if len(new_modules) == 0 or new_modules[0].__name__ != 'plugins.plugins':
+					new_modules.insert(0, module)
+				else:
+					new_modules.insert(1, module)
 			else:
-				new_modules.insert(1, module)
-		else:
-			new_modules.append(module)
+				new_modules.append(module)
 
-new_modules = filter(lambda x: re.match('^plugins\.', x.__name__), new_modules)
+	new_modules = filter(lambda x: re.match('^plugins\.', x.__name__), new_modules)
 
 def reload_plugin_modules():
 	import traceback

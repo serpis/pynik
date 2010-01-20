@@ -1,12 +1,17 @@
-from ircclient.ircclient import IRCClient
-import plugin_handler
 import sys
 import traceback
 import datetime
-
-plugin_handler.plugins_on_load()
-
+import plugin_handler
+from ircclient import ircclient
+from autoreloader.autoreloader import AutoReloader
 from heapq import heappush, heappop
+
+# Call plugins_on_load only on first import
+try:
+	IRCBot
+except NameError:
+	plugin_handler.plugins_on_load()
+
 class PriorityQueue:
 	def __init__(self):
 		self.internal_array = []
@@ -43,12 +48,18 @@ class TimedEvent:
 	def __cmp__(self, other):
 		return cmp(self.trigger_time, other.trigger_time)
 
-class IRCBot:
+class IRCBot(AutoReloader):
 	def __init__(self, address, port, nick, username, realname):
-		self.client = IRCClient(address, port, nick, username, realname)
-		self.client.callbacks = { "on_connected": self.on_connected, "on_join": self.on_join, "on_nick_change": self.on_nick_change, "on_notice": self.on_notice, "on_part": self.on_part, "on_privmsg": self.on_privmsg, "on_quit": self.on_quit }
+		self.client = ircclient.IRCClient(address, port, nick, username, realname)
+		self.client.callbacks = self.callbacks()
 		self.plugins = []
 		self.timer_heap = PriorityQueue()
+		self.need_reload = {}
+
+	def callbacks(self):
+		return { "on_connected": self.on_connected, "on_join": self.on_join,
+			 "on_nick_change": self.on_nick_change, "on_notice": self.on_notice, 
+			 "on_part": self.on_part, "on_privmsg": self.on_privmsg, "on_quit": self.on_quit }
 
 	def is_connected(self):
 		return self.client.is_connected()
@@ -88,6 +99,10 @@ class IRCBot:
 	def on_quit(self, nick, reason):
 		self.execute_plugins("on_quit", nick, reason)
 
+	def reload(self):
+		self.need_reload['main'] = True
+		self.need_reload['ircbot'] = True
+
 	def reload_plugins(self):
 		plugin_handler.plugins_on_unload()
 		plugin_handler.reload_plugin_modules()
@@ -109,6 +124,12 @@ class IRCBot:
 		return self.client.tell(target, message)
 
 	def tick(self):
+		if self.need_reload.has_key('ircbot') and self.need_reload['ircbot']:
+			reload(ircclient)
+			reload(plugin_handler)
+			self.client.callbacks = self.callbacks()
+			self.need_reload['ircbot'] = False
+
 		now = datetime.datetime.now()
 
 		if not self.timer_heap.empty() and not self.client.connected:

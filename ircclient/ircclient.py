@@ -6,11 +6,12 @@ import re
 import time
 import datetime
 import errno
+from autoreloader.autoreloader import AutoReloader
 
 def timestamp():
 	return datetime.datetime.now().strftime("[%H:%M:%S]")
 
-class IRCClient:
+class IRCClient(AutoReloader):
 	def __init__(self, address, port, nick, username, realname):
 		self.connected = False
 		self.active_session = False

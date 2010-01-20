@@ -1,24 +1,23 @@
 # coding: latin-1
-
-from ircbot import IRCBot
-from httpsrv import http_server
 import time
-import settings
 import datetime
 import os
 import sys
 import pdb
+import gc
+
+import ircbot
+import settings
+from httpsrv import http_server
 
 if settings.nick == "CHANGEME":
 	print "---> Please customize settings.py and try again. <---"
 	sys.exit(0);
 
-bot = IRCBot(settings.server_address, settings.server_port, settings.nick, settings.username, settings.realname)
+bot = ircbot.IRCBot(settings.server_address, settings.server_port, settings.nick, settings.username, settings.realname)
 
 #web_server = http_server.HTTPServer(host="127.0.0.1", port=8000)
-
 botnik_picture_data = None
-
 
 def handle_request(request):
 	if request.request_path == "/botnik.png":
@@ -58,8 +57,16 @@ sys.path += [os.path.join(sys.path[0], "httpsrv"), os.path.join(sys.path[0], "ir
 def Tick():
 	while True:
 		try:
+			if bot.need_reload.has_key('main') and bot.need_reload['main']:
+				reload(ircbot)
+				reload(settings)
+				print "Collected %s objects out of %s. Garbarge are %s objects." % (gc.collect(2), 
+					len(gc.get_objects()), len(gc.garbage))
+				bot.need_reload['main'] = False
+
 			bot.tick()
 			#web_server.tick()
+
 			time.sleep(0.1)
 		except KeyboardInterrupt:
 			print ""

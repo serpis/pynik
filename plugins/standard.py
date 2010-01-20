@@ -358,5 +358,17 @@ class CollectCommand(Command):
 				l.append((types[key], key))
 
 			#print sorted(l)
-		gc.set_debug(gc.DEBUG_LEAK)
-		return "Collected %s objects out of %s." % (gc.collect(), obj_count)
+		gc.set_debug(gc.DEBUG_LEAK | gc.DEBUG_STATS)
+		return "Collected %s objects out of %s. Garbarge are %s objects." % (gc.collect(), obj_count, len(gc.garbage))
+
+	def trig_garbage(self, bot, source, target, trigger, argument):
+		import gc
+
+		gc.set_debug(0)
+
+		garbage_cnt = len(gc.garbage[:])
+		del(gc.garbage[:])
+		collect_cnt = gc.collect(2)
+		garbage_left = len(gc.garbage[:])
+
+		return "Collected %s objects. Brought out %s units of garbage, %s units left." % (collect_cnt, garbage_cnt, garbage_left)
