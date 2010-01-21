@@ -738,7 +738,7 @@ class LispCommand(Command):
 			retn = str(lisp(self.savable_environment, argument))
 			self.save()
 			return retn
-		except LispError as e:
+		except LispError, e:
 			return str(e)
 
 	def save(self):

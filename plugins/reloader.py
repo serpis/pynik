@@ -17,6 +17,6 @@ class LoadCommand(Command):
 		if utility.has_admin_privileges(source, target):
 			try:
 				bot.load_plugin(plugin)
-			except ImportError as e:
+			except ImportError, e:
 				return "Unable to load '%s', %s" % (plugin, e)
 			return "Plugin %s loaded. Use 'reload' to initialize it." % plugin
