@@ -6,6 +6,8 @@ import re
 import time
 import datetime
 import errno
+import random
+import string
 from autoreloader.autoreloader import AutoReloader
 
 def timestamp():
@@ -40,7 +42,8 @@ class IRCClient(AutoReloader):
 			'ERROR': self.on_error,
 			'353': self.on_begin_nick_list,
 			'366': self.on_end_nick_list,
-			'001': self.on_connected
+			'001': self.on_connected,
+			'433': self.on_nick_inuse,
 		}
 
 		self.server_address = address;
@@ -164,6 +167,10 @@ class IRCClient(AutoReloader):
 			if source_nick in nick_list:
 				nick_list.remove(source_nick)
 				nick_list.append(new_nick)
+
+	def on_nick_inuse(self, tuples):
+		self.send("NICK " + self.nick + "_" + "".join([random.choice(string.ascii_letters + 
+			  string.digits + ".-") for i in xrange(3)]))
 
 	def on_part(self, tupels):
 		source, channel, reason = [tupels[1], tupels[4], tupels[5]]
