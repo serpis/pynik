@@ -101,10 +101,7 @@ class IRCClient(AutoReloader):
 			return self.send("PRIVMSG " + target + " :" + string)
 
 	def join(self, channel, password=""):
-		try:
-			return self.send('JOIN ' + channel)
-		except TypeError:
-			return self.send('JOIN ' + channel + ' ' + password)
+		return self.send('JOIN ' + channel + ' ' + password)
 
 	def get_nick(self, host):
 		m = re.search('^:?(\S+?)!', host)
