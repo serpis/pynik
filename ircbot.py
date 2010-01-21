@@ -84,6 +84,12 @@ class IRCBot(AutoReloader):
 				print "%s: argh", plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]) % (datetime.datetime.now().strftime("[%H:%M:%S]"))
 	
 	def on_connected(self):
+		for channel in self.settings.networks.values()[0]['channels']:
+			try:
+				self.join(channel[0], channel[1])
+			except IndexError:
+				self.join(channel[0])
+
 		self.execute_plugins("on_connected")
 
 	def on_join(self, nick, channel):
@@ -104,6 +110,14 @@ class IRCBot(AutoReloader):
 	def on_quit(self, nick, reason):
 		self.execute_plugins("on_quit", nick, reason)
 
+	def on_reload(self):
+		# Check for new channels, if so join them
+		for channel in self.settings.networks.values()[0]['channels']:
+			try:
+				self.join(channel[0], channel[1])
+			except IndexError:
+				self.join(channel[0])
+
 	def reload(self):
 		self.need_reload['main'] = True
 		self.need_reload['ircbot'] = True
@@ -119,8 +133,8 @@ class IRCBot(AutoReloader):
 	def connect(self, address, port):
 		return self.client.connect(address, port)
 
-	def join(self, channel):
-		return self.client.join(channel)
+	def join(self, channel, password=""):
+		return self.client.join(channel, password)
 
 	def send(self, line):
 		return self.client.send(line)

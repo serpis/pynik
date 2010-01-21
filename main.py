@@ -64,6 +64,7 @@ def Tick():
 				print "Collected %s objects out of %s. Garbarge are %s objects." % (gc.collect(2), 
 					len(gc.get_objects()), len(gc.garbage))
 				bot.need_reload['main'] = False
+				bot.on_reload()
 
 			bot.tick()
 			#web_server.tick()
