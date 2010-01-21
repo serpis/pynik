@@ -6,15 +6,16 @@ import sys
 import pdb
 import gc
 
+try:
+	import settings
+except ImportError:
+	print "---> Please copy settings.sample.py to settings.py and customize it. <---"
+	sys.exit(0)
+
 import ircbot
-import settings
 from httpsrv import http_server
 
-if settings.nick == "CHANGEME":
-	print "---> Please customize settings.py and try again. <---"
-	sys.exit(0);
-
-bot = ircbot.IRCBot(settings.server_address, settings.server_port, settings.nick, settings.username, settings.realname)
+bot = ircbot.IRCBot(settings.Settings())
 
 #web_server = http_server.HTTPServer(host="127.0.0.1", port=8000)
 botnik_picture_data = None

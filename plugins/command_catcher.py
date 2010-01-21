@@ -48,7 +48,7 @@ class CommandCatcherPlugin(Plugin):
 				except MemoryError:
 					return "Command '%s' used to much memory." % trigger
 				except:
-					bot.tell(settings.admin_channel, 
+					bot.tell(bot.settings.admin_channel, 
 						 "%s triggered an error by typing '%s %s': %s, tb: %s." % (source, trigger, 
 						 arguments, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])[-1] ))
 					

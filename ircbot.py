@@ -49,8 +49,13 @@ class TimedEvent:
 		return cmp(self.trigger_time, other.trigger_time)
 
 class IRCBot(AutoReloader):
-	def __init__(self, address, port, nick, username, realname):
-		self.client = ircclient.IRCClient(address, port, nick, username, realname)
+	def __init__(self, settings):
+		self.settings = settings
+		if len(self.settings.networks) > 1:
+			raise Exception("Only one network is supported right now.")
+		sett = self.settings.networks.values()[0]
+		self.client = ircclient.IRCClient(sett['server_address'], sett['server_port'], 
+						  sett['nick'], sett['username'], sett['realname'])
 		self.client.callbacks = self.callbacks()
 		self.plugins = []
 		self.timer_heap = PriorityQueue()

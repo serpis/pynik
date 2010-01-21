@@ -113,8 +113,9 @@ def load_data(name, default_value=None):
 		print "Could not load data from file 'data/" + str(name) + ".txt' :("
 		return default_value
 
+# FIXME use bot.settings/rebuild authentication
 def has_admin_privileges(source, target):
-	return source in settings.admin_adminnicks
+	return source in settings.Settings().admin_adminnicks 
 
 nbsp_latin1 = unescape("&nbsp;")
 nbsp_utf8 = nbsp_latin1.decode("latin-1").encode("utf-8")
