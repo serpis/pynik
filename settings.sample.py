@@ -9,6 +9,7 @@ class Settings(AutoReloader):                      # these two lines
 			     "nick": "CHANGEME",
 			     "username": "CHANGEME",
 			     "realname": "CHANGEME",
+			     "channels": [["#CHANGEME"], ["#channel", "password"], ],
 			     },
 		}
 
