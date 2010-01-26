@@ -1,0 +1,6 @@
+*~
+*.pyc
+*.orig
+\#*#
+data/*
+settings.py
