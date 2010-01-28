@@ -39,9 +39,11 @@ def menu(location):
 		# TODO: Use a correct non-hackish week number, possibly through a utility function.	
 		url = "http://www.cgnordic.com/sv/Eurest-Sverige/Restauranger/Restaurang-Karallen-Linkopings-universitet/Lunchmeny-v-" + str(int(datetime.now().strftime("%W"))) + "/"
 		
-		entry_regex = '\<td\>\<strong\>(.+?dag).+?\<\/strong\>\<\/td\>\<\/tr\>(.+?)(?=(\<td\>\<strong\>(.+?dag).+?\<\/strong\>\<\/td\>\<\/tr\>|\<p\>Pris dagens:))'
+		header_regex = '\<strong\>(.+?dag).+?\<\/strong\>'
+		
+		entry_regex = header_regex + '(\<\/p\>)?\<\/td\>\<\/tr\>(.+?)(?=(' + header_regex + '|\<p\>Pris dagens:))'
 		entry_day_index = 0
-		entry_data_index = 1
+		entry_data_index = 2
 		
 		dish_regex = '\<\/td\>\s+\<td\>(\s+\<p( align="[a-z]+")?\>)?([^\<]+?)(\<\/p\>)?\<\/td\>\<\/tr\>()'
 		dish_name_index = 2
