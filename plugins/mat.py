@@ -36,12 +36,8 @@ def menu(location):
 	elif location == "karallen" or location == "kara":
 		# Restaurang Kårallen, LiU
 		
-		# The URL is a bit unclear, possibly this will work
-		url = "http://www.cgnordic.com/sv/Eurest-Sverige/Restauranger/Restaurang-Karallen-Linkopings-universitet/Lunchmeny-"
-		if (int(datetime.now().strftime("%W"))+1) % 2:
-			url += "v-15/"
-		else:
-			url += "v-13/"
+		# TODO: Use a correct non-hackish week number, possibly through a utility function.	
+		url = "http://www.cgnordic.com/sv/Eurest-Sverige/Restauranger/Restaurang-Karallen-Linkopings-universitet/Lunchmeny-v-" + str(int(datetime.now().strftime("%W"))) + "/"
 		
 		entry_regex = '\<td\>\<strong\>(.+?dag).+?\<\/strong\>\<\/td\>\<\/tr\>(.+?)(?=(\<td\>\<strong\>(.+?dag).+?\<\/strong\>\<\/td\>\<\/tr\>|\<p\>Pris dagens:))'
 		entry_day_index = 0
