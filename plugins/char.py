@@ -7,7 +7,7 @@ chars = [{'dec':'32', 'oct':'040', 'hex':'20', 'bin':'00100000', 'symbol':'&nbsp
 {'dec':'34', 'oct':'042', 'hex':'22', 'bin':'00100010', 'symbol':'\"', 'html':'&amp;#34;', 'desc':'Double quotes (or speech marks)'},
 {'dec':'35', 'oct':'043', 'hex':'23', 'bin':'00100011', 'symbol':'#', 'html':'&amp;#35;', 'desc':'Number'},
 {'dec':'36', 'oct':'044', 'hex':'24', 'bin':'00100100', 'symbol':'$', 'html':'&amp;#36;', 'desc':'Dollar'},
-{'dec':'37', 'oct':'045', 'hex':'25', 'bin':'00100101', 'symbol':'%', 'html':'&amp;#37;', 'desc':'Procenttecken'},
+{'dec':'37', 'oct':'045', 'hex':'25', 'bin':'00100101', 'symbol':'%', 'html':'&amp;#37;', 'desc':'Percent sign'},
 {'dec':'38', 'oct':'046', 'hex':'26', 'bin':'00100110', 'symbol':'&amp;', 'html':'&amp;#38;', 'desc':'Ampersand'},
 {'dec':'39', 'oct':'047', 'hex':'27', 'bin':'00100111', 'symbol':'\'', 'html':'&amp;#39;', 'desc':'Single quote'},
 {'dec':'40', 'oct':'050', 'hex':'28', 'bin':'00101000', 'symbol':'(', 'html':'&amp;#40;', 'desc':'Open parenthesis (or open bracket)'},
