@@ -3,7 +3,7 @@
 import sys
 from plugins import Plugin
 
-class FirstPlugin(Plugin): 
+class ExamplePlugin(Plugin): 
 	hooks = ['on_privmsg']   
 
 	def __init__(self):
