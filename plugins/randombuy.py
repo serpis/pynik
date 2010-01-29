@@ -81,7 +81,7 @@ class RandomBuyCommand(Command):
 	def __init__(self):
 		pass
 		
-	def on_privmsg(self, bot, source, target, message):
+	def on_privmsg(self, bot, source, target, message, network, **kwargs):
 		m = re.match(r'\.k((ö|Ã¶)+)p(.*)', message)
 		if not m:
 			return # Not a trigger
@@ -91,7 +91,7 @@ class RandomBuyCommand(Command):
 		
 		# Show usage
 		if not args[1]:
-			bot.tell(target, self.usage)
+			bot.tell(network, target, self.usage)
 			return
 		
 		m = re.match(r'(((\d+)-(\d+))|(\d+)|=(\d+))(!?)', args[1])
@@ -106,7 +106,7 @@ class RandomBuyCommand(Command):
 				min_price = int(m.group(6))
 				max_price = min_price
 			else:
-				bot.tell(target, "Ojoj, nu gick det fel igen :(")
+				bot.tell(network, target, "Ojoj, nu gick det fel igen :(")
 			
 			if m.group(7):
 				removal_filter = ".*batter(y|ies).*"
@@ -114,7 +114,7 @@ class RandomBuyCommand(Command):
 				removal_filter = None
 			
 		else:
-			bot.tell(target, "Hörru, så gör man inte! " + self.usage)
+			bot.tell(network, target, "Hörru, så gör man inte! " + self.usage)
 		
 		# Length varies depending on encoding, so this is not a good way to do it
 		hardcore = (len(args[0]) > 3)
@@ -124,7 +124,7 @@ class RandomBuyCommand(Command):
 		
 		# Tell the appropriate target
 		if target[0] == '#':
-			bot.tell(target, result)
+			bot.tell(network, target, result)
 		else:
-			bot.tell(source, result)
+			bot.tell(network, source, result)
 		

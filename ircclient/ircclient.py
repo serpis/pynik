@@ -1,5 +1,4 @@
 from __future__ import with_statement
-
 import sys
 import socket
 import re
@@ -8,13 +7,14 @@ import datetime
 import errno
 import random
 import string
+
 from autoreloader.autoreloader import AutoReloader
 
 def timestamp():
 	return datetime.datetime.now().strftime("[%H:%M:%S]")
 
 class IRCClient(AutoReloader):
-	def __init__(self, address, port, nick, username, realname):
+	def __init__(self, address, port, nick, username, realname, network):
 		self.connected = False
 		self.active_session = False
 		self.temp_nick_list_channel = None
@@ -52,6 +52,7 @@ class IRCClient(AutoReloader):
 		self.nick = nick
 		self.username = username
 		self.realname = realname
+		self.network = network
 
 	def connect(self, address, port):
 		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -70,7 +71,7 @@ class IRCClient(AutoReloader):
 		self.lines.append(line)
 	
 	def send(self, line):
-		self.log_line(timestamp() + " SENT: " + line)
+		self.log_line(timestamp() + " " + self.network + " SENT: " + line)
 
 		data = line + "\r\n"
 
@@ -137,7 +138,7 @@ class IRCClient(AutoReloader):
 		source, channel = [tupels[1], tupels[4]]
 
 		if "on_join" in self.callbacks:
-			self.callbacks["on_join"](source, channel)
+			self.callbacks["on_join"](self.network, source, channel)
 
 	def on_kick(self, tupels):
 		source, channel = [tupels[1], tupels[4]]
@@ -148,7 +149,7 @@ class IRCClient(AutoReloader):
 			target_nick = m.group(1)
 
 		if "on_kick" in self.callbacks:
-			self.callbacks["on_kick"](source, channel, target_nick)
+			self.callbacks["on_kick"](self.network, source, channel, target_nick)
 
 		if target_nick:
 			for nick_list in self.nick_lists.values():
@@ -159,7 +160,7 @@ class IRCClient(AutoReloader):
 		source, new_nick = [tupels[1], tupels[4]]
 
 		if "on_nick_change" in self.callbacks:
-			self.callbacks["on_nick_change"](source, new_nick)
+			self.callbacks["on_nick_change"](self.network, source, new_nick)
 
 		source_nick = self.get_nick(source)
 
@@ -176,7 +177,7 @@ class IRCClient(AutoReloader):
 		source, channel, reason = [tupels[1], tupels[4], tupels[5]]
 
 		if "on_part" in self.callbacks:
-			self.callbacks["on_part"](source, channel, reason)
+			self.callbacks["on_part"](self.network, source, channel, reason)
 
 		source_nick = self.get_nick(source)
 
@@ -194,13 +195,14 @@ class IRCClient(AutoReloader):
 		source_nick = self.get_nick(source)
 
 		if "on_quit" in self.callbacks:
-			self.callbacks["on_quit"](source_nick, reason)
+			self.callbacks["on_quit"](self.network, source_nick, reason)
 
 		for nick_list in self.nick_lists.values():
 			if source_nick in nick_list:
 				nick_list.remove(source_nick)
 
 	def on_ping(self, tupels):
+		self.ping_count += 1
 		self.send("PONG :" + tupels[4])
 
 	def on_privmsg(self, tupels):
@@ -210,7 +212,7 @@ class IRCClient(AutoReloader):
 			target = source
 
 		if "on_privmsg" in self.callbacks:
-			self.callbacks["on_privmsg"](source, target, message)
+			self.callbacks["on_privmsg"](self.network, source, target, message)
 
 	def on_notice(self, tupels):
 		source, target, message = tupels[2], tupels[4], tupels[5]
@@ -219,13 +221,13 @@ class IRCClient(AutoReloader):
 			target = source
 
 		if "on_notice" in self.callbacks:
-			self.callbacks["on_notice"](source, target, message)
+			self.callbacks["on_notice"](self.network, source, target, message)
 
 	def on_connected(self, tupels):
 		self.active_session = True
 
 		if "on_connected" in self.callbacks:
-			self.callbacks["on_connected"]()
+			self.callbacks["on_connected"](self.network)
 
 	def on_error(self, tupels):
 		message = tupels[5]
@@ -253,7 +255,7 @@ class IRCClient(AutoReloader):
 						self.recv_buf = line
 					else:
 						line = line.rstrip("\r\n")
-						self.log_line(timestamp() + " RECV: " + line)
+						self.log_line(timestamp() + " " + self.network + " RECV: " + line)
 						m = self.irc_message_pattern.match(line)
 						if m:
 							if m.group(3) in self.message_handlers:

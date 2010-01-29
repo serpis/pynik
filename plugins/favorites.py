@@ -41,9 +41,9 @@ class FavoriteCommands(Command):
 		else:
 			return "Syntax: setfav <trigger> <url>"
 
-	def trig_favorites(self, bot, source, target, trigger, argument):
+	def trig_favorites(self, bot, source, target, trigger, argument, network, **kwargs):
 		from copy import copy
-		bot.tell(target, 'Favorites: ' + ', '.join(sorted(self.favorites.keys())) + '.')
+		bot.tell(network, target, 'Favorites: ' + ', '.join(sorted(self.favorites.keys())) + '.')
 
 	def get_fav(self, trig, args):
 		if trig in self.favorites:

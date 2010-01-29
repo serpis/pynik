@@ -1,10 +1,13 @@
+import re
 import sys
 import traceback
 import datetime
+from copy import copy
+from heapq import heappush, heappop
+from autoreloader.autoreloader import AutoReloader
+
 import plugin_handler
 from ircclient import ircclient
-from autoreloader.autoreloader import AutoReloader
-from heapq import heappush, heappop
 
 # Call plugins_on_load only on first import
 try:
@@ -51,72 +54,113 @@ class TimedEvent:
 class IRCBot(AutoReloader):
 	def __init__(self, settings):
 		self.settings = settings
-		if len(self.settings.networks) > 1:
-			raise Exception("Only one network is supported right now.")
-		sett = self.settings.networks.values()[0]
-		self.client = ircclient.IRCClient(sett['server_address'], sett['server_port'], 
-						  sett['nick'], sett['username'], sett['realname'])
-		self.client.callbacks = self.callbacks()
+		self.callbacks = self.get_callbacks()
+		self.clients = {}
+		self.networks = []
 		self.plugins = []
 		self.timer_heap = PriorityQueue()
 		self.need_reload = {}
 
-	def callbacks(self):
+		for network in self.settings.networks:
+			net_settings = self.settings.networks[network]
+			print "Connecting to network %s at %s:%s..." % (network,
+			      net_settings['server_address'], net_settings['server_port'])
+			self.clients[network] = ircclient.IRCClient(net_settings['server_address'],
+								    net_settings['server_port'],
+								    net_settings['nick'],
+								    net_settings['username'],
+								    net_settings['realname'],
+								    network)
+			self.clients[network].callbacks = copy(self.callbacks)
+			self.networks.append(network)
+
+	def get_callbacks(self):
 		return { "on_connected": self.on_connected, "on_join": self.on_join,
 			 "on_nick_change": self.on_nick_change, "on_notice": self.on_notice, 
 			 "on_part": self.on_part, "on_privmsg": self.on_privmsg, "on_quit": self.on_quit }
 
-	def is_connected(self):
-		return self.client.is_connected()
+	def is_connected(self, network=None):
+		if network == None:
+			raise DeprecationWarning("network parameter missing")			
+		return self.clients['networks'].is_connected()
 
-	def execute_plugins(self, trigger, *arguments):
+	def execute_plugins(self, network, trigger, *arguments):
 		for plugin in plugin_handler.all_plugins():
 			try:
-				#if arguments:
-				#	print trigger
-				#       print("plugin.%s(self, %s) %s" % (trigger,", ".join(arguments),plugin.__class__ ))
-				#else:
-				#	print("plugin.%s(self)" % trigger)
-				plugin.__class__.__dict__[trigger](plugin, self, *arguments)
-			except KeyError:
-				pass
+				if plugin.__class__.__dict__.has_key(trigger):
+					# FIXME this is rather ugly, for compatiblity with pynik
+					if plugin.__class__.__dict__[trigger].func_code.co_argcount == len(arguments) + 2:
+						plugin.__class__.__dict__[trigger](plugin, self, *arguments) # Call without network
+					elif plugin.__class__.__dict__[trigger].func_code.co_argcount == len(arguments) + 3:
+						plugin.__class__.__dict__[trigger](plugin, self, *arguments, **{'network': network})
+					else:
+						raise NotImplementedError("Plugin '%s' argument count missmatch, was %s." % (
+								plugin, plugin.__class__.__dict__[trigger].func_code.co_argcount))
 			except:
-				print "%s: argh", plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]) % (datetime.datetime.now().strftime("[%H:%M:%S]"))
-	
-	def on_connected(self):
-		for channel in self.settings.networks.values()[0]['channels']:
+				print "%s %s Plugin '%s' threw exception, exinfo: '%s', traceback: '%s'" % (
+					datetime.datetime.now().strftime("[%H:%M:%S]"), network,
+					plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
+
+				try:
+					self.tell(self.settings.admin_network, self.settings.admin_channel,
+						  "%s %s Plugin '%s' threw exception, exinfo: '%s', traceback: '%s'" % (
+							datetime.datetime.now().strftime("[%H:%M:%S]"), network,
+							plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])[::-1]))
+				except:
+					print "%s %s Unable to send exception to admin channel, exinfo: '%s', traceback: '%s'" % (
+						datetime.datetime.now().strftime("[%H:%M:%S]"), network,
+						sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
+
+	def on_connected(self, network):
+		for channel in self.settings.networks[network]['channels']:
 			try:
-				self.join(channel[0], channel[1])
+				self.join(network, channel[0], channel[1])
 			except IndexError:
-				self.join(channel[0])
+				self.join(network, channel[0])
 
-		self.execute_plugins("on_connected")
+		self.execute_plugins(network, "on_connected")
 
-	def on_join(self, nick, channel):
-		self.execute_plugins("on_join", nick, channel)
+	def on_join(self, network, nick, channel):
+		self.execute_plugins(network, "on_join", nick, channel)
 
-	def on_nick_change(self, old_nick, new_nick):
-		self.execute_plugins("on_nick_change", old_nick, new_nick)
+	def on_nick_change(self, network, old_nick, new_nick):
+		self.execute_plugins(network, "on_nick_change", old_nick, new_nick)
 
-	def on_notice(self, nick, target, message):
-		self.execute_plugins("on_notice", nick, target, message)
+	def on_notice(self, network, nick, target, message):
+		self.execute_plugins(network, "on_notice", nick, target, message)
 
-	def on_part(self, nick, channel, reason):
-		self.execute_plugins("on_part", nick, channel, reason)
+	def on_part(self, network, nick, channel, reason):
+		self.execute_plugins(network, "on_part", nick, channel, reason)
 
-	def on_privmsg(self, nick, target, message):
-		self.execute_plugins("on_privmsg", nick, target, message)
+	def on_privmsg(self, network, nick, target, message):
+		self.execute_plugins(network, "on_privmsg", nick, target, message)
 
-	def on_quit(self, nick, reason):
-		self.execute_plugins("on_quit", nick, reason)
+	def on_quit(self, network, nick, reason):
+		self.execute_plugins(network, "on_quit", nick, reason)
 
 	def on_reload(self):
 		# Check for new channels, if so join them
-		for channel in self.settings.networks.values()[0]['channels']:
-			try:
-				self.join(channel[0], channel[1])
-			except IndexError:
-				self.join(channel[0])
+		for network in self.networks:
+			for channel in self.settings.networks[network]['channels']:
+				try:
+					self.join(network, channel[0], channel[1])
+				except IndexError:
+					self.join(network, channel[0])
+
+		# Connect to new networks
+		for network in self.settings.networks:
+			if network not in self.networks:
+				net_settings = self.settings.networks[network]
+				print "Connecting to new network %s at %s:%s..." % (network,
+				      net_settings['server_address'], net_settings['server_port'])
+				self.clients[network] = ircclient.IRCClient(net_settings['server_address'],
+									    net_settings['server_port'],
+									    net_settings['nick'],
+									    net_settings['username'],
+									    net_settings['realname'],
+									    network)
+				self.clients[network].callbacks = copy(self.callbacks)
+				self.networks.append(network)
 
 	def reload(self):
 		self.need_reload['main'] = True
@@ -130,38 +174,51 @@ class IRCBot(AutoReloader):
 	def load_plugin(self, plugin):
 		plugin_handler.load_plugin(plugin)
 
-	def connect(self, address, port):
-		return self.client.connect(address, port)
+	def join(self, network, channel, password=""):
+		return self.clients[network].join(channel, password)
 
-	def join(self, channel, password=""):
-		return self.client.join(channel, password)
+	def send(self, network, line=None):
+		if line == None:
+			raise DeprecationWarning("network parameter missing")
+		return self.clients[network].send(line)
 
-	def send(self, line):
-		return self.client.send(line)
+	def send_all_networks(self, line):
+		for client in self.clients.values():
+			if client.is_connected():
+				client.send(line)
 
-	def tell(self, target, message):
-		return self.client.tell(target, message)
+	def tell(self, network, target, message=None):
+		if message == None:
+			raise DeprecationWarning("network parameter missing")
+		return self.clients[network].tell(target, message)
 
 	def tick(self):
 		if self.need_reload.has_key('ircbot') and self.need_reload['ircbot']:
 			reload(ircclient)
 			reload(plugin_handler)
-			self.client.callbacks = self.callbacks()
+			self.callbacks = self.get_callbacks()
+			for client in self.clients.values():
+				client.callbacks = copy(self.callbacks)
+				#client.on_reload()
+			#self.execute_plugins(, "")
+
+
 			self.need_reload['ircbot'] = False
 
+		# FIXME timer is broken
+#		if not self.timer_heap.empty() and not self.client.connected:
+#			print "ATTENTION! We are not connected. Skipping timers!"
+#		else:
 		now = datetime.datetime.now()
+		while not self.timer_heap.empty() and self.timer_heap.top().trigger_time <= now:
+			timer = self.timer_heap.pop()
+			timer.trigger()
+			if timer.recurring:
+				timer.reset()
+				self.timer_heap.push(timer)
 
-		if not self.timer_heap.empty() and not self.client.connected:
-			print "ATTENTION! We are not connected. Skipping timers!"
-		else:
-			while not self.timer_heap.empty() and self.timer_heap.top().trigger_time <= now:
-				timer = self.timer_heap.pop()
-				timer.trigger()
-				if timer.recurring:
-					timer.reset()
-					self.timer_heap.push(timer)
-
-		self.client.tick()
+		for client in self.clients.values():
+			client.tick()
 
 	def add_timer(self, delta, recurring, target, *args):
 		timer = TimedEvent(delta, recurring, target, args)

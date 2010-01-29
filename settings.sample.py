@@ -2,9 +2,8 @@ from autoreloader.autoreloader import AutoReloader # Do not remove
 class Settings(AutoReloader):                      # these two lines
 
 	# Sample config, all options are mandatory
-	# Bot currently only supports one network.
 	networks = {
-		"quakenet": {"server_address": "irc.example.com",
+		"example": {"server_address": "irc.example.com",
 			     "server_port": 6667,
 			     "nick": "CHANGEME",
 			     "username": "CHANGEME",
@@ -13,6 +12,7 @@ class Settings(AutoReloader):                      # these two lines
 			     },
 		}
 
+	admin_network = "example"
 	admin_channel = "#example"
 	admin_adminnicks = ["CHANGEME"]
 	

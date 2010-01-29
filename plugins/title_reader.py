@@ -55,7 +55,7 @@ class TitleReaderPlugin(Command):
 		pass
 
 
-	def on_privmsg(self, bot, source, target, message):
+	def on_privmsg(self, bot, source, target, message, network):
 		m = re.search('((https?:\/\/|www.)\S+)', message, re.IGNORECASE)
 
 		if m:
@@ -67,8 +67,8 @@ class TitleReaderPlugin(Command):
 			title = get_title(url)
 			self.urls[target].title = title
 			self.save_last_url(target)
-			if target in ['#c++.se', '#d1d', '#lithen', "#d2006"]:
-				bot.tell(target, self.clean(url, title))
+			if target in ['#c++.se', '#d1d', '#lithen', "#d2006"]: #FIXME!
+				bot.tell(network, target, self.clean(url, title))
 
 
 	def save_last_url(self, target):

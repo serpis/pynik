@@ -9,6 +9,6 @@ class PostitCommand(Command):
 	def __init__(self):
 		pass
 	
-	def on_join(self, bot, source, channel):
-		bot.tell("#pynik", "O.o")
-		bot.tell(channel, "oi")
+	def on_join(self, bot, source, channel, network, **kwargs):
+		bot.tell(network, "#pynik", "O.o")
+		bot.tell(network, channel, "oi")

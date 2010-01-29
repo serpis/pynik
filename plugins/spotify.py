@@ -69,7 +69,7 @@ class SpotifyConvertPlugin(Command):
 
 		return output
 
-	def on_privmsg(self, bot, source, target, message):
+	def on_privmsg(self, bot, source, target, message, network, **kwargs):
 		m = re.search(r'http://open\.spotify\.com/(?P<type>.+?)/(?P<hash>\w+)', message)
 		prot = 'URL'
 		if not m:
@@ -82,7 +82,7 @@ class SpotifyConvertPlugin(Command):
 			self.spots[target] = spot
 			self.save_last_spot(target)
 
-			bot.tell(target, self.spot_lookup_direct(spot))
+			bot.tell(network, target, self.spot_lookup_direct(spot))
 
 
 	def save_last_spot(self, target):

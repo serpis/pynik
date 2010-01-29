@@ -1,5 +1,4 @@
 # coding: utf-8
-
 import re
 import sys
 from plugins import Plugin
@@ -15,7 +14,7 @@ class CommandCatcherPlugin(Plugin):
 	def __init__(self):
 		pass
 
-	def on_command(self, bot, source, target, trigger, arguments):
+	def on_command(self, bot, source, target, trigger, arguments, network):
 		meth_name = 'trig_' + trigger.lower()
 		pairs = []
 		
@@ -42,18 +41,33 @@ class CommandCatcherPlugin(Plugin):
 					source = m.group(1)
 
 				try:
-					return utility.timeout(method, 10, (bot, source, target, trigger, arguments))
+					# FIXME this is rather ugly, for compatiblity with pynik
+					if method.im_func.func_code.co_argcount == 7:
+						ret = utility.timeout(method, 10, (bot, source, target, trigger, arguments), {'network': network})
+					elif method.im_func.func_code.co_argcount == 6:
+						ret = utility.timeout(method, 10, (bot, source, target, trigger, arguments))
+					else:
+						raise NotImplementedError("Trigger '%s' argument count missmatch, was %s." % (
+								trigger, method.im_func.func_code.co_argcount))
+					return ret
 				except utility.TimeoutException:
 					return "Command '%s' took too long to execute." % trigger
 				except MemoryError:
 					return "Command '%s' used to much memory." % trigger
 				except:
-					bot.tell(bot.settings.admin_channel, 
-						 "%s triggered an error by typing '%s %s': %s, tb: %s." % (source, trigger, 
-						 arguments, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])[-1] ))
-					
 					print "Error triggered by '%s' with command '%s', exinfo: '%s', traceback: '%s'" % (source, 
 					      trigger, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
+
+					try:
+						bot.tell(bot.settings.admin_network, bot.settings.admin_channel, 
+							 "%s triggered an error by typing '%s %s': %s, tb: %s." % (
+								source, trigger, arguments, 
+								sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])[::-1]))
+					except:
+						print "%s %s Unable to send exception to admin channel, exinfo: '%s', traceback: '%s'" % (
+							datetime.datetime.now().strftime("[%H:%M:%S]"), network,
+							sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
+
 					return "Oops. Error logged."
 			else:
 				return "Bwaha. You can't trigger that!"
@@ -62,7 +76,7 @@ class CommandCatcherPlugin(Plugin):
 			if trigger in favorites.FavoriteCommands.instance.favorites.keys():
 				return favorites.FavoriteCommands.instance.trig_fav(bot, source, target, 'fav', trigger + ' ' + arguments)
 	
-	def on_privmsg(self, bot, source, target, message):
+	def on_privmsg(self, bot, source, target, message, network, **kwargs):
 		m = re.match(r'^(\S)((\S+)\s?(.*?))$', message)
 		if m and m.group(1) == '.':
 			body = m.group(2)
@@ -73,14 +87,14 @@ class CommandCatcherPlugin(Plugin):
 				trigger = m.group(3)
 				arguments = m.group(4)
 
-			ret_str = self.on_command(bot, source, target, trigger, arguments)
+			ret_str = self.on_command(bot, source, target, trigger, arguments, network)
 			if ret_str:
 				m = re.search('^(.+)!', source)
 				if m:
 					if target == source:
 						target = m.group(1)
 				
-				bot.tell(target, ret_str)
+				bot.tell(network, target, ret_str)
 
 
 	def on_load(self):

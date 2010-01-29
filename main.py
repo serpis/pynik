@@ -35,10 +35,10 @@ def handle_request(request):
 		return
 
 	c = None
-	if bot.is_connected():
-		c = "connected"
-	else:
-	 	c = "disconnected"
+#	if bot.is_connected(): #FIXME
+#		c = "connected"
+#	else:
+#	 	c = "disconnected"
 
 	data = "I think that I am %s.<p><img src=\"botnik.png\"><p>" % c
 
@@ -51,7 +51,7 @@ def handle_request(request):
 
 #web_server.register_handle_request_callback(handle_request)
 	
-bot.add_timer(datetime.timedelta(0, 60), True, bot.send, "PING :iamabanana")
+bot.add_timer(datetime.timedelta(0, 600), True, bot.send_all_networks, "PING :iamabanana")
 sys.path += [os.path.join(sys.path[0], "httpsrv"), os.path.join(sys.path[0], "ircclient"),
 	     os.path.join(sys.path[0], "plugins")]
 
