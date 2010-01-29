@@ -1,8 +1,12 @@
 import os
-import sets
 import imp
 import sys
 import re
+
+import error_handler
+
+# TODO Is this deprecated module actually used? Can another one be used instead?
+import sets
 
 from copy import copy
 
@@ -40,7 +44,7 @@ def reload_plugin_modules():
 		try:
 			reload(module)
 		except:
-			print 'error when reloading module', module.__name__, sys.exc_info(), str(traceback.extract_tb(sys.exc_info()[2]))
+			error_handler.output_string('error when reloading module ' + str(module.__name__) + ' ' + str(sys.exc_info()) + ' ' + str(traceback.extract_tb(sys.exc_info()[2])))
 
 def search_for_subclasses(c):
 	l = [c]

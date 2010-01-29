@@ -6,6 +6,8 @@ import re
 import utility
 from commands import Command
 
+import error_handler
+
 class metacritic(Command):
 	def __init__(self):
 		pass
@@ -36,7 +38,7 @@ class metacritic(Command):
 		if result:
 			return result
 
-		print "title search failed."
+		error_handler.output_message("[metacritic] title search failed.")
 		url = 'http://apps.metacritic.com/search/process?ty=3&ts=' + utility.escape(term)
 		data = utility.read_url(url)["data"]
 		result = self.parse_result(data, term, url)

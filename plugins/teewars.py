@@ -14,6 +14,8 @@ import thread
 import sys
 import traceback
 
+import error_handler
+
 list_lock = thread.allocate_lock()
 
 def tw_get_num_players(address, port):
@@ -100,7 +102,7 @@ def tw_get_info():
 		utility.read_url("http://serp.starkast.net/berserker/gief_stats.php?timestamp=%s&servers=%s&players=%s" % (int(time.time()), num_servers, num_players));
 		return (num_servers, num_players)
 	except:
-		print 'exception O.o', sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+		error_handler.output_message('exception O.o ' + str(sys.exc_info()) + ' ' + str(traceback.extract_tb(sys.exc_info()[2])))
 		return None
 
 class TeewarsCommand(Command):

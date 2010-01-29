@@ -8,6 +8,8 @@ import utility
 import traceback
 import settings
 
+import error_handler
+
 class CommandCatcherPlugin(Plugin): 
 	hooks = ['on_privmsg']   
 
@@ -55,8 +57,8 @@ class CommandCatcherPlugin(Plugin):
 				except MemoryError:
 					return "Command '%s' used to much memory." % trigger
 				except:
-					print "Error triggered by '%s' with command '%s', exinfo: '%s', traceback: '%s'" % (source, 
-					      trigger, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
+					error_handler.output_message("Error triggered by '%s' with command '%s', exinfo: '%s', traceback: '%s'" % (
+							source, trigger, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])))
 
 					try:
 						bot.tell(bot.settings.admin_network, bot.settings.admin_channel, 
@@ -64,9 +66,9 @@ class CommandCatcherPlugin(Plugin):
 								source, trigger, arguments, 
 								sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])[::-1]))
 					except:
-						print "%s %s Unable to send exception to admin channel, exinfo: '%s', traceback: '%s'" % (
+						error_handler.output_message("%s %s Unable to send exception to admin channel, exinfo: '%s', traceback: '%s'" % (
 							datetime.datetime.now().strftime("[%H:%M:%S]"), network,
-							sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
+							sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])))
 
 					return "Oops. Error logged."
 			else:

@@ -6,6 +6,8 @@ import re
 import sys
 import utility
 
+import error_handler
+
 class OptionsCommand(Command):
 	_table = {}
 
@@ -164,7 +166,7 @@ class OptionsCommand(Command):
 			self._table = self.build_tree(None, t, 0)
 		except:
 			import traceback
-			print sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])
+			error_handler.output_message(str(sys.exc_info()) + ' ' + str(traceback.extract_tb(sys.exc_info()[2])))
 
 	def get_members_by_name(self, members, name):
 		l = []

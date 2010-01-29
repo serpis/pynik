@@ -2,6 +2,8 @@ import sys
 import re
 from socket import *
 
+import error_handler
+
 def write(s, text):
 	s.send(text)
 	s.send("\r\n")
@@ -87,7 +89,7 @@ def read_url(url):
 			return result
 				
 		elif protocol != 'http':
-			print "Only http(s) is supported at this moment."
+			error_handler.output_message("[httpget] Only http(s) is supported at this moment, cannot get " + url)
 			return None
 		else:
 			if not port:
@@ -131,8 +133,8 @@ def read_url(url):
 
 				return { "url": url, "data": data }
 			else:
-				print "Got unhandled response code: %s" % response_num
+				error_handler.output_message("[httpget] Got unhandled response code: %s" % response_num)
 				return None
 	else:
-		print "NOT AN URL: %s" % url
+		error_handler.output_message("[httpget] NOT AN URL: %s" % url)
 		return None

@@ -7,6 +7,8 @@ import utility
 from datetime import datetime
 from commands import Command
 
+import error_handler
+
 def is_valid_course_code(code):
 	# A valid course code consists of 6 characters, e.g. TATM79, TDP001 or NBIA19
 	return re.match("\A([A-Za-z0-9]{6})\Z", code)
@@ -52,8 +54,8 @@ def lith_course_info(code, programme, year):
 	if m:
 		name = name + " (" + utility.unescape(m.group(1)) + ")"
 	else:
-		print "I couldn't find the English name of the LiTH course " + \
-			code + " O.o"
+		error_handler.output_message(
+			"I couldn't find the English name of the LiTH course " + code + " O.o")
 	
 	# Locate the number of HP (ECTS) credits
 	m = re.search(

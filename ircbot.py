@@ -7,6 +7,7 @@ from heapq import heappush, heappop
 from autoreloader.autoreloader import AutoReloader
 
 import plugin_handler
+import error_handler
 from ircclient import ircclient
 
 # Call plugins_on_load only on first import
@@ -98,9 +99,9 @@ class IRCBot(AutoReloader):
 						raise NotImplementedError("Plugin '%s' argument count missmatch, was %s." % (
 								plugin, plugin.__class__.__dict__[trigger].func_code.co_argcount))
 			except:
-				print "%s %s Plugin '%s' threw exception, exinfo: '%s', traceback: '%s'" % (
-					datetime.datetime.now().strftime("[%H:%M:%S]"), network,
-					plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
+				error_handler.output_message("%s %s Plugin '%s' threw exception, exinfo: '%s', traceback: '%s'" % (
+						datetime.datetime.now().strftime("[%H:%M:%S]"), network,
+						plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])))
 
 				if trigger != "timer_beat":
 					try:
@@ -109,9 +110,9 @@ class IRCBot(AutoReloader):
 								datetime.datetime.now().strftime("[%H:%M:%S]"), network,
 								plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])[::-1]))
 					except:
-						print "%s %s Unable to send exception to admin channel, exinfo: '%s', traceback: '%s'" % (
-							datetime.datetime.now().strftime("[%H:%M:%S]"), network,
-							sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
+						error_handler.output_message("%s %s Unable to send exception to admin channel, exinfo: '%s', traceback: '%s'" % (
+								datetime.datetime.now().strftime("[%H:%M:%S]"), network,
+								sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])))
 
 	def on_connected(self, network):
 		for channel in self.settings.networks[network]['channels']:

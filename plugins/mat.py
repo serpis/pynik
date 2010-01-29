@@ -116,6 +116,7 @@ def menu(location):
 				pass # Odd input or bad regex
 			elif dish_name.find(">") != -1:
 				error_handler.output_message("Hmm, 'mat' got an odd dish from " + location + ": " + dish_name)
+
 			elif dish[dish_price_index]:
 				# Price found, let's add it
 				dishes.append(dish_name + " (" + dish[dish_price_index] + " kr)")
