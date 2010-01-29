@@ -31,12 +31,12 @@ class PostNr(Command):
 			if len(result) != 0:
 				result += ", "
 			result += "%s: %s" % (postnr, postnrs[postnr])
-			print postnrs[postnr]
+			# print postnrs[postnr]
 	 
 		if len(result) == 0:
 			return "no result :<"
 		else:
-			print result
+			# print result
 			return result
 
 	def utf82iso(self, s):

@@ -138,17 +138,17 @@ class Schema(Command):
 		
 		if argument:
 			url = "http://timeedit.liu.se/4DACTION/WebShowSearch/5/2-0?wv_type=6&wv_search=" + argument
-			print url
+			#print url
 			response = utility.read_url(url)
 			data = response["data"].replace("\n", "")
-			print data
+			#print data
 			
 			m = re.search('\<a href=\'javascript:addObject\((\d+)\)\'\>\<img src=\'\/img\/plus\.gif\' width=\'12\' height=\'12\' border=\'0\' alt=\'\'\>\<\/a\>', data)
 			
 			if not m:
 				return "Course not found :("
 			
-			print m.group(1)
+			#print m.group(1)
 			self.id_directory[argument.lower()] = int(m.group(1))
 			self.save()
 			return "Added %s: http://timeedit.liu.se/4DACTION/WebShowSearch/5/2-0?wv_obj1=%s&wv_graphic=Grafiskt+format If this is wrong, just re-add it." % (argument.lower(), m.group(1))
