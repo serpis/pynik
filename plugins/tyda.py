@@ -52,13 +52,13 @@ def tyda_lookup(word, lang):
 	return base_word + inflected_words + ": " + ", ".join(translated_words) + " | " + url
 	
 class TydaCommand(Command):
-	usage = "Usage: .tyda <word> [<source language>]"
+	usage = "Usage: .tyda <word>[, <source language, en or sv>]"
 	
 	def trig_tyda(self, bot, source, target, trigger, argument):
 		"""English-Swedish/Swedish-English dictionary, powered by tyda.se"""
 		
 		argument = argument.strip()
-		args = argument.split(' ', 1)
+		args = argument.split(', ', 1)
 		
 		# Show usage
 		if not args[0]:
