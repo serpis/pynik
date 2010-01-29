@@ -32,7 +32,7 @@ class PickCommand(Command):
 		choices = map(lambda x: x.strip(), choices)
 		choices = filter(lambda choice: len(choice), choices)
 
-		print choices
+		#print choices
 
 		if choices:
 			responses = ["Hm... Definitely not %s.", "%s!", "I say... %s!", "I wouldn't pick %s...", "Perhaps %s..."]
