@@ -5,6 +5,7 @@ Serious shit
 ============
 * Timer events happen even when botnik is disconnected. This may cause him to try to send data on a closed socket => crash.
 * The title reader can freeze sometimes. I think this is because the httpreader module is a little buggy.
+* shuting down the bot probably results in on_unload not being run => no saved states
 
 Small
 =====
