@@ -160,6 +160,8 @@ class TempCommand(Command):
 		pass
 
 	def trig_temp(self, bot, source, target, trigger, argument):
+		""" Usage: .temp [City] Uses data from temperature.nu, please direct all complaints to www.temperatur.nu """
+		argument = argument.strip()
 		if argument:
 			argument = argument.strip()
 			self.places[source] = argument
