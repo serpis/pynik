@@ -1,7 +1,5 @@
 # coding: utf-8
 
-from __future__ import with_statement
-import pickle
 import os
 import re
 import datetime
@@ -77,20 +75,10 @@ class ReminderCommand(Command):
 				self.save()
 
 	def save(self):
-		with open('data/reminders.txt', 'w') as file:
-			p = pickle.Pickler(file)
-
-			p.dump(self.reminders)
+		utility.save_data("reminders", self.reminders)
 
 	def on_load(self):
-		self.reminders = []
-
-		try:
-			with open('data/reminders.txt') as file:
-				unp = pickle.Unpickler(file)
-				self.reminders = unp.load()
-		except:
-			pass
+		self.reminders = utility.load_data("reminders", [])
 	
 	def on_unload(self):
 		self.reminders = []

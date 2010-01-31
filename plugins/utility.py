@@ -6,6 +6,7 @@ import sys
 from plugins import Plugin
 import htmlentitydefs
 import re
+import os
 import signal
 import string
 
@@ -102,14 +103,14 @@ def read_url(url):
 	return data
 
 def save_data(name, data):
-	handle = open('data/' + name + '.txt', 'w')
+	handle = open(os.path.join('data', name + '.txt'), 'w')
 	p = pickle.Pickler(handle)
 	p.dump(data)
 	handle.close()
 
 def load_data(name, default_value=None):
 	try:
-		with open('data/' + name + '.txt', 'r') as handle:
+		with open(os.path.join('data', name + '.txt'), 'r') as handle:
 			return pickle.Unpickler(handle).load()
 	except:
 		print "Could not load data from file 'data/" + str(name) + ".txt' :("
