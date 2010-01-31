@@ -89,7 +89,7 @@ def read_url(url):
 			return result
 				
 		elif protocol != 'http':
-			error_handler.output_message("[httpget] Only http(s) is supported at this moment, cannot get " + url)
+			error_handler.output_message("<httpget> Only http(s) is supported at this moment, cannot get " + url)
 			return None
 		else:
 			if not port:
@@ -133,8 +133,8 @@ def read_url(url):
 
 				return { "url": url, "data": data }
 			else:
-				error_handler.output_message("[httpget] Got unhandled response code: %s" % response_num)
+				error_handler.output_message("<httpget> Got unhandled response code: %s" % response_num)
 				return None
 	else:
-		error_handler.output_message("[httpget] NOT AN URL: %s" % url)
+		error_handler.output_message("<httpget> NOT AN URL: %s" % url)
 		return None
