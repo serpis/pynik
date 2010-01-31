@@ -44,7 +44,7 @@ def reload_plugin_modules():
 		try:
 			reload(module)
 		except:
-			error_handler.output_string('error when reloading module ' + str(module.__name__) + ' ' + str(sys.exc_info()) + ' ' + str(traceback.extract_tb(sys.exc_info()[2])))
+			error_handler.output_message('error when reloading module ' + str(module.__name__) + ' ' + str(sys.exc_info()) + ' ' + str(traceback.extract_tb(sys.exc_info()[2])))
 
 def search_for_subclasses(c):
 	l = [c]
