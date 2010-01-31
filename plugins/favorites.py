@@ -1,7 +1,5 @@
 # coding: utf-8
 
-from __future__ import with_statement
-import pickle
 from commands import Command
 import re
 import utility
@@ -68,24 +66,13 @@ class FavoriteCommands(Command):
 				return "No such favorite '%s'." % fav_trig
 	
 	def save(self):
-		with open('data/favorites.txt', 'w') as file:
-			p = pickle.Pickler(file)
-
-			p.dump(self.favorites)
+		utility.save_data("favorites", self.favorites)
 
 	def on_modified_options(self):
 		self.save()
 
 	def on_load(self):
-		self.favorites = {}
-
-		try:
-			with open('data/favorites.txt') as file:
-				unpickler = pickle.Unpickler(file)
-
-				self.favorites = unpickler.load()
-		except:
-			pass
+		self.favorites = utility.load_data("favorites", {})
 
 	def on_unload(self):
 		self.favorites.clear()

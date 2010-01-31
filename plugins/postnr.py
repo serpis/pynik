@@ -3,8 +3,6 @@
 import re
 import utility
 import string
-import os
-import pickle
 from commands import Command
 
 class PostNr(Command):
@@ -63,21 +61,10 @@ class PostNr(Command):
 			return self.posten_postnr_query(self.utf82iso(args[0]), self.utf82iso(args[1]))
 
 	def save(self): 
-		f = open(os.path.join("data", "postnr_addresses.txt"), "w") 
-		p = pickle.Pickler(f) 
-		p.dump(self.places) 
-		f.close() 
+		utility.save_data("postnr_addresses", self.places)
 
-	def on_load(self): 
-		self.places = {}
-
-		try:
-			f = open(os.path.join("data", "postnr_addresses.txt"), "r") 
-			unpickler = pickle.Unpickler(f) 
-			self.places = unpickler.load() 
-			f.close() 
-		except:
-			pass
+	def on_load(self):
+		self.places = utility.load_data("postnr_addresses", {})
 
 	def on_unload(self): 
 		self.places = {}
