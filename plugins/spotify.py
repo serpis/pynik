@@ -1,7 +1,5 @@
 # coding: utf-8
 
-from __future__ import with_statement
-import pickle
 import sys
 import re
 import utility
@@ -154,18 +152,11 @@ class SpotifyConvertPlugin(Command):
 
 
 	def save_spots(self):
-		file = open('data/spots2.txt', 'w')
-		p = pickle.Pickler(file)
-		p.dump(self.spot_list)
-		file.close()
+		utility.save_data("spots2", self.spot_list)
 
 
 	def load_spots(self):
-		try:
-			with open('data/spots2.txt', 'r') as file:
-				self.spot_list = pickle.Unpickler(file).load()
-		except IOError:
-			pass
+		self.spot_list = utility.load_data("spots2", [])
 
 
 	def on_load(self):

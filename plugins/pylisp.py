@@ -1,7 +1,6 @@
-from __future__ import with_statement
-import pickle
 from plugins import Plugin
 from commands import Command
+import utility
 
 import command_catcher
 import random
@@ -742,23 +741,19 @@ class LispCommand(Command):
 			return str(e)
 
 	def save(self):
-		with open('data/lisp_state.txt', 'w') as file:
-			p = pickle.Pickler(file)
-
-			self.savable_environment.parent = None
-			p.dump(self.savable_environment)
-			self.savable_environment.parent = self.globals
+		self.savable_environment.parent = None
+		utility.save_data("lisp_state", self.savable_environment)
+		self.savable_environment.parent = self.globals
 
 	def on_load(self):
-		try:
-			with open('data/lisp_state.txt') as file:
-				unp = pickle.Unpickler(file)
-
-				self.savable_environment = unp.load()
-		except:
+		self.savable_environment = utility.load_data("lisp_state")
+		
+		if not self.savable_environment:
 			self.savable_environment = Environment(self.globals)
+		else:
+			self.savable_environment.parent = self.globals
 
-		self.savable_environment.parent = self.globals
+		
 	
 	def on_unload(self):
 		self.savable_environment = Environment(self.globals)

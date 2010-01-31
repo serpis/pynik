@@ -1,10 +1,8 @@
 # coding: utf-8
 
-from __future__ import with_statement
 from commands import Command
 import random
 import datetime
-import pickle
 import utility
 import standard
 import re
@@ -127,18 +125,10 @@ class GamePlugin(Command):
 		self.save_games()
 
 	def save_games(self):
-		file = open('data/games.txt', 'w')
-		p = pickle.Pickler(file)
-		p.dump(self.games)
-		file.close()
+		utility.save_data("games", self.games)
 
 	def load_games(self):
-		try:
-			with open('data/games.txt', 'r') as file:
-				self.games = pickle.Unpickler(file).load()
-		except:
-			pass
-
+		self.games = utility.load_data("games", {})
 
 	def trig_gamestart(self, bot, source, target, trigger, argument):
 		if not target in self.games.keys():

@@ -1,7 +1,5 @@
 # coding: utf-8
 
-from __future__ import with_statement
-import pickle
 import os
 import re
 import datetime
@@ -162,21 +160,10 @@ class RssCommand(Command):
 				self.save()
 
 	def save(self):
-		with open('data/rss_watch_list.txt', 'w') as file:
-			p = pickle.Pickler(file)
-
-			p.dump(self.watch_list)
+		utility.save_data("rss_watch_list", self.watch_list)
 
 	def on_load(self):
-		self.watch_list = []
-
-		try:
-			with open('data/rss_watch_list.txt') as file:
-				unp = pickle.Unpickler(file)
-
-				self.watch_list = unp.load()
-		except:
-			pass
+		self.watch_list = utility.load_data("rss_watch_list", [])
 	
 	def on_unload(self):
 		self.watch_list = []

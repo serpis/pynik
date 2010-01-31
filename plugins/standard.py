@@ -5,8 +5,6 @@ import htmlentitydefs
 import string
 import re
 import utility
-import os
-import pickle
 import random
 
 class EchoCommand(Command): 
@@ -72,21 +70,10 @@ class InsultCommand(Command):
 		return "Added insult: %s" % argument.replace('%s', source)
 	 
 	def save(self): 
-		f = open(os.path.join("data", "insults.txt"), "w") 
-		p = pickle.Pickler(f) 
-		p.dump(self.insults) 
-		f.close() 
+		utility.save_data("insults", self.insults)
 	 
 	def on_load(self): 
-		self.insults = [] 
- 
-		try:
-			f = open(os.path.join("data", "insults.txt"), "r") 
-			unpickler = pickle.Unpickler(f) 
-			self.insults = unpickler.load() 
-			f.close() 
-		except:
-			pass
+		self.insults = utility.load_data("insults", [])
 		 
 	def on_unload(self): 
 		self.insults = None
@@ -197,21 +184,10 @@ class TempCommand(Command):
 			return "Temperature in %s: invalid place, try using .yr instead." % (argument_text)
 
 	def save(self): 
-		f = open(os.path.join("data", "places.txt"), "w") 
-		p = pickle.Pickler(f) 
-		p.dump(self.places) 
-		f.close() 
+		utility.save_data("places", self.places)
 
-	def on_load(self): 
-		self.places = {}
-
-		try:
-			f = open(os.path.join("data", "places.txt"), "r") 
-			unpickler = pickle.Unpickler(f) 
-			self.places = unpickler.load() 
-			f.close() 
-		except:
-			pass
+	def on_load(self):
+		self.places = utility.load_data("places", {})
 
 	def on_unload(self): 
 		self.places = {}

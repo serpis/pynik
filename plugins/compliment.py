@@ -4,9 +4,8 @@
 
 from commands import Command
 import string
-import os
-import pickle
 import random
+import utility
 
 class ComplimentCommand(Command): 
 	def __init__(self): 
@@ -36,22 +35,11 @@ class ComplimentCommand(Command):
 		self.save() 
 		return "Added compliment: %s" % argument.replace('%s', source)
 	 
-	def save(self): 
-		f = open(os.path.join("data", "compliments.txt"), "w") 
-		p = pickle.Pickler(f) 
-		p.dump(self.compliments) 
-		f.close() 
+	def save(self):
+		utility.save_data("compliments", self.compliments)
 	 
 	def on_load(self): 
-		self.compliments = [] 
- 
-		try:
-			f = open(os.path.join("data", "compliments.txt"), "r") 
-			unpickler = pickle.Unpickler(f) 
-			self.compliments = unpickler.load() 
-			f.close() 
-		except:
-			pass
+		self.compliments = utility.load_data("compliments", [])
 		 
 	def on_unload(self): 
 		self.compliments = None
