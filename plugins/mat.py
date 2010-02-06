@@ -36,8 +36,13 @@ def menu(location):
 	elif location == "karallen" or location == "kara":
 		# Restaurang Kårallen, LiU
 		
-		# TODO: Use a correct non-hackish week number, possibly through a utility function.	
-		url = "http://www.cgnordic.com/sv/Eurest-Sverige/Restauranger/Restaurang-Karallen-Linkopings-universitet/Lunchmeny-v-" + str(int(datetime.now().strftime("%W"))) + "/"
+		# Oh well... The Kårallen guys apparently don't know what they are doing.
+		# For now, let's hope this pattern continues.
+		url = "http://www.cgnordic.com/sv/Eurest-Sverige/Restauranger/Restaurang-Karallen-Linkopings-universitet/Lunchmeny-"
+		if (int(datetime.now().strftime("%W"))+1) % 2: # TODO use better week function
+			url += "v-13/"
+		else:
+			url += "v-15/"
 		
 		header_regex = '\<strong\>(.+?dag).+?\<\/strong\>'
 		
@@ -86,6 +91,8 @@ def menu(location):
 	
 	# Fetch the web page
 	response = utility.read_url(url)
+	if not response:
+		return []
 	data = response["data"]
 	data = utility.unescape(data.replace("\n", ""))
 	data = data.replace(utility.unescape("&nbsp;"), " ")
