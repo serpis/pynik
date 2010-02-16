@@ -1,6 +1,8 @@
 IcE^:
-plugins/postnr
+plugins/postnr, isitfriday, food, code, 8ball, countdown, nelson
+plugins/alpha, yrno
 fixes to httpget and title_reader
+multiple networksupport, autoreloading, better settings, debugger
 
 Jonex:
 plugins/pi
