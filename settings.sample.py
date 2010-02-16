@@ -15,8 +15,11 @@ class Settings(AutoReloader):                      # these two lines
 	admin_network = "example"
 	admin_channel = "#example"
 	admin_adminnicks = ["CHANGEME"]
+
+	trigger = "."
 	
 	# Plugins that will be loaded on startup from plugins/
 	# Use this directory to view all available Plugins and to add your own.
 	plugins = ['plugins', 'command_catcher', 'commands', 'standard',
 			   'reloader', 'options', 'utility']
+

@@ -78,7 +78,7 @@ class CommandCatcherPlugin(Plugin):
 	
 	def on_privmsg(self, bot, source, target, message, network, **kwargs):
 		m = re.match(r'^(\S)((\S+)\s?(.*?))$', message)
-		if m and m.group(1) == '.':
+		if m and m.group(1) == bot.settings.trigger:
 			body = m.group(2)
 			if body[0] == '(':
 				trigger = "lisp"
