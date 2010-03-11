@@ -30,8 +30,10 @@ def get_title(url):
 		url = 'http://' + url
 
 	response = utility.read_url(url)
+	if response == None:
+		return None
+	
 	data = response["data"]
-
 	data = data.replace("\r", "").replace("\n", "")
 
 	m = re.search('<title[^>]*>\s*(.+?)\s*<\/title>', data, re.IGNORECASE|re.MULTILINE)
