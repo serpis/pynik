@@ -104,7 +104,7 @@ class TimeCommand(Command):
 class WeekCommand(Command):
 	def trig_week(self, bot, source, target, trigger, argument):
 		import datetime
-		return "Current week: %d." % (int(datetime.datetime.now().strftime("%W"))+1)
+		return "Current week: %d." % (int(datetime.datetime.now().strftime("%V")))
 
 def is_trigger(name):
 	m = re.search('^trig_.+', name)
