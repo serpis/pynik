@@ -233,9 +233,9 @@ class GoogleCommand(Command):
 			return "%s - %s | %s" % (text, link, url) 
 
 		# try to extract calculator result
-		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><td>&nbsp;<td nowrap (dir=ltr)?>(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
+		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><td>&nbsp;<td style="vertical-align:top" >(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
 		if m:
-			answer = m.group(4)
+			answer = m.group(3)
 			answer = answer.replace(' &#215;', '×').replace('<sup>', '^')
 			answer = re.sub('<.+?>', '', answer)
 			return answer
