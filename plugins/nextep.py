@@ -7,7 +7,7 @@ import utility
 import urllib
 
 class NextEpisodeCommands(Command):
-	TVRAGE_URL = "http://www.tvrage.com/quickinfo.php?show=%s"
+	TVRAGE_URL = "http://services.tvrage.com/tools/quickinfo.php?show=%s"
 	PATTERN = re.compile(r"(.*?)@(.*)")
 	def __init__(self):
 		pass
