@@ -188,10 +188,10 @@ class TempCommand(Command):
 			data = response["data"]
 			m = _get_temp_re.match(data)
 
-		if m:
+		if m and m.group(1) != "not found":
 			return "Temperature in %s: %s." % (argument_text, m.group(1))
 		else:
-			return "Temperature in %s: invalid place" % (argument_text)
+			return "Temperature in %s: invalid place, try using .yr instead." % (argument_text)
 
 	def save(self): 
 		f = open(os.path.join("data", "places.txt"), "w") 
