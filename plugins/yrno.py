@@ -15,7 +15,7 @@ from commands import Command
 class YrNo(Command):
     places = {}
 
-    def trig_yr(self, bot, source, target, trigger, argument, network, **kwargs):
+    def trig_yr(self, bot, source, target, trigger, argument):
         """ yr.no usage: location, [hour/date/"today"] """
 
         argument = self.iso2utf8(argument)
