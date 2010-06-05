@@ -278,7 +278,7 @@ class GoogleCommand(Command):
 
 class WikipediaCommand(Command):
 	def wp_get(self, item):
-		url = "http://en.wikipedia.org/wiki/%s" % utility.escape(item.replace(" ", "_"))
+		url = "http://simple.wikipedia.org/wiki/%s" % utility.escape(item.replace(" ", "_"))
 
 		response = utility.read_url(url)
 
