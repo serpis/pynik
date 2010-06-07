@@ -284,8 +284,8 @@ class GoogleCommand(Command):
 			return url
 
 class WikipediaCommand(Command):
-	def wp_get(self, item):
-		url = "http://simple.wikipedia.org/wiki/%s" % utility.escape(item.replace(" ", "_"))
+	def wp_get(self, language, item):
+		url = "http://%s.wikipedia.org/wiki/%s" % (language, utility.escape(item.replace(" ", "_")))
 
 		response = utility.read_url(url)
 
@@ -324,12 +324,13 @@ class WikipediaCommand(Command):
 		return (url, data)
 
 	def trig_wp(self, bot, source, target, trigger, argument):
-		url, data = self.wp_get(argument)
-
-		if data:
-			return "%s - %s" % (data, url)
-		else:
-			return "I couldn't find an article... :("
+		languages = ["simple", "en", "sv"]
+		for language in languages:
+			url, data = self.wp_get(language, argument)
+			if data:
+				return "%s - %s" % (data, url)
+	
+		return "I couldn't find an article... :("
 
 class AAOCommand(Command):
 	triggers = ['}{|', 'åäö', 'Ã¥Ã¤Ã¶']
