@@ -70,7 +70,8 @@ class IRCBot(AutoReloader):
 								    net_settings['nick'],
 								    net_settings['username'],
 								    net_settings['realname'],
-								    network)
+								    network,
+								    net_settings.setdefault('server_password'))
 			self.clients[network].callbacks = copy(self.callbacks)
 			self.networks.append(network)
 

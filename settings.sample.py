@@ -4,6 +4,7 @@ class Settings(AutoReloader):                      # these two lines
 	# Sample config, all options are mandatory
 	networks = {
 		"example": {"server_address": "irc.example.com",
+			     "server_password": "mypassword", # optional, omit if unused.
 			     "server_port": 6667,
 			     "nick": "CHANGEME",
 			     "username": "CHANGEME",

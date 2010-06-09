@@ -14,7 +14,7 @@ def timestamp():
 	return datetime.datetime.now().strftime("[%H:%M:%S]")
 
 class IRCClient(AutoReloader):
-	def __init__(self, address, port, nick, username, realname, network):
+	def __init__(self, address, port, nick, username, realname, network, password):
 		self.connected = False
 		self.active_session = False
 		self.temp_nick_list_channel = None
@@ -53,6 +53,7 @@ class IRCClient(AutoReloader):
 		self.username = username
 		self.realname = realname
 		self.network = network
+		self.password = password
 
 	def connect(self, address, port):
 		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -274,5 +275,7 @@ class IRCClient(AutoReloader):
 				return
 
 			if self.connected:
+				if self.password is not None:
+					self.send("PASS %s" % self.password)
 				self.send("USER %s * * :%s" % (self.username, self.realname))
 				self.send("NICK %s" % self.nick)
