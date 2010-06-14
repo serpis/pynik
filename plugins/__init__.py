@@ -6,4 +6,4 @@ __all__ = ['plugins', 'command_catcher', 'first_plugin', 'auto_join',
             'ical_parser', 'icq', 'pylisp', 'lithcourse', 'scale', 'postnr',
             'tenta', 'prisjakt', 'spotify', 'stava', 'down', 'metacritic',
             'notes', 'fml', 'systembolaget', 'randombuy', 'festern_bbq',
-            'compliment', 'roulette', 'tyda']
+            'compliment', 'roulette', 'tyda', 'yrno']
