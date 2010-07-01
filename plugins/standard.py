@@ -96,7 +96,7 @@ class RawCommand(Command):
 class TimeCommand(Command):
 	def trig_time(self, bot, source, target, trigger, argument):
 		import datetime
-		return datetime.datetime.now().isoformat()
+		return datetime.datetime.now().strftime("%y%m%d-%H%M%S - %H:%M:%S %a %d %b w:%V")
 
 	def trig_date(self, bot, source, target, trigger, argument):
 		return self.trig_time(bot, source, target, trigger, argument)
