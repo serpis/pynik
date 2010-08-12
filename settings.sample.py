@@ -19,6 +19,9 @@ class Settings(AutoReloader):                      # these two lines
 
 	trigger = "."
 	
+	recode_out_default_charset = "iso-8859-15"
+	recode_fallback = "iso-8859-15"
+
 	# Plugins that will be loaded on startup from plugins/
 	# Use this directory to view all available Plugins and to add your own.
 	plugins = ['plugins', 'command_catcher', 'commands', 'standard',

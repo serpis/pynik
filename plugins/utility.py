@@ -13,11 +13,32 @@ import settings
 class TimeoutException(Exception):
 	pass
 
-def unescape(str):
-	def fromhtml(s):
-		try: return htmlentitydefs.entitydefs[s.group(1)]
-		except KeyError: return chr(int(s.group(1)))
-	return re.sub("&#?(\w+);", fromhtml, str)
+##
+# Removes HTML or XML character references and entities from a text string.
+# From: http://effbot.org/zone/re-sub.htm#unescape-html
+#
+# @param text The HTML (or XML) source text.
+# @return The plain text, as a Unicode string, if necessary.
+def unescape(text):
+    def fixup(m):
+        text = m.group(0)
+        if text[:2] == "&#":
+            # character reference
+            try:
+                if text[:3] == "&#x":
+                    return unichr(int(text[3:-1], 16))
+                else:
+                    return unichr(int(text[2:-1]))
+            except ValueError:
+                pass
+        else:
+            # named entity
+            try:
+                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+            except KeyError:
+                pass
+        return text # leave as is
+    return re.sub("&#?\w+;", fixup, text)
 
 def escape(str):
 	import urllib
@@ -117,8 +138,8 @@ def load_data(name, default_value=None):
 def has_admin_privileges(source, target):
 	return source in settings.Settings().admin_adminnicks 
 
-nbsp_latin1 = unescape("&nbsp;")
-nbsp_utf8 = nbsp_latin1.decode("latin-1").encode("utf-8")
+nbsp_latin1 = unescape("&nbsp;").encode("latin-1")
+nbsp_utf8 = unescape("&nbsp;").encode("utf-8")
 
 def currency_conversion(amount, source, target):
 	url = 'http://www.google.com/search?rls=en&q=' + str(amount) + '+' + source + '+in+' + target + '&ie=UTF-8&oe=UTF-8'

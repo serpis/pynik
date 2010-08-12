@@ -7,6 +7,7 @@ import datetime
 import errno
 import random
 import string
+import settings
 
 from autoreloader.autoreloader import AutoReloader
 
@@ -68,7 +69,11 @@ class IRCClient(AutoReloader):
 		return self.connected
 
 	def log_line(self, line):
-		print line
+		try:
+			print line
+		except UnicodeEncodeError:
+			# FIXME use bot.settings/rebuild settings
+			print line.encode(settings.Settings().recode_fallback, "replace")
 		self.lines.append(line)
 	
 	def send(self, line):
@@ -77,7 +82,19 @@ class IRCClient(AutoReloader):
 		data = line + "\r\n"
 
 		while data:
-			sent =  self.s.send(data)
+			# FIXME use bot.settings/rebuild settings
+			try:
+				sent =  self.s.send(data.encode(settings.Settings().recode_out_default_charset))
+			except UnicodeDecodeError:
+				# String is probably not unicode, print warning and just send it
+				print
+				print "WARNING IRCClient send called with non unicode string, fix this!"
+				print
+				sent = self.s.send(data)
+			except UnicodeEncodeError:
+				# Try fallback coding instead
+				sent =  self.s.send(data.encode(settings.Settings().recode_fallback, "replace"))
+
 			data = data[sent:]
 
 		return len(line)+2

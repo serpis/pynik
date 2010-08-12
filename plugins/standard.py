@@ -334,11 +334,11 @@ class AAOCommand(Command):
 
 	def on_trigger(self, bot, source, target, trigger, argument):
 			if trigger == '\xe5\xe4\xf6':
-				return source+": Du anv‰nder nog Latin-1"
+				return source + u": Du anv√§nder nog Latin-1"
 			elif trigger == '}{|':
-				return source+": Du anv‰nder nog ISO-646"
+				return source + u": Du anv√§nder nog ISO-646"
 			else:
-				return source+": Du anv‰nder nog UTF-8"
+				return source + u": Du anv√§nder nog UTF-8"
 			
 class CollectCommand(Command):
 	def trig_collect(self, bot, source, target, trigger, argument):
