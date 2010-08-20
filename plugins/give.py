@@ -9,6 +9,8 @@ class GiveCommand(Command):
 		m = re.search("(\S+) +(\S+) ?(.*)$", argument)
 		if m:
 			hilight, give_trig, give_args = m.groups()
+			if give_trig[0] == ".":
+				give_trig = give_trig[1:]
 
 			ret_str = command_catcher.CommandCatcherPlugin.instance.on_command(bot, source, target, give_trig, give_args, network)
 
