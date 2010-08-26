@@ -73,6 +73,7 @@ def Tick():
 		except KeyboardInterrupt:
 			print ""
 			print "Entering debug mode, use c(ontinue) to exit. Don't stay here to long."
+			print "This is " + bot.settings.networks.values()[0]["nick"]
 			pdb.set_trace()
 		except:
 			raise
