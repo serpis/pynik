@@ -59,7 +59,7 @@ class ReminderCommand(Command):
 		else:
 			return "You have no reminders."
 
-	def timer_beat(self, bot, now):
+	def timer_beat(self, bot, now, network):
 		if not self.next_beat or self.next_beat < now:
 			self.next_beat = now + datetime.timedelta(0, 0, 0, 0, 1)
 
@@ -67,7 +67,7 @@ class ReminderCommand(Command):
 
 			for reminder in self.reminders:
 				if reminder.trigger_time <= now:
-					bot.tell(reminder.nick, "Beep beep! %s" % reminder.message)
+					bot.tell(network, reminder.nick, "Beep beep! %s" % reminder.message)
 					to_remove.append(reminder)
 
 			if to_remove:

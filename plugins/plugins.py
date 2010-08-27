@@ -14,7 +14,7 @@ class Plugin(object):
 		pass
 
 	def timer_beat(self, bot, now, network, **kwargs):
-		""" Not working right now. """
+		""" Called every 0.1 seconds. """
 		pass
 
 	def on_connected(self, bot, network, **kwargs):

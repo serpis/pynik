@@ -221,6 +221,10 @@ class IRCBot(AutoReloader):
 		for client in self.clients.values():
 			client.tick()
 
+		# Call timer_beat in all networks
+		for network in self.networks:
+			self.execute_plugins(network, "timer_beat", now)
+
 	def add_timer(self, delta, recurring, target, *args):
 		timer = TimedEvent(delta, recurring, target, args)
 

@@ -121,9 +121,9 @@ class RssCommand(Command):
 		else:
 			return 'Usage delwatch <rss feed>.'
 
-	def timer_beat(self, bot, now):
+	def timer_beat(self, bot, now, network):
 		if not self.next_beat or self.next_beat < now:
-			self.next_beat = now + datetime.timedelta(0, 0, 0, 0, 2)
+			self.next_beat = now + datetime.timedelta(0, 0, 0, 0, 30)
 
 			save_needed = False
 
@@ -150,7 +150,7 @@ class RssCommand(Command):
 								t[2] = newest = articles[0][0]
 								save_needed = True
 
-							bot.tell(nick, 'New: ' + ' | '.join(map(lambda x: "%s - %s" % (x[1], x[2]), articles[0:3])))
+							bot.tell(network, nick, 'New: ' + ' | '.join(map(lambda x: "%s - %s" % (x[1], x[2]), articles[0:3])))
 					#else:
 					#	bot.tell(nick, 'I couldn\'t find any articles there. :-(')
 				except utility.TimeoutException:
