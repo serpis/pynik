@@ -64,7 +64,7 @@ def menu(location):
 		
 	elif location == "zenit":
 		# Restaurang & Café Zenit, LiU
-		url = "http://www.hors.se/restauranger/restaurant_meny.php3?UID=24"
+		url = "http://www.hors.se/restauranter.php?UID=24"
 		
 		entry_regex = '\<tr\>\<td valign="top" colspan="3"\>\<b\>(.+?dag)\<\/b\>\<\/td\>\<\/tr>(.+?)(\<tr\>\<td colspan="3"\>\<hr\>\<\/td\>\<\/tr\>|Veckans Bistro)'
 		entry_day_index = 0
