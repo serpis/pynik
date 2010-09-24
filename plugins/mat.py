@@ -65,17 +65,19 @@ def menu(location):
 	elif location == "zenit":
 		# Restaurang & Café Zenit, LiU
 		url = "http://www.hors.se/restauranter.php?UID=24"
+
+		header_regex = '\<tr\>\<td valign="top" colspan="3"\>\<b\>(.+?dag)\<\/b\>\<\/td\>\<\/tr\>'
 		
-		entry_regex = '\<tr\>\<td valign="top" colspan="3"\>\<b\>(.+?dag)\<\/b\>\<\/td\>\<\/tr>(.+?)(\<tr\>\<td colspan="3"\>\<hr\>\<\/td\>\<\/tr\>|Veckans Bistro)'
+		entry_regex = header_regex + '(.+?)(?=(' + header_regex + '|VECKANS BISTRO|\<\/table\>))'
 		entry_day_index = 0
 		entry_data_index = 1
 		
 		# This used to be some clever (?) regex to handle special cases that are
 		# possibly not applicable now.
 		# \xa4 == ¤
-		dish_regex = '(\<td valign="top"\>|\<br \/\>\s*)\xa4 (.+?)(\<br \/\>|\<\/td\>)()'
-		dish_name_index = 1
-		dish_price_index = 3 # Dummy index.
+		dish_regex = '\xa4 ([^\>]+?)(\<br \/\>|\<\/td\>)()'
+		dish_name_index = 0
+		dish_price_index = 2 # Dummy index.
 		
 	else:
 		return [] # Not implemented yet
@@ -88,7 +90,7 @@ def menu(location):
 	data = utility.unescape(data.replace("\n", ""))
 	data = data.replace(utility.unescape("&nbsp;"), " ")
 	
-	#return data
+	#print data
 	
 	# Build the menu
 	menu = []
