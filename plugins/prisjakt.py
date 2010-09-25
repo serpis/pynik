@@ -14,11 +14,10 @@ def decode_characters(encoded_string):
 	
 def prisjakt_search(query_string):
 	# Build URLs
-	url_product = 'http://www.prisjakt.nu/ajax/jsonajaxserver.php?' + \
-			'm=super_search&p={"mode"%3A"' + 'prod_pj' + \
+	url_base = 'http://www.prisjakt.nu/ajax/jsonajaxserver.php?'
+	url_product = url_base + 'm=super_search&p={"mode"%3A"' + 'prod_pj' + \
 			'"%2C"search"%3A"' + query_string + '"%2C"limit"%3A1%2C"v4"%3A1}'
-	url_book = 'http://www.prisjakt.nu/ajax/jsonajaxserver.php?' + \
-			'm=super_search&p={"mode"%3A"' + 'bok' + \
+	url_book = url_base + 'm=super_search&p={"mode"%3A"' + 'bok' + \
 			'"%2C"search"%3A"' + query_string + '"%2C"limit"%3A1%2C"v4"%3A1}'
 
 	# Fetch the product result page
@@ -26,7 +25,7 @@ def prisjakt_search(query_string):
 	data = response["data"]
 
 	# Look for info
-	id_pattern = "\\{'mode': 'produkt', 'produkt_id': '(\\d+)'\\}"
+	id_pattern = "\{'mode': 'produkt', 'produkt_id': '(\d+)'\}"
 	id_match = re.search(id_pattern, data)
 
 	if not id_match:
@@ -35,7 +34,7 @@ def prisjakt_search(query_string):
 		data = response["data"]
 
 		# Look for info
-		id_pattern = "\\{'mode': 'bok', 'produkt_id': '(\\d+)'\\}"
+		id_pattern = "\{'mode': 'bok', 'produkt_id': '(\d+)'\}"
 		id_match = re.search(id_pattern, data)
 
 		url_type = "bok"
@@ -48,23 +47,35 @@ def prisjakt_search(query_string):
 
 		# Get title
 		if url_type == "bok":
-			title_pattern = "class=\\\\\"ikon(14)?\\\\\"( alt=\\\\\"\\\\\")?\\> (.+?) \\\\n"
-			encoded_title = re.search(title_pattern, data).group(3)
+			title_pattern = "class=\\\\\"ikon(14)?\\\\\"( alt=\\\\\"\\\\\")?\> (.+?) \\\\n"
+			title_match = re.search(title_pattern, data)
+			if title_match:
+				encoded_title = title_match.group(3)
+			else:
+				encoded_title = "Unknown title"
 		else:
-			title_pattern = "onmouseout=\\\\\"ajaxpopup_hide\(\);\\\\\"\>\\\\n  (.+?) \\\\n"
-			encoded_title = re.search(title_pattern, data).group(1)
+			title_pattern = "onmouseout=\\\\\"ajaxpopup_hide\(\);\\\\\"\>\\\\n  (.+?)\\\\n"
+			title_match = re.search(title_pattern, data)
+			if title_match:
+				encoded_title = title_match.group(1)
+			else:
+				encoded_title = "Unknown title"
 		
 		# Remove HTML tags
 		encoded_title = string.replace(
-				encoded_title, '<span class=\\"search_hit\\">', '')
-		encoded_title = string.replace(encoded_title, '<\\/span>', '')
+				encoded_title, "<span class=\\\"search_hit\\\">", "")
+		encoded_title = string.replace(encoded_title, "<\\/span>", "")
 		# Decode special characters
 		product_title = decode_characters(encoded_title)
 
 		# Get price
 		data = data.replace("&nbsp;", "")
-		price_pattern = "\\<span class=\\\\\"pris\\\\\"\>(\\d+:-)\\<\\\\\/span\\>"
-		product_price = re.search(price_pattern, data).group(1)
+		price_pattern = "\<span class=\\\\\"pris\\\\\"\>(\d+:-)\<\\\\\/span\>"
+		price_match = re.search(price_pattern, data)
+		if price_match:
+			product_price = price_match.group(1)
+		else:
+			product_price = "???:-"
 
 		# Done, return info string (latin-1 to make IRCClient.send() happy)
 		return product_title.encode('latin-1', 'replace') + ", " + product_price + \
