@@ -14,8 +14,11 @@ class TimeoutException(Exception):
 
 def unescape(str):
 	def fromhtml(s):
-		try: return htmlentitydefs.entitydefs[s.group(1)]
-		except KeyError: return chr(int(s.group(1)))
+		try:
+			return htmlentitydefs.entitydefs[s.group(1)]
+		except KeyError:
+			return unichr(int(s.group(1))).encode('ascii', 'replace')
+	
 	return re.sub("&#?(\w+);", fromhtml, str)
 
 def escape(str):
