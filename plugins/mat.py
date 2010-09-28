@@ -37,9 +37,13 @@ def menu(location):
 		# Restaurang Kårallen, LiU
 		
 		# Oh well... The Kårallen guys apparently don't know what they are doing.
-		# For now, let's hope this pattern continues.
+		# Until someone implements code that parses out the link to the current
+		# menu page, this hack will have to do:
 		url = "http://www.cgnordic.com/sv/Eurest-Sverige/Restauranger/Restaurang-Karallen-Linkopings-universitet/Lunchmeny-"
-		if (int(datetime.now().strftime("%W"))+1) % 2: # TODO use better week function
+		week_number = int(datetime.now().strftime("%V"))
+		if (week_number % 3) == 0:
+			url += "v-4/"
+		elif (week_number % 3) == 1:
 			url += "v-13/"
 		else:
 			url += "v-15/"
