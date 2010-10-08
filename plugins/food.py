@@ -48,7 +48,7 @@ class Restaurant():
 		return "I'm sorry Dave I don't recognize that restaurant. Hmm, should not reach this."
 
 class Preston(Restaurant):
-	restaurants = ["JB", "Husman", "Chili", "Golfinn", "Collegium", "Vallfarten"]
+	restaurants = ["Husman", "Chili", "Golfinn", "Collegium", "Vallfarten"]
 	url = "http://www.preston.se/dagens.html"
 
 	def fetchFood(self, restaurant, day=None):
@@ -197,6 +197,63 @@ class DeeJays(Restaurant):
 		else:
 			return "Stängt ):"
 
+class JohnBauer(Restaurant):
+	restaurants = ["JB"]
+	url = "http://www.johnbauer.nu/web/Restaurang_JB_1.aspx"
+
+	def fetchFood(self, restaurant, today=None):
+		response = utility.read_url(self.url)
+		data = response["data"]
+		
+		day = None
+		week = None
+		lunches = []
+		ofset = 0
+		found_restaurant = "JB"
+
+		days = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"]
+		if not today:
+			today = days[datetime.now().isoweekday()-1]
+
+
+		# find week
+		search = re.search('kudden v ([0-9]+)', data)
+		if search:
+			week = search.group(1)
+
+		# find day
+		start = data.lower().find(today.lower())
+		search = re.search("</p>", data[start:])
+		day = today
+
+		lines = data[start:start+search.end()].split("\n")
+		for line in lines:
+			search = re.search("&#160;(<em>)?([^<]*)<", line)
+			if search:
+				print search.group(2)
+				lunches.append(search.group(2))
+
+
+		# create result
+		result = ""
+		cnt = 1
+		if day != None and week != None and found_restaurant != None:
+			result = "Lunch " + found_restaurant + " " + day + " v" + week + " "
+
+		for lunch in lunches:
+			result += str(cnt) + ": " + lunch + " "
+			cnt += 1
+
+		if result[-1:] == " ":
+			result = result[:-1]
+
+		if len(result) == 0 or len(lunches) == 0:
+			return "No lunch available at %s ):" % restaurant
+		else:
+			return result
+
+
+
 class Food(Command):
 	restaurants = None
 
@@ -205,6 +262,7 @@ class Food(Command):
 		r1 = self.restaurants.setNext(Preston())
 		r2 = r1.setNext(Blaumesen())
 		r3 = r2.setNext(DeeJays())
+		r4 = r3.setNext(JohnBauer())
 
 	def trig_lunch(self, bot, source, target, trigger, argument, network, **kwargs):
 		""" Presents food, usage: {<restaurant>,list} """
