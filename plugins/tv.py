@@ -46,7 +46,7 @@ class TVCommand(Command):
 			if s:
 				return "Currently on %s: %s." % (channel, s)
 			else:
-				return "Could not find that channel. Try http://tvguide.swedb.se/tv?=NU"
+				return "Could not find that channel. Try http://tvsajten.com/tv?=NU"
 		else:
 			channels = ['SVT 1', 'SVT 2', 'TV3', 'TV4', 'TV4+', 'Kanal 5', 'TV6', 'Discovery Mix', 'MTV']
 			descriptions = []
@@ -55,6 +55,6 @@ class TVCommand(Command):
 				s = self.extract_channel_info(data, channel)
 				if s:
 					descriptions.append(channel + ': ' + s)
-			descriptions.append('http://tvguide.swedb.se/tv?=NU')
+			descriptions.append('http://tvsajten.com/tv?=NU')
 
 			return " | ".join(descriptions)
