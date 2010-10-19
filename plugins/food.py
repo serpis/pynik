@@ -202,6 +202,8 @@ class JohnBauer(Restaurant):
 	url = "http://www.johnbauer.nu/web/Restaurang_JB_1.aspx"
 
 	def fetchFood(self, restaurant, today=None):
+		return "They changed something! No lunch :("
+
 		response = utility.read_url(self.url)
 		data = response["data"]
 		
@@ -210,8 +212,9 @@ class JohnBauer(Restaurant):
 		lunches = []
 		ofset = 0
 		found_restaurant = "JB"
+		result = ""
 
-		days = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"]
+		days = ["M\xc3\xa5ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "L\xc3\xb6rdag", "S\xc3\xb6ndag"]
 		if not today:
 			today = days[datetime.now().isoweekday()-1]
 
@@ -224,28 +227,27 @@ class JohnBauer(Restaurant):
 		# find day
 		start = data.lower().find(today.lower())
 		search = re.search("</p>", data[start:])
-		day = today
+		if search:
+			day = today
 
-		lines = data[start:start+search.end()].split("\n")
-		for line in lines:
-			search = re.search("&#160;(<em>)?([^<]*)<", line)
-			if search:
-				print search.group(2)
-				lunches.append(search.group(2))
+			lines = data[start:start+search.end()].split("\n")
+			for line in lines:
+				search = re.search("&#160;(<em>)?([^<]*)<", line)
+				if search:
+					print search.group(2)
+					lunches.append(search.group(2))
 
+			# create result
+			cnt = 1
+			if day != None and week != None and found_restaurant != None:
+				result = "Lunch " + found_restaurant + " " + day + " v" + week + " "
 
-		# create result
-		result = ""
-		cnt = 1
-		if day != None and week != None and found_restaurant != None:
-			result = "Lunch " + found_restaurant + " " + day + " v" + week + " "
+			for lunch in lunches:
+				result += str(cnt) + ": " + lunch + " "
+				cnt += 1
 
-		for lunch in lunches:
-			result += str(cnt) + ": " + lunch + " "
-			cnt += 1
-
-		if result[-1:] == " ":
-			result = result[:-1]
+			if result[-1:] == " ":
+				result = result[:-1]
 
 		if len(result) == 0 or len(lunches) == 0:
 			return "No lunch available at %s ):" % restaurant
