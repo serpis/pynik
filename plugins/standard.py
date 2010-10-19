@@ -232,7 +232,8 @@ class GoogleCommand(Command):
 			return "%s - %s | %s" % (text, link, url) 
 
 		# try to extract calculator result
-		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><td>&nbsp;<td style="vertical-align:top" >(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
+		m = re.search('<td><img src="\/images\/icons\/onebox\/calculator-40\.gif" ?width=40 height=40 alt=""><td>&nbsp;<td style="vertical-align:top" >(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
+		#m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><td>&nbsp;<td style="vertical-align:top" >(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
 		if m:
 			answer = m.group(3)
 			answer = answer.replace(' &#215;', '\xd7').replace('<sup>', '^')
