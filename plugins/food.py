@@ -199,11 +199,9 @@ class DeeJays(Restaurant):
 
 class JohnBauer(Restaurant):
 	restaurants = ["JB"]
-	url = "http://www.johnbauer.nu/web/Restaurang_JB_1.aspx"
+	url = "http://www.johnbauer.nu/linkoping/om-skolan/restaurang-bjorkudden"
 
 	def fetchFood(self, restaurant, today=None):
-		return "They changed something! No lunch :("
-
 		response = utility.read_url(self.url)
 		data = response["data"]
 		
@@ -232,10 +230,11 @@ class JohnBauer(Restaurant):
 
 			lines = data[start:start+search.end()].split("\n")
 			for line in lines:
-				search = re.search("&#160;(<em>)?([^<]*)<", line)
+				print line
+				search = re.search("</strong>[ ]?([^<]*)<br />", line)
 				if search:
-					print search.group(2)
-					lunches.append(search.group(2))
+					print search.group(1)
+					lunches.append(search.group(1))
 
 			# create result
 			cnt = 1
