@@ -42,11 +42,11 @@ def menu(location):
 		url = "http://www.cgnordic.com/sv/Eurest-Sverige/Restauranger/Restaurang-Karallen-Linkopings-universitet/Lunchmeny-"
 		week_number = int(datetime.now().strftime("%V"))
 		if (week_number % 3) == 0:
-			url += "v-4/"
-		elif (week_number % 3) == 1:
 			url += "v-13/"
-		else:
+		elif (week_number % 3) == 1:
 			url += "v-15/"
+		else:
+			url += "v-4/"
 		
 		header_regex = '\<strong\>(.+?dag).+?\<\/strong\>'
 		
@@ -73,20 +73,17 @@ def menu(location):
 		
 	elif location == "zenit":
 		# Restaurang & Café Zenit, LiU
-		url = "http://www.hors.se/restauranter.php?UID=24"
+		url = "http://hors.se/new_site/restauranter_pdf.php?UID=24"
 
-		header_regex = '\<tr\>\<td valign="top" colspan="3"\>\<b\>(.+?dag)\<\/b\>\<\/td\>\<\/tr\>'
+		header_regex = '\<b\>(.+?dag) [\d]{2}-[A-Za-z]{3}\<\/b\>'
 		
-		entry_regex = header_regex + '(.+?)(?=(' + header_regex + '|VECKANS BISTRO|\<\/table\>))'
+		entry_regex = header_regex + '(.+?)(?=(' + header_regex + '|\<td width="200px" valign="top"\>Veckans|\<\/html\>))'
 		entry_day_index = 0
 		entry_data_index = 1
-		
-		# This used to be some clever (?) regex to handle special cases that are
-		# possibly not applicable now.
-		# \xa4 == ¤
-		dish_regex = '\xa4 ([^\>]+?)(\<br \/\>|\<\/td\>)()'
+
+		dish_regex = '\<td valign="top"\>([^\<]+)\<\/td\>\<td width="140px" valign="top"\>()'
 		dish_name_index = 0
-		dish_price_index = 2 # Dummy index.
+		dish_price_index = 1 # Dummy index.
 		
 	else:
 		return [] # Not implemented yet
