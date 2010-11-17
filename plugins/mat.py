@@ -187,18 +187,9 @@ def liu_food_str(day):
 		stripped_menu = []
 		
 		for item in zenit_menu[1]:
-			words = item.split(" ")
-			important_words = []
-			
-			for word in words:
-				if word.isupper():
-					important_words.append(word.replace(",", "").strip())
-			
-			# TODO str.capitalize does not work correctly with non-english letters!
-			if important_words:
-				dish_string = " + ".join(important_words)
-				dish_string = dish_string.decode("latin-1").encode("utf-8").capitalize()
-				stripped_menu.append(dish_string)
+			dish_string = item.split(" med ", 2)[0]
+			dish_string = dish_string.replace("serveras", "").strip().capitalize()
+			stripped_menu.append(dish_string)
 		
 		result += ", ".join(stripped_menu)
 	
