@@ -77,11 +77,11 @@ def menu(location):
 
 		header_regex = '\<b\>(.+?dag) [\d]{2}-[A-Za-z]{3}\<\/b\>'
 		
-		entry_regex = header_regex + '(.+?)(?=(' + header_regex + '|\<td width="200px" valign="top"\>Veckans|\<\/html\>))'
+		entry_regex = header_regex + '(.+?)(?=(' + header_regex + '|\<td width="\d+px" valign="top"\>Veckans|\<\/html\>))'
 		entry_day_index = 0
 		entry_data_index = 1
 
-		dish_regex = '\<td valign="top"\>([^\<]+)\<\/td\>\<td width="140px" valign="top"\>()'
+		dish_regex = '\<td valign="top"\>([^\<]+)\<\/td\>\<td width="\d+px" valign="top"\>()'
 		dish_name_index = 0
 		dish_price_index = 1 # Dummy index.
 		
@@ -189,6 +189,7 @@ def liu_food_str(day):
 		for item in zenit_menu[1]:
 			dish_string = item.split(" med ", 2)[0]
 			dish_string = dish_string.replace("serveras", "").strip().capitalize()
+			dish_string = dish_string.decode('iso-8859-1').encode('utf-8')
 			stripped_menu.append(dish_string)
 		
 		result += ", ".join(stripped_menu)
