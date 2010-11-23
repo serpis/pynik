@@ -41,12 +41,10 @@ def menu(location):
 		# menu page, this hack will have to do:
 		url = "http://www.cgnordic.com/sv/Eurest-Sverige/Restauranger/Restaurang-Karallen-Linkopings-universitet/Lunchmeny-"
 		week_number = int(datetime.now().strftime("%V"))
-		if (week_number % 3) == 0:
+		if (week_number % 2) == 1:
 			url += "v-13/"
-		elif (week_number % 3) == 1:
-			url += "v-15/"
 		else:
-			url += "v-4/"
+			url += "v-15/"
 		
 		header_regex = '\<strong\>(.+?dag).+?\<\/strong\>'
 		
