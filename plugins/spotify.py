@@ -31,10 +31,51 @@ class SpotifyConvertPlugin(Command):
 
 	def spot_lookup(self, type, hash):
 		tempSpot = Spot(type, hash, 'URI')
-		return self.spot_lookup_direct(tempSpot)
+		res = self.spot_lookup_direct(tempSpot)
+		if res:
+			return res
+		else:
+			return "couldn't find shit, captain!"
 
+	def get_properties(self, url):
+		response = utility.read_url(url)
+		data = response["data"]
+
+		pattern = r"<meta property=\"og:(.*?)\" content=\"(.*?)\" />"
+		return dict(re.findall(pattern, data))
 
 	def spot_lookup_direct(self, theSpot):
+		url = "http://open.spotify.com/%s/%s" % (theSpot.type, theSpot.hash)
+
+		p = self.get_properties(url)
+
+		artist = None
+		track = None
+		album = None
+
+		if p["type"] == "song":
+			artist = self.get_properties(p["artist"])["title"]
+			track = p["title"]
+			album = self.get_properties(p["album"])["title"]
+		elif p["type"] == "album":
+			artist = self.get_properties(p["artist"])["title"]
+			album = p["title"]
+
+		output = "%s: %s | %s" % (artist, track, album)
+
+		if not track:
+			output = "%s: %s" % (artist, album)
+
+		if not album:
+			output = "%s" % artist
+
+		if not artist:
+			return None
+
+		return output
+
+
+	def spot_lookup_direct_old(self, theSpot):
 		url = "http://spotify.url.fi/%s/%s" % (theSpot.type, theSpot.hash)
 		response = utility.read_url(url)
 		data = response["data"]
@@ -65,7 +106,7 @@ class SpotifyConvertPlugin(Command):
 			output = "%s" % artist
 
 		if not artist:
-			return "couldn't find shit, captain!"
+			return None
 
 		return output
 
@@ -81,9 +122,10 @@ class SpotifyConvertPlugin(Command):
 			spot = Spot(type, hash, prot)
 			self.spots[target] = spot
 			self.save_last_spot(target)
+			res = self.spot_lookup_direct(spot)
 
-			bot.tell(target, self.spot_lookup_direct(spot))
-
+			if res:
+				bot.tell(target, res)
 
 	def save_last_spot(self, target):
 		self.spot_list.append(self.spots[target])
