@@ -104,7 +104,7 @@ class TimeCommand(Command):
 class WeekCommand(Command):
 	def trig_week(self, bot, source, target, trigger, argument):
 		import datetime
-		return "Current week: %d." % (int(datetime.datetime.now().strftime("%W"))+1)
+		return "Current week: %d." % (int(datetime.datetime.now().strftime("%V")))
 
 def is_trigger(name):
 	m = re.search('^trig_.+', name)
@@ -217,7 +217,7 @@ class GoogleCommand(Command):
 
 		data = response["data"]
 
-		#print data
+		print data
 
 		# try to extract video result
 		m = re.search(r'Video results for <em>.*?<\/em>.*?<td valign=top style="padding-right:10px"><a href="(.*?)" class=l.*?>(.*?)</a><br>',data)
@@ -228,9 +228,9 @@ class GoogleCommand(Command):
 			return "%s - %s | %s" % (text, link, url) 
 
 		# try to extract calculator result
-		m = re.search('<td><img src=\/images\/calc_img\.gif width=40 height=30 alt=""><td>&nbsp;<td nowrap (dir=ltr)?>(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
+		m = re.search('<td><img src="\/images\/icons\/onebox\/calculator-40\.gif" ?width=40 height=40 alt=""><td>&nbsp;<td style="vertical-align:top" >(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
 		if m:
-			answer = m.group(4)
+			answer = m.group(3)
 			answer = answer.replace(' &#215;', '×').replace('<sup>', '^')
 			answer = re.sub('<.+?>', '', answer)
 			return answer
@@ -278,7 +278,7 @@ class GoogleCommand(Command):
 
 class WikipediaCommand(Command):
 	def wp_get(self, item):
-		url = "http://en.wikipedia.org/wiki/%s" % utility.escape(item.replace(" ", "_"))
+		url = "http://simple.wikipedia.org/wiki/%s" % utility.escape(item.replace(" ", "_"))
 
 		response = utility.read_url(url)
 

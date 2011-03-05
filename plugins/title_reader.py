@@ -30,8 +30,10 @@ def get_title(url):
 		url = 'http://' + url
 
 	response = utility.read_url(url)
+	if response == None:
+		return None
+	
 	data = response["data"]
-
 	data = data.replace("\r", "").replace("\n", "")
 
 	m = re.search('<title[^>]*>\s*(.+?)\s*<\/title>', data, re.IGNORECASE|re.MULTILINE)
@@ -64,11 +66,14 @@ class TitleReaderPlugin(Command):
 			self.urls[target].url = m.group(1)
 			self.urls[target].nick = source
 			self.urls[target].timestamp = 'test'
-			title = get_title(url)
-			self.urls[target].title = title
-			self.save_last_url(target)
-			if target in ['#c++.se', '#d1d', '#lithen', "#d2006"]:
-				bot.tell(target, self.clean(url, title))
+			try:
+				title = utility.timeout(get_title, 10, (url,))
+				self.urls[target].title = title
+				self.save_last_url(target)
+				if target in ['#c++.se', '#d1d', '#lithen', "#d2006"]:
+					bot.tell(target, self.clean(url, title))
+			except utility.TimeoutException:
+				pass
 
 
 	def save_last_url(self, target):
