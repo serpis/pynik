@@ -24,7 +24,7 @@ class IMDbCommand(Command):
 
 		try:
 			data = decoder.decode(response['data'])
-		except Error:
+		except Exception:
 			return u"Couldn't parse the API output :( | Manual search: " + site_search_url
 		
 		if data.get(u"Response") != u"True":
