@@ -1,112 +1,103 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
-import sys
-import re
 import utility
-from plugins import Plugin
 from commands import Command
-import command_catcher
 
-class Spot(object):
-	def __init__(self, type, hash, format):
-		self.type = type
-		self.hash = hash
-		self.format = format
+import re
+from json import JSONDecoder
+
+class SpotifyRef(object):
+	def __init__(self, target_type, spotify_hash):
+		self.type = target_type
+		self.hash = spotify_hash
 
 	def URI(self):
-		return "spotify:%s:%s" % (type, hash)
+		return u"spotify:%s:%s" % (self.type, self.hash)
 
 	def URL(self):
-		return "http://open.spotify.com/%s/%s" % (type, hash)
+		return u"http://open.spotify.com/%s/%s" % (self.type, self.hash)
 
-class SpotifyConvertPlugin(Command):
+
+class SpotifyCommand(Command):
 	hooks = ['on_privmsg']
-	spots = {}
-	spot_list = []
+	references = {}
+	api_base_url = u"http://78.31.8.28/" # http://ws.spotiy.com/ is official but seems unstable
 
 	def __init__(self):
 		pass
 
-	def spot_lookup(self, type, hash):
-		tempSpot = Spot(type, hash, 'URI')
-		res = self.spot_lookup_direct(tempSpot)
+	def lookup(self, target_type, spotify_hash):
+		temp_ref = SpotifyRef(target_type, spotify_hash)
+		res = self.lookup_direct(temp_ref)
 		if res:
 			return res
 		else:
-			return "couldn't find shit, captain!"
+			return u"No metadata found :("
 
-	def get_properties(self, url):
-		response = utility.read_url(url)
-		data = response["data"]
+	def lookup_direct(self, reference):
+		decoder = JSONDecoder()
+		api_url = self.api_base_url + u"lookup/1/.json?uri=" + reference.URI()
+		response = utility.read_url(api_url)
 
-		pattern = r"<meta property=\"og:(.*?)\" content=\"(.*?)\" />"
-		return dict(re.findall(pattern, data))
-
-	def spot_lookup_direct(self, theSpot):
-		url = "http://open.spotify.com/%s/%s" % (theSpot.type, theSpot.hash)
-
-		p = self.get_properties(url)
-
-		artist = None
-		track = None
-		album = None
-
-		if p["type"] == "song":
-			artist = self.get_properties(p["artist"])["title"]
-			track = p["title"]
-			album = self.get_properties(p["album"])["title"]
-		elif p["type"] == "album":
-			artist = self.get_properties(p["artist"])["title"]
-			album = p["title"]
-
-		output = "%s: %s | %s" % (artist, track, album)
-
-		if not track:
-			output = "%s: %s" % (artist, album)
-
-		if not album:
-			output = "%s" % artist
-
-		if not artist:
+		if not response:
 			return None
 
-		return output
-
-
-	def spot_lookup_direct_old(self, theSpot):
-		url = "http://spotify.url.fi/%s/%s" % (theSpot.type, theSpot.hash)
-		response = utility.read_url(url)
-		data = response["data"]
-
-		# Commence data mining
-
-		artist = re.search(r"<span>Artist</span>\s*<a.*?>(?P<artist>.+?)</a>", data, re.DOTALL)
-		if artist: artist = artist.group(1)
-
-		album = re.search(r"<span>Album</span>\s*<a.+?>(?P<album>.+?)</a>", data, re.DOTALL)
-		if album: album = album.group(1)
-
-		year = re.search(r"<span>Year</span>\s*(?P<year>.+?)\s*</p>", data, re.DOTALL)
-		if year: year = year.group(1)
-
-		track = re.search(r"<span>Track</span>\s*<a.+?>(?P<track>.+?)</a>", data, re.DOTALL)
-		if track: track = track.group(1)
-
-		length = re.search("<span>Length</span>\s*(?P<length>.+?)\s*</p>", data, re.DOTALL)
-		if length: length = length.group(1)
-
-		output = "%s: %s | %s (%s)" % (artist, track, album, year)
-
-		if not track:
-			output = "%s: %s (%s)" % (artist, album, year)
-
-		if not album:
-			output = "%s" % artist
-
-		if not artist:
+		try:
+			data = decoder.decode(response['data'])
+		except StandardError:
 			return None
 
-		return output
+		if not data.get(u"info"):
+			return None
+
+		# Album reference
+		if reference.type == u"album":
+			metadata = data.get(u"album", {})
+			album = metadata.get(u"name", u"Unknown album")
+			artist = metadata.get(u"artist", u"Unknown artist")
+			year = metadata.get(u"released", u"Unknown year")
+			return u"%s: %s (%s)" % (artist, album, year)
+
+		# Artist reference
+		elif reference.type == u"artist":
+			metadata = data.get(u"artist", {})
+			artist = metadata.get(u"name", u"Unknown artist")
+			return u"%s" % artist
+
+		# Track reference
+		elif reference.type == u"track":
+			#return u"track"
+			# Extract some dicts from the data
+			metadata = data.get(u"track", {})
+			metadata_album = metadata.get(u"album", {})
+			metadata_artists = metadata.get(u"artists", [{}])
+
+			# Extract info from the dicts
+			album = metadata_album.get(u"name", u"Unknown album")
+			artists = map(lambda artist: artist.get(u"name", u"Unknown artist"), metadata_artists)
+			artist = ", ".join(artists)
+			duration = metadata.get(u"length", u"0.0")
+			popularity = metadata.get(u"popularity", u"0.0")
+			track = metadata.get(u"name", u"Unknown track")
+			year = metadata_album.get(u"released", u"Unknown year")
+
+			# Convert strings to floats
+			try:
+				duration = float(duration)
+			except ValueError:
+				duration = 0.0;
+			try:
+				popularity = float(popularity)
+			except ValueError:
+				popularity = 0.0;
+
+			# Construct result
+			return u"%s: %s | %s (%s) | Track popularity %d%%, Track duration %d:%02d" % \
+					(artist, track, album, year, int(round(popularity*100)), duration / 60, duration % 60)
+
+		# Unsupported reference
+		else:
+			return None
 
 	def on_privmsg(self, bot, source, target, message):
 		m = re.search(r'http://open\.spotify\.com/(?P<type>.+?)/(?P<hash>\w+)', message)
@@ -115,57 +106,47 @@ class SpotifyConvertPlugin(Command):
 			prot = 'URI'
 			m = re.search(r'spotify:(?P<type>.+?):(?P<hash>\w+)', message)
 		if m:
-			type = m.group('type')
-			hash = m.group('hash')
-			spot = Spot(type, hash, prot)
-			self.spots[target] = spot
-			self.save_last_spot(target)
-			res = self.spot_lookup_direct(spot)
-
-			if res:
-				bot.tell(target, res)
-
-	def save_last_spot(self, target):
-		self.spot_list.append(self.spots[target])
-		self.save_spots()
-
+			reference = SpotifyRef(m.group('type'), m.group('hash'))
+			self.references[target] = reference
+			self.save_refs()
+			# Non-escaped . is intended, because mainstream pynik lacks a way to get trigger char
+			if not re.match(r'.spotify .+', message):
+				res = self.lookup_direct(reference)
+				if res:
+					bot.tell(target, res.encode("utf-8"))
 
 	def trig_spotify(self, bot, source, target, trigger, argument):
+		"""Retrieves metadata about Spotify albums, artists and tracks. | This product uses a SPOTIFY API but is not endorsed, certified or otherwise approved in any way by Spotify. Spotify is the registered trade mark of the Spotify Group."""
+
+		# Look up the argument
 		if argument:
 			m = re.search(r'http://open\.spotify\.com/(?P<type>.+?)/(?P<hash>\w+)', argument)
-
-			if (not m):
+			if not m:
 				m = re.search(r'spotify:(?P<type>.+?):(?P<hash>\w+)', argument)
-
 			if m:
-				return self.spot_lookup(m.group("type"), m.group("hash"))
-
+				return self.lookup(m.group("type"), m.group("hash")).encode("utf-8")
 			else:
 				return "Couldn't make sense of that."
 
-		elif target in self.spots.keys():
-			m = self.spots[target]
-			if m:
-				return self.spot_lookup_direct(m)
-			else:
-				return 'I haven\'t seen any urls here yet.'
+		# Look up the last posted link
+		res = None
 
+		if target in self.references.keys():
+			ref = self.references[target]
+			if ref:
+				res = u" | ".join([self.lookup_direct(ref), ref.URL()])
+		
+		if res:
+			return res.encode("utf-8")
+		else:
+			return 'I haven\'t seen any Spotify links here yet.'
 
-	def save_spots(self):
-		utility.save_data("spots2", self.spot_list)
+	def save_refs(self):
+		utility.save_data("spotify", self.references)
 
-
-	def load_spots(self):
-		self.spot_list = utility.load_data("spots2", [])
-
+	def load_refs(self):
+		self.references = utility.load_data("spotify", {})
 
 	def on_load(self):
-		self.load_spots()
+		self.load_refs()
 
-
-	def save(self):
-		pass
-
-
-	def on_modified_options(self):
-		self.save()
