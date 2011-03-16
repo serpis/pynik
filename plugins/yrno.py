@@ -123,13 +123,13 @@ class YrNo(Command):
 
         result = "Weather in %s at " % town
         for t in lhbh[:4]:
-            result += "%s: %s %sC %s mm %s m/s %s " % (t["time"], t["weather"], t["temp"], t["precipitation"], t["wind_strength"], t["wind_direction"])
+            result += "%s: %s %sC %s mm %s m/s %s " % (t.get("time", "N/A"), t.get("weather", "N/A"), t.get("temp", "N/A"), t.get("precipitation", "N/A"), t.get("wind_strength", "N/A"), t.get("wind_direction", "N/A"))
 
         # Find rain!
         rains = ""
         for t in lhbh:
-            if float(t["precipitation"]) > 0.1:
-                rains += "%s%s %smm " % (t["day"][:2], t["time"], t["precipitation"])
+            if float(t.get("precipitation", 0.11)) > 0.1:
+                rains += "%s%s %smm " % (t["day"][:2], t.get("time", "N/A"), t.get("precipitation", "N/A"))
 
         if len(rains) != 0:
             result += "DANGER rain! " + rains
