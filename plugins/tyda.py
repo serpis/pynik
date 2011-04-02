@@ -2,6 +2,10 @@
 
 # Plugin created by Merola
 
+# This plugin does not use an official API and is in no way endorsed by the
+# scraped web service. You are fully responsible for any breaches of
+# terms of use and/or applicable laws that usage of this plugin could result in.
+
 import re
 import string
 import utility
