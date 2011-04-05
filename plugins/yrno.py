@@ -38,17 +38,17 @@ class YrNo(Command):
         self.save()
 
         # Search for town
-        url = "http://www.yr.no/soek.aspx?sted=" + urllib2.quote(args[0])
+        url = "http://gammel.yr.no/soek.aspx?sted=" + urllib2.quote(args[0])
         request = urllib2.Request(url)
         request.add_header("Cookie", "brp=spr=eng")
         response = urllib2.urlopen(request)
 
         #print response.geturl()
 
-        if response.geturl().find("http://www.yr.no/soek.aspx?sted=") != -1:
+        if response.geturl().find("http://gammel.yr.no/soek.aspx?sted=") != -1:
             search = re.search('<a href="(/place/[^"]*)" title="[^"]*">', response.read())
             if search:
-                url = "http://www.yr.no" + urllib2.quote(search.group(1))
+                url = "http://gammel.yr.no" + urllib2.quote(search.group(1))
                 #print url
                 request = urllib2.Request(url)
                 request.add_header("Cookie", "brp=spr=eng")
