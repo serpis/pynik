@@ -3,7 +3,7 @@
 import utility
 from commands import Command
 
-from json import JSONDecoder
+from simplejson import JSONDecoder
 
 class IMDbCommand(Command):
 	usage = "Usage: .imdb <search term>"
