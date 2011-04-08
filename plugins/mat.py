@@ -7,6 +7,8 @@ import utility
 from commands import Command
 from datetime import datetime
 
+import error_handler
+
 def menu(location):
 	# Set location-specific settings
 	if location == "[hg]" or location == "hg":
@@ -41,9 +43,7 @@ def menu(location):
 		# menu page, this hack will have to do:
 		url = "http://www.cgnordic.com/sv/Eurest-Sverige/Restauranger/Restaurang-Karallen-Linkopings-universitet/Lunchmeny-"
 		week_number = int(datetime.now().strftime("%V"))
-		if (week_number % 3) == 0:
-			url += "v-4/"
-		elif (week_number % 3) == 1:
+		if (week_number % 2) == 1:
 			url += "v-13/"
 		else:
 			url += "v-15/"
@@ -73,20 +73,17 @@ def menu(location):
 		
 	elif location == "zenit":
 		# Restaurang & Café Zenit, LiU
-		url = "http://www.hors.se/restauranter.php?UID=24"
+		url = "http://hors.se/new_site/restauranter_pdf.php?UID=24"
 
-		header_regex = '\<tr\>\<td valign="top" colspan="3"\>\<b\>(.+?dag)\<\/b\>\<\/td\>\<\/tr\>'
+		header_regex = '\<b\>(.+?dag) [\d]{2}-[A-Za-z]{3}\<\/b\>'
 		
-		entry_regex = header_regex + '(.+?)(?=(' + header_regex + '|VECKANS BISTRO|\<\/table\>))'
+		entry_regex = header_regex + '(.+?)(?=(' + header_regex + '|\<td width="\d+px" valign="top"\>Veckans|\<\/html\>))'
 		entry_day_index = 0
 		entry_data_index = 1
-		
-		# This used to be some clever (?) regex to handle special cases that are
-		# possibly not applicable now.
-		# \xa4 == ¤
-		dish_regex = '\xa4 ([^\>]+?)(\<br \/\>|\<\/td\>)()'
+
+		dish_regex = '\<td valign="top"\>([^\<]+)\<\/td\>\<td width="\d+px" valign="top"\>()'
 		dish_name_index = 0
-		dish_price_index = 2 # Dummy index.
+		dish_price_index = 1 # Dummy index.
 		
 	else:
 		return [] # Not implemented yet
@@ -118,7 +115,7 @@ def menu(location):
 			if not dish_name:
 				pass # Odd input or bad regex
 			elif dish_name.find(">") != -1:
-				print "Hmm, I got an odd dish from " + location + ": " + dish_name
+				error_handler.output_message("Hmm, 'mat' got an odd dish from " + location + ": " + dish_name)
 			elif dish[dish_price_index]:
 				# Price found, let's add it
 				dishes.append(dish_name + " (" + dish[dish_price_index] + " kr)")
@@ -192,6 +189,7 @@ def liu_food_str(day):
 		for item in zenit_menu[1]:
 			dish_string = item.split(" med ", 2)[0]
 			dish_string = dish_string.replace("serveras", "").strip().capitalize()
+			dish_string = dish_string.decode('iso-8859-1').encode('utf-8')
 			stripped_menu.append(dish_string)
 		
 		result += ", ".join(stripped_menu)
