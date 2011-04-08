@@ -102,15 +102,16 @@ class IRCBot(AutoReloader):
 					datetime.datetime.now().strftime("[%H:%M:%S]"), network,
 					plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
 
-				try:
-					self.tell(self.settings.admin_network, self.settings.admin_channel,
-						  "%s %s Plugin '%s' threw exception, exinfo: '%s', traceback: '%s'" % (
+				if trigger != "timer_beat":
+					try:
+						self.tell(self.settings.admin_network, self.settings.admin_channel,
+							  "%s %s Plugin '%s' threw exception, exinfo: '%s', traceback: '%s'" % (
+								datetime.datetime.now().strftime("[%H:%M:%S]"), network,
+								plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])[::-1]))
+					except:
+						print "%s %s Unable to send exception to admin channel, exinfo: '%s', traceback: '%s'" % (
 							datetime.datetime.now().strftime("[%H:%M:%S]"), network,
-							plugin, sys.exc_info(), traceback.extract_tb(sys.exc_info()[2])[::-1]))
-				except:
-					print "%s %s Unable to send exception to admin channel, exinfo: '%s', traceback: '%s'" % (
-						datetime.datetime.now().strftime("[%H:%M:%S]"), network,
-						sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
+							sys.exc_info(), traceback.extract_tb(sys.exc_info()[2]))
 
 	def on_connected(self, network):
 		for channel in self.settings.networks[network]['channels']:
