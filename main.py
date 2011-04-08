@@ -13,47 +13,12 @@ except ImportError:
 	sys.exit(0)
 
 import ircbot
-from httpsrv import http_server
 
 bot = ircbot.IRCBot(settings.Settings())
-
-#web_server = http_server.HTTPServer(host="127.0.0.1", port=8000)
-botnik_picture_data = None
-
-def handle_request(request):
-	if request.request_path == "/botnik.png":
-		global botnik_picture_data
-
-		if not botnik_picture_data:
-			try:
-				file = open("botnik.png")
-				botnik_picture_data = file.read()
-				file.close()
-			except:
-				web_server.respond_200(request, "Couldn't send image...")
-		web_server.respond_200(request, botnik_picture_data, "image/png")
-		return
-
-	c = None
-#	if bot.is_connected(): #FIXME
-#		c = "connected"
-#	else:
-#	 	c = "disconnected"
-
-	data = "I think that I am %s.<p><img src=\"botnik.png\"><p>" % c
-
-	data += "Conversation:<p><pre>"
-	for line in bot.client.lines:
-		data += line.replace("<", "&lt;").replace(">", "&gt;") + "\n"
-	data += "</pre>"
-
-	web_server.respond_200(request, data)
-
-#web_server.register_handle_request_callback(handle_request)
-	
 bot.add_timer(datetime.timedelta(0, 600), True, bot.send_all_networks, "PING :iamabanana")
-sys.path += [os.path.join(sys.path[0], "httpsrv"), os.path.join(sys.path[0], "ircclient"),
-	     os.path.join(sys.path[0], "plugins")]
+
+# Add paths for debugger
+sys.path += [os.path.join(sys.path[0], "ircclient"), os.path.join(sys.path[0], "plugins")]
 
 def Tick():
 	while True:
@@ -67,7 +32,6 @@ def Tick():
 				bot.on_reload()
 
 			bot.tick()
-			#web_server.tick()
 
 			time.sleep(0.1)
 		except KeyboardInterrupt:
