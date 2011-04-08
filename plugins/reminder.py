@@ -59,7 +59,7 @@ class ReminderCommand(Command):
 
 	def timer_beat(self, bot, now, network):
 		if not self.next_beat or self.next_beat < now:
-			self.next_beat = now + datetime.timedelta(0, 0, 0, 0, 1)
+			self.next_beat = now + datetime.timedelta(0, 0, 1)
 
 			to_remove = []
 
