@@ -22,7 +22,7 @@ class SpotifyRef(object):
 class SpotifyCommand(Command):
 	hooks = ['on_privmsg']
 	references = {}
-	api_base_url = u"http://78.31.8.28/" # http://ws.spotiy.com/ is official but seems unstable
+	api_base_url = u"http://ws.spotify.com/"
 
 	def __init__(self):
 		pass
@@ -67,7 +67,7 @@ class SpotifyCommand(Command):
 
 		# Track reference
 		elif reference.type == u"track":
-			#return u"track"
+			
 			# Extract some dicts from the data
 			metadata = data.get(u"track", {})
 			metadata_album = metadata.get(u"album", {})
@@ -111,7 +111,7 @@ class SpotifyCommand(Command):
 			self.references[target] = reference
 			self.save_refs()
 			# Non-escaped . is intended, because mainstream pynik lacks a way to get trigger char
-			if not re.match(r'.spotify .+', message):
+			if not re.match(r'' + bot.settings.trigger + 'spotify .+', message):
 				res = self.lookup_direct(reference)
 				if res:
 					bot.tell(network, target, res.encode("utf-8"))
