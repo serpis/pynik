@@ -60,6 +60,7 @@ class IRCBot(AutoReloader):
 		self.networks = []
 		self.plugins = []
 		self.timer_heap = PriorityQueue()
+		self.next_timer_beat = None
 		self.need_reload = {}
 
 		for network in self.settings.networks:
@@ -218,9 +219,11 @@ class IRCBot(AutoReloader):
 		for client in self.clients.values():
 			client.tick()
 
-		# Call timer_beat in all networks
-		for network in self.networks:
-			self.execute_plugins(network, "timer_beat", now)
+		# Call timer_beat in all networks every 1 second
+		if not self.next_timer_beat or self.next_timer_beat < now:
+			self.next_timer_beat = now + datetime.timedelta(0, 1)
+			for network in self.networks:
+				self.execute_plugins(network, "timer_beat", now)
 
 	def add_timer(self, delta, recurring, target, *args):
 		timer = TimedEvent(delta, recurring, target, args)
