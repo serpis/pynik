@@ -195,22 +195,17 @@ class IRCBot(AutoReloader):
 		return self.clients[network].tell(target, message)
 
 	def tick(self):
-		if self.need_reload.has_key('ircbot') and self.need_reload['ircbot']:
+		# Do reload if necassary
+		if self.need_reload.get('ircbot'):
 			reload(ircclient)
 			reload(plugin_handler)
 			self.callbacks = self.get_callbacks()
 			for client in self.clients.values():
 				client.callbacks = copy(self.callbacks)
-				#client.on_reload()
-			#self.execute_plugins(, "")
-
 
 			self.need_reload['ircbot'] = False
 
-		# FIXME timer is broken
-#		if not self.timer_heap.empty() and not self.client.connected:
-#			print "ATTENTION! We are not connected. Skipping timers!"
-#		else:
+		# Call timers
 		now = datetime.datetime.now()
 		while not self.timer_heap.empty() and self.timer_heap.top().trigger_time <= now:
 			timer = self.timer_heap.pop()
@@ -231,5 +226,3 @@ class IRCBot(AutoReloader):
 
 		self.timer_heap.push(timer)
 
-	def add_background_job(self, name, callback, target, args):
-		pass
