@@ -48,7 +48,7 @@ class Restaurant():
 		return "I'm sorry Dave I don't recognize that restaurant. Hmm, should not reach this."
 
 class Preston(Restaurant):
-	restaurants = ["Husman", "Chili", "Golfinn", "Collegium", "Vallfarten"]
+	restaurants = ["JB", "Husman", "Chili", "Golfinn", "Collegium", "Vallfarten"]
 	url = "http://www.preston.se/dagens.html"
 
 	def fetchFood(self, restaurant, day=None):
@@ -198,7 +198,7 @@ class DeeJays(Restaurant):
 			return "Stängt ):"
 
 class JohnBauer(Restaurant):
-	restaurants = ["JB"]
+	restaurants = []
 	url = "http://www.johnbauer.nu/linkoping/om-skolan/restaurang-bjorkudden"
 
 	def fetchFood(self, restaurant, today=None):
