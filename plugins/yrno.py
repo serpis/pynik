@@ -38,17 +38,19 @@ class YrNo(Command):
         self.save()
 
         # Search for town
-        url = "http://gammel.yr.no/soek.aspx?sted=" + urllib2.quote(args[0])
+        url = "http://www.yr.no/soek.aspx?sted=" + urllib2.quote(args[0])
+        print "contacting", url
         request = urllib2.Request(url)
         request.add_header("Cookie", "brp=spr=eng")
         response = urllib2.urlopen(request)
 
         #print response.geturl()
 
-        if response.geturl().find("http://gammel.yr.no/soek.aspx?sted=") != -1:
+        if response.geturl().find("http://www.yr.no/soek.aspx?sted=") != -1:
             search = re.search('<a href="(/place/[^"]*)" title="[^"]*">', response.read())
             if search:
                 url = "http://gammel.yr.no" + urllib2.quote(search.group(1))
+                print "contacting", url
                 #print url
                 request = urllib2.Request(url)
                 request.add_header("Cookie", "brp=spr=eng")
@@ -63,6 +65,7 @@ class YrNo(Command):
         
         # Get Hour by Hour view
         url = stedbaseurl + "hour_by_hour.html"
+        print "contacting", url
         response = urllib2.urlopen(url)
 
         #print stedbaseurl
