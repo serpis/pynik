@@ -1,160 +1,127 @@
 # coding: utf-8 
- 
+import re
+import pytz
+
 from commands import Command 
- 
-timezone = ['GMT', 'UT', 'UTC', 'WET', 'CET', 'EET', 'BT', 'CCT', 'JST', 'GST', 'IDLE', 'NZST', 'WAT', 'AT', 'AST', 'EST', 'CST', 'MST', 'PST', 'YST', 'AHST',  'CAT',  'HST',  'NT', 'IDLW'] 
-timeoffsets = [0, 0, 0, 0, 1, 2, 3, 8, 9, 10, 12, 12, -1, -2, -4, -5, -6, -7, -8, -9, -10, -10, -10, -11, -12] 
-defaultzone = 4 
-			 
-def instructions(): 
-	return "Usage: \".timezone <time>( <timezone>)( in <timezone>)\" or \".timezone <timezone>\", <time> is written as \"hour(:minute)( am/pm)\", for a list of timezones see .timezones" 
+from datetime import datetime
+
+def instruction():
+	return "Usage: \".timezone (<date> )<time>( <timezone>)( in <timezone>)\", <time>/<date> is written in the specified timezone or Europe/Stockholm as default. If no date is provided today is assumed." 
  
 class TimezoneCommand(Command): 
 	def __init__(self): 
 		pass 
- 
-	def trig_timezones(self, bot, source, target, trigger, argument): 
-		return ', '.join(timezone) 
- 
-	def trig_timezone(self, bot, source, target, trigger, argument): 
-		parts = argument.split(' in ') 
-		 
-		usingminutes = False 
-		minutes = 0 
-		 
-		if(len(parts) == 1): 
-			split = parts[0].strip().split(' ') 
-			 
-			if(len(split) == 1): 
-				import time 
-				minutes = time.gmtime(time.time()).tm_min 
-				time = time.gmtime(time.time()).tm_hour + timeoffsets[defaultzone] 
-				fromzone = defaultzone 
-				using24h = True 
-				usingminutes = True 
-				gettime = False 
-			elif(len(split) == 2): 
-				using24h = True 
-				gettime = True 
-			elif(len(split) == 3):   
-				using24h = False 
-				gettime = True 
-				ispm = (split[1].lower().find('pm') != -1) 
-			else: 
-				return instructions() 
-			 
-		elif(len(parts) == 2): 
-			gettime = True 
-			split = parts[0].strip().split(' ') 
-		else: 
-			return instructions() 
-			 
-		if(gettime): 
-			fromzone = -1 
-			for i in range(len(timezone)): 
-				if(split[len(split) -1].strip().upper() == timezone[i]): 
-					fromzone = i 
-					 
-			if(fromzone == -1): 
-				fromzone = defaultzone 
- 
-				if(len(split) == 1): 
-					using24h = True 
-				elif(len(split) == 2): 
-					using24h = False 
-					 
-					if(split[1].lower().find('pm') != -1): 
-						ispm = True 
-					elif(split[1].lower().find('am') != -1): 
-						ispm = False 
-					else: 
-						return instructions() 
-				else: 
-					return instructions() 
-			else: 
-				if(len(split) == 2): 
-					using24h = True 
-				elif(len(split) == 3): 
-					using24h = False 
-					ispm = (split[1].lower().find('pm') != -1) 
-				else: 
-					return instructions() 
-			 
-			try: 
-				time = int(split[0]) 
-			except ValueError: 
-				try: 
-					t = split[0].split(':') 
-					time = int(t[0]) 
-					 
-					if(len(t) >= 2): 
-						minutes = int(t[1]) 
-						usingminutes = True 
-					 
-				except ValueError: 
-					return instructions() 
-			 
-			if(not using24h): 
-				if(time == 12): 
-					time -= 12 
-				if(ispm): 
-					time += 12 
-			 
-			 
-		if(time > 24 or time < 0 or minutes > 59 or minutes < 0): 
-			return instructions() 
-			 
-		tozone = -1 
-		for i in range(len(timezone)): 
-			if(parts[len(parts) -1].strip().upper() == timezone[i]): 
-				tozone = i 
-				 
-		if(tozone == -1): 
-			tozone = defaultzone 
-			 
-			if(gettime == False): 
-				return instructions() 
-		 
-		diff = timeoffsets[tozone] - timeoffsets[fromzone] 
-		totime = (time + diff) % 24 
-		 
-		fromtimestr = mktimestr(time, using24h, usingminutes, minutes) 
-		using24h = True 
-		usingminutes = True 
-		totimestr = mktimestr(totime, using24h, usingminutes, minutes) 
-		 
-		if(diff == 0): 
-			return fromtimestr + " " + timezone[fromzone] 
-		elif(diff == 1): 
-			diffstr = "(+1 hour)" 
-		elif(diff == -1): 
-			diffstr = "(-1 hour)" 
-		elif(diff > 0): 
-			diffstr = "(+" + str(diff) + " hours)" 
-		else: 
-			diffstr = "(" + str(diff) + " hours)" 
-			 
-		return fromtimestr + " " + timezone[fromzone] + " is " + totimestr + " " + timezone[tozone] + " " + diffstr 
-			 
-			 
-def mktimestr(time, using24h, usingminutes, minutes): 
-	if(not using24h): 
-		if(time < 12): 
-			tmp = " am" 
-		else: 
-			time -= 12 
-			tmp = " pm" 
-		 
-		if(time == 0): 
-			time = 12 
-	else: 
-		tmp = "" 
-	 
-	if(not usingminutes): 
-		timestr = str(time) + tmp 
-	elif(minutes < 10): 
-		timestr = str(time) + ":0" + str(minutes) + tmp 
-	else: 
-		timestr = str(time) + ":" + str(minutes) + tmp 
-		 
-	return timestr
+	
+	def trig_tz(self, bot, source, target, trigger, argument):
+		return self.trig_timezone(bot, source, target, trigger, argument)
+
+	def trig_timezone(self, bot, source, target, trigger, argument):
+		""" Converts time (with date) from timezone into another timezone. Summertime should work if date is specified. If no date is specified the current date is assumed. """
+
+		parsed_argument = re.match("([0-9:\- \/]*)\s(.*)", argument)
+		if not parsed_argument:
+			return "Does not match format.."
+		#print parsed_argument.groups()
+
+		formats = [("%Y-%m-%d %H:%M", ""),
+			   ("%y-%m-%d %H:%M", ""),
+			   ("%d/%m %H:%M", "noyear"),
+			   ("%H:%M", "nodate"),
+			   ]
+		dt = None
+		for format in formats:
+			try:
+				dt = datetime.strptime(parsed_argument.group(1).strip(), format[0])
+				dtMatch = format[1]
+			except ValueError, e:
+				if e.message.find("not match format") != -1:
+					continue
+				elif e.message.find("unconverted data remains") != -1:
+					print "partly matched", format[0], e
+				else:
+					raise
+		if dt is None:
+			return "Unable to parse datetime with: " + ", ".join(map(lambda x: x[0], formats))
+
+		now = datetime.now()
+		if dtMatch == "nodate":
+			dt = datetime(now.year, now.month, now.day, dt.hour, dt.minute)
+		elif dtMatch == "noyear":
+			dt = datetime(now.year, dt.month, dt.day, dt.hour, dt.minute)
+
+		#print "Got dt!", dt
+
+		def itz(t):
+			replaces = [ (["est", "edt"], "US/Eastern"),
+				     (["cst", "cdt"], "US/Central"),
+				     (["mst", "mdt"], "US/Mountain"),
+				     (["pst", "pdt"], "US/Pacific"),
+				     ]
+
+			for replace in replaces:
+				if t.lower() in replace[0]:
+					t = replace[1]
+
+			return pytz.all_timezones[map(lambda x: x.lower(), pytz.all_timezones).index(t.lower())]
+
+		# Parse timezones
+		cmds = parsed_argument.group(2).split(" ")
+		tzFrom = pytz.timezone("Europe/Stockholm")
+		tzTo = pytz.timezone("Europe/Stockholm")
+		if cmds[0] == "in":
+			tzTo = pytz.timezone(itz(cmds[1]))
+		else:
+			tzFrom = pytz.timezone(itz(cmds[0]))
+			if len(cmds) == 3 and cmds[1] == "in":
+				tzTo = pytz.timezone(itz(cmds[2]))
+		
+		convertedDt = tzFrom.localize(dt).astimezone(tzTo)
+		dt = tzFrom.localize(dt).astimezone(tzFrom)
+		#print str(convertedDt)
+		return str(dt) + " " + str(tzFrom) + " is " + str(convertedDt) + " " + str(tzTo)
+
+# Unittest
+import unittest
+class TestTimezonePlugin(unittest.TestCase):
+	def setUp(self):
+		# Mock now()
+		class datetime:
+			@staticmethod
+			def now():
+				return realdatetime(2011, 6, 8, 12, 34, 00, 155129)
+		
+	def test1234GmtInCet(self):
+		self.assertEqual("2011-06-08 12:34:00+00:00 GMT is 2011-06-08 14:34:00+02:00 CET", 
+				 TimezoneCommand().trig_tz(None, "", "", "", "12:34 gmt in cet"))
+
+	def test1234InEdt(self):
+		self.assertEqual("2011-06-08 12:34:00+02:00 Europe/Stockholm is 2011-06-08 06:34:00-04:00 US/Eastern",
+				 TimezoneCommand().trig_tz(None, "", "", "", "12:34 in edt"))
+
+	def test1234Edt(self):
+		self.assertEqual("2011-06-08 12:34:00-04:00 US/Eastern is 2011-06-08 18:34:00+02:00 Europe/Stockholm",
+				 TimezoneCommand().trig_tz(None, "", "", "", "12:34 edt"))
+
+	def test1234EdtInGmt(self):
+		self.assertEqual("2011-06-08 12:34:00-04:00 US/Eastern is 2011-06-08 16:34:00+00:00 GMT", 
+				 TimezoneCommand().trig_tz(None, "", "", "", "12:34 edt in gmt"))
+
+	def test7pmEdtInCet(self):
+		self.assertEqual("2011-06-08 19:00:00-04:00 US/Eastern is 2011-06-09 01:00:00+02:00 CET",
+				 TimezoneCommand().trig_tz(None, "", "", "", "7pm edt in cet"))
+
+	def test20100505_1234EdtInCet(self):
+		self.assertEqual("2010-05-05 12:34:00-04:00 US/Eastern is 2010-05-05 18:34:00+02:00 CET",
+				 TimezoneCommand().trig_tz(None, "", "", "", "2010-05-05 12:34 edt in cet"))
+
+	def testUnixTime(self):
+		self.assertEqual("1307536440+02:00 Europe/Stockholm is 2010-05-05 12:34:00+02:00 Europe/Stockholm",
+				 TimezoneCommand().trig_tz(None, "", "", "", "1307536440"))
+
+	def testUnixTime(self):
+		self.assertEqual("1307536440+00:00 GMT is 2010-05-05 14:34:00+02:00 Europe/Stockholm",
+				 TimezoneCommand().trig_tz(None, "", "", "", "1307536440 gmt"))
+
+if __name__ == "__main__":
+	unittest.main()
+
