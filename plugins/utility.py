@@ -13,14 +13,32 @@ import string
 class TimeoutException(Exception):
 	pass
 
-def unescape(str):
-	def fromhtml(s):
-		try:
-			return htmlentitydefs.entitydefs[s.group(1)]
-		except KeyError:
-			return unichr(int(s.group(1))).encode('ascii', 'replace')
+def unescape(string):
+	"""Replaces all HTML entities and numeric references with the referenced characters.
 	
-	return re.sub("&#?(\w+);", fromhtml, str)
+	Since pynik is currently unaware of encodings, encoded non-ASCII characters may be
+	part of the input string. Also, code that calls this function does not expect Unicode
+	return values. Therefore Unicode is encoded into ASCII before returned, as an ugly
+	work-around. Encoding in for example UTF-8 would also be ugly since the input may
+	be in a different encoding, a garbled character soup would be the result."""
+
+	def fromhtml(m):
+		text = m.group(0)
+		if text[1] == '#':
+			# Numeric character reference
+			try:
+				if text[2] == 'x':
+					val = int(text[3:-1], 16) # Hexadecimal
+				else:
+					val = int(text[2:-1], 10) # Decimal
+				return unichr(val).encode('ascii', 'replace')
+			except ValueError:
+				return text
+		else:
+			# Character entity reference
+			return htmlentitydefs.name2codepoint.get(text[2:-1], text).encode('ascii', 'replace')
+	
+	return re.sub(r"&#?\w+;", fromhtml, string)
 
 def escape(str):
 	import urllib
