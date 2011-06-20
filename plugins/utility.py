@@ -21,7 +21,7 @@ def unescape(string):
 	return values. Therefore Unicode is encoded into ASCII before returned, as an ugly
 	work-around. Encoding in for example UTF-8 would also be ugly since the input may
 	be in a different encoding, a garbled character soup would be the result."""
-
+	
 	def fromhtml(m):
 		text = m.group(0)
 		if text[1] == '#':
@@ -34,9 +34,12 @@ def unescape(string):
 				return unichr(val).encode('ascii', 'replace')
 			except ValueError:
 				return text
-		else:
+		elif text[1:-1] in htmlentitydefs.name2codepoint:
 			# Character entity reference
-			return htmlentitydefs.name2codepoint.get(text[2:-1], text).encode('ascii', 'replace')
+			return unichr(htmlentitydefs.name2codepoint[text[1:-1]]).encode('ascii', 'replace')
+		else:
+			# We can't tell what the user intention was here, leave it be.
+			return text
 	
 	return re.sub(r"&#?\w+;", fromhtml, string)
 
