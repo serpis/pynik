@@ -1,4 +1,4 @@
-__all__ = ['plugins', 'command_catcher', 'first_plugin', 'auto_join',
+__all__ = ['plugins', 'command_catcher', 'first_plugin', 'auto_join', 'aduno',
             'title_reader', "pi", 'commands', 'standard', 'favorites',
             'reloader', 'tv', 'nextep', 'options', 'qotd', 'svn', 'utility',
             'example_command', 'rss', 'googlefight', 'teewars', 'tw_nazi',
