@@ -170,7 +170,7 @@ class TempCommand(Command):
 		else:
 			actual_argument = argument
 
-		url = "http://www.temperatur.nu/termo/%s/temp.txt" % actual_argument
+		url = "http://www.temperatur.nu/termo/%s/temp.txt" % actual_argument.lower()
 		response = utility.read_url(url)
 		m = None
 
