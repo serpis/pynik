@@ -29,7 +29,7 @@ def get_tweet(message):
 	else:
 		return False
 
-class CharCommand(Command):
+class TweetCommand(Command):
 	hooks = ['on_privmsg']
 
 	def on_privmsg(self, bot, source, target, message):
@@ -38,10 +38,3 @@ class CharCommand(Command):
 		if tweet:
 			output = "@" + tweet.user + ": " + "\"" + tweet.text + "\""
 			bot.tell(target, output)
-
-
-# Testing
-#arg = sys.argv[1]
-twitter_url = "https://twitter.com/#!/gruber/status/115107082008666114"
-#tweet_id = get_tweet_id(twitter_url)
-#print get_status_text(tweet_id)
