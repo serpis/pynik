@@ -68,7 +68,7 @@ class TitleReaderPlugin(Command):
 				title = utility.timeout(get_title, 10, (url,))
 				self.urls[target].title = title
 				self.save_last_url(target)
-				if target in ['#c++.se', '#d1d', '#lithen', "#d2006"]:
+				if target in ['#c++.se', '#d1d', '#lithen', "#d2006"," #testchannel"]:
 					bot.tell(target, self.clean(url, title))
 			except utility.TimeoutException:
 				pass
