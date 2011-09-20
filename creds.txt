@@ -1,3 +1,7 @@
+dentarg:
+plugins/char
+plugins/tweet
+
 IcE^:
 plugins/postnr
 fixes to httpget and title_reader
