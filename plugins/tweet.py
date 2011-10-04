@@ -39,7 +39,7 @@ def get_tweet_text_and_user(tweet):
 		return False
 
 	# Use latin-1 to make IRCClient.send() happy
-	tweet.text = data.get(u"text").encode('latin-1', 'replace')
+	tweet.text = data.get(u"text").encode('latin-1', 'replace').replace('\n', ' ')
 	tweet.user = data.get(u"user").get(u"screen_name").encode('latin-1', 'replace')
 	return tweet
 
