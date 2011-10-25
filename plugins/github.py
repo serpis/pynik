@@ -3,7 +3,7 @@
 # Plugin created by diggidanne
 
 from commands import Command
-from simplejson import loads
+from json import loads
 import utility
 from datetime import date
 
