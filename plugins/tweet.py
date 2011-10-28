@@ -20,7 +20,7 @@ class Tweet:
 # called in plugins/title_reader.py
 def match_tweet_url(url):
 	regexp = '(http|https)://twitter.com/((#!/(\w+))|(\w+))/status/(\d+)'
-	m = re.search(regexp, message, re.IGNORECASE)
+	m = re.search(regexp, url, re.IGNORECASE)
 	return m
 
 def get_tweet_text_and_user(tweet):
