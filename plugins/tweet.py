@@ -17,11 +17,6 @@ class Tweet:
 	text = ''
 	erro = ''
 
-def match_tweet_url(url):
-	regexp = 'https://twitter.com/((#!/(\w+))|(\w+))/status/(\d+)'
-	m = re.search(regexp, url, re.IGNORECASE)
-	return m
-
 def get_tweet_text_and_user(tweet):
 	decoder = JSONDecoder()
 	url = "https://api.twitter.com/1/statuses/show/" + tweet.idno + ".json"
@@ -44,10 +39,11 @@ def get_tweet_text_and_user(tweet):
 	return tweet
 
 def get_tweet(message):
-	m = match_tweet_url(message)
+	regexp = '(http|https)://twitter.com/((#!/(\w+))|(\w+))/status/(\d+)'
+	m = re.search(regexp, message, re.IGNORECASE)
 	if m:
 		tweet = Tweet()
-		tweet.idno = m.group(5)
+		tweet.idno = m.group(6)
 		tweet = get_tweet_text_and_user(tweet)
 		if tweet:
 			return tweet
