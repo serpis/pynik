@@ -200,6 +200,9 @@ class GoogleCommand(Command):
 
 		data = response["data"]
 
+		data = re.sub(r"\n|\r|\r\n", "", data)
+		data = re.sub(r" +", " ", data)
+
 		print data
 
 		# try to extract video result
@@ -211,9 +214,10 @@ class GoogleCommand(Command):
 			return "%s - %s | %s" % (text, link, url) 
 
 		# try to extract calculator result
-		m = re.search('<td><img src="\/images\/icons\/onebox\/calculator-40\.gif" ?width=40 height=40 alt=""><td>&nbsp;<td style="vertical-align:top" >(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
+		#m = re.search('<td><img src="\/images\/icons\/onebox\/calculator-40\.gif" ?width=40 height=40 alt=""><td>&nbsp;<td style="vertical-align:top" >(<h2 class=r( style="font-size:\d+%")?>)?<b>(.*?)<\/b>', data)
+		m = re.search('.*?font-size:138%">(.*?)<', data)
 		if m:
-			answer = m.group(3)
+			answer = m.group(1)
 			answer = answer.replace(' &#215;', '×').replace('<sup>', '^')
 			answer = re.sub('<.+?>', '', answer)
 			return answer
