@@ -3,19 +3,19 @@
 from commands import Command
 import utility
 import re
+import json
 
 class erekebabfredag(Command):
     def __init__(self):
         pass
 
     def trig_erekebabfredag(self, bot, source, target, trigger, argument):
-        url = 'http://ere.kebabfredag.nu'
+        url = 'http://ere.kebabfredag.nu/api/erekebabfredag?format=json'
         response = utility.read_url(url)
         data = response["data"]
+        jsondata = json.loads(data)
 
-        is_it = re.search(r'<h3>(.+)</h3>', data, re.S)
-        if is_it:
-            return is_it.group(1)               
+        if jsondata['isIt']:
+            return u'Japp!'
         else:
-            return 'Scrapping failed'                
-
+            return u'Nepp :('
