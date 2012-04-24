@@ -68,10 +68,15 @@ class IRCClient:
 	def send(self, line):
 		self.log_line(timestamp() + " SENT: " + line)
 
+		self.last_action = datetime.datetime.now()
+
 		data = line + "\r\n"
 
 		while data:
 			sent =  self.s.send(data)
+			if sent == 0:
+				self.connected = False
+				break
 			data = data[sent:]
 
 		return len(line)+2
@@ -223,6 +228,8 @@ class IRCClient:
 		message = tupels[5]
 		print 'the irc server informs of an error:', message
 
+		self.connected = False
+
 		if "host is trying to (re)connect too fast" in message:
 			self.idle_for(120)
 
@@ -237,19 +244,24 @@ class IRCClient:
 			try:
 				retn = self.s.recv(1024)
 
-				self.recv_buf += retn
-				recv_lines = self.recv_buf.splitlines(True)
-				self.recv_buf = ''
-				for line in recv_lines:
-					if not line.endswith("\r\n"):
-						self.recv_buf = line
-					else:
-						line = line.rstrip("\r\n")
-						self.log_line(timestamp() + " RECV: " + line)
-						m = self.irc_message_pattern.match(line)
-						if m:
-							if m.group(3) in self.message_handlers:
-								self.message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
+				self.last_action = datetime.datetime.now()
+
+				if len(retn) == 0:
+					self.connected = False
+				else:
+					self.recv_buf += retn
+					recv_lines = self.recv_buf.splitlines(True)
+					self.recv_buf = ''
+					for line in recv_lines:
+						if not line.endswith("\r\n"):
+							self.recv_buf = line
+						else:
+							line = line.rstrip("\r\n")
+							self.log_line(timestamp() + " RECV: " + line)
+							m = self.irc_message_pattern.match(line)
+							if m:
+								if m.group(3) in self.message_handlers:
+									self.message_handlers[m.group(3)](m.group(0, 1, 2, 3, 4, 5))
 
 			except socket.error, (error_code, error_message):
 				if error_code != errno.EWOULDBLOCK:
@@ -266,3 +278,10 @@ class IRCClient:
 			if self.connected:
 				self.send("USER %s * * :%s" % (self.username, self.realname))
 				self.send("NICK %s" % self.nick)
+
+				self.last_action = datetime.datetime.now()
+
+		# make sure something happened within the last 8 minutes, otherwise mark as disconnected
+		if self.last_action + datetime.timedelta(0, 8 * 60) < datetime.datetime.now():
+			self.connected = False
+
