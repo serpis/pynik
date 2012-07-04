@@ -64,5 +64,5 @@ class TweetCommand(Command):
 		tweet = get_tweet(message)
 
 		if tweet:
-			output = "@" + tweet.user + ": " + "\"" + tweet.text + "\""
+			output = "@" + tweet.user + ": " + tweet.text
 			bot.tell(target, output)
