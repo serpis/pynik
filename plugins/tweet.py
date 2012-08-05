@@ -48,7 +48,7 @@ def get_tweet(message):
 	m = match_tweet_url(message)
 	if m:
 		tweet = Tweet()
-		tweet.idno = m.group(6)
+		tweet.idno = m.group(7)
 		tweet = get_tweet_text_and_user(tweet)
 		if tweet:
 			return tweet
