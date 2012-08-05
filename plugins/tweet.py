@@ -19,7 +19,7 @@ class Tweet:
 
 # called in plugins/title_reader.py
 def match_tweet_url(url):
-	regexp = '(http|https)://twitter.com/((#!/(\w+))|(\w+))/status/(\d+)'
+	regexp = '(http|https)://twitter.com/((#!/(\w+))|(\w+))/(status|statuses)/(\d+)'
 	m = re.search(regexp, url, re.IGNORECASE)
 	return m
 
