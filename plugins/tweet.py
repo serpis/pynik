@@ -17,9 +17,15 @@ class Tweet:
 	text = ''
 	erro = ''
 
-def get_tweet_text(idno):
+# called in plugins/title_reader.py
+def match_tweet_url(url):
+	regexp = '(http|https)://twitter.com/((#!/(\w+))|(\w+))/status/(\d+)'
+	m = re.search(regexp, url, re.IGNORECASE)
+	return m
+
+def get_tweet_text_and_user(tweet):
 	decoder = JSONDecoder()
-	url = "https://api.twitter.com/1/statuses/show/" + idno + ".json"
+	url = "https://api.twitter.com/1/statuses/show/" + tweet.idno + ".json"
 	response = utility.read_url(url)
 
 	if not response:
@@ -30,20 +36,21 @@ def get_tweet_text(idno):
 		data = decoder.decode(response['data'])
 	except Exception:
 		# Couldn't parse the API output
+		print("Couldn't parse the API output")
 		return False
 
 	# Use latin-1 to make IRCClient.send() happy
-	return data.get(u"text").encode('latin-1', 'replace')
+	tweet.text = data.get(u"text").encode('latin-1', 'replace').replace('\n', ' ')
+	tweet.user = data.get(u"user").get(u"screen_name").encode('latin-1', 'replace')
+	return tweet
 
 def get_tweet(message):
-	regexp = 'https://twitter.com/#!/(\w+)/status/(\d+)'
-	m = re.search(regexp, message, re.IGNORECASE)
+	m = match_tweet_url(message)
 	if m:
 		tweet = Tweet()
-		tweet.user = m.group(1)
-		tweet.idno = m.group(2)
-		tweet.text = get_tweet_text(tweet.idno)
-		if tweet.text:
+		tweet.idno = m.group(6)
+		tweet = get_tweet_text_and_user(tweet)
+		if tweet:
 			return tweet
 		else:
 			return False
@@ -57,5 +64,5 @@ class TweetCommand(Command):
 		tweet = get_tweet(message)
 
 		if tweet:
-			output = "@" + tweet.user + ": " + "\"" + tweet.text + "\""
+			output = "@" + tweet.user + ": " + tweet.text
 			bot.tell(target, output)
