@@ -3,6 +3,7 @@
 import sys
 import re
 import utility
+import tweet
 from plugins import Plugin
 from commands import Command
 import command_catcher
@@ -64,11 +65,12 @@ class TitleReaderPlugin(Command):
 			self.urls[target].url = m.group(1)
 			self.urls[target].nick = source
 			self.urls[target].timestamp = 'test'
+			tweetbool = tweet.match_tweet_url(url)
 			try:
 				title = utility.timeout(get_title, 10, (url,))
 				self.urls[target].title = title
 				self.save_last_url(target)
-				if target in ['#c++.se', '#d1d', '#lithen', "#d2006"," #testchannel"]:
+				if not tweetbool and target in ['#c++.se', '#d1d', '#lithen', "#d2006"," #testchannel"]:
 					bot.tell(target, self.clean(url, title))
 			except utility.TimeoutException:
 				pass
