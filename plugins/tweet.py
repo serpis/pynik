@@ -19,7 +19,7 @@ class Tweet:
 
 # called in plugins/title_reader.py
 def match_tweet_url(url):
-	regexp = '(http|https)://twitter.com/((#!/(\w+))|(\w+))/status/(\d+)'
+	regexp = '(http|https)://twitter.com/((#!/(\w+))|(\w+))/(status|statuses)/(\d+)'
 	m = re.search(regexp, url, re.IGNORECASE)
 	return m
 
@@ -48,7 +48,7 @@ def get_tweet(message):
 	m = match_tweet_url(message)
 	if m:
 		tweet = Tweet()
-		tweet.idno = m.group(6)
+		tweet.idno = m.group(7)
 		tweet = get_tweet_text_and_user(tweet)
 		if tweet:
 			return tweet
