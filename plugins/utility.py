@@ -13,7 +13,26 @@ import string
 class TimeoutException(Exception):
 	pass
 
-def unescape(string):
+def sub_from_html(m):
+	text = m.group(0)
+	if text[1] == '#':
+		# Numeric character reference
+		try:
+			if text[2] == 'x':
+				val = int(text[3:-1], 16) # Hexadecimal
+			else:
+				val = int(text[2:-1], 10) # Decimal
+			return unichr(val)
+		except ValueError:
+			return text
+	elif text[1:-1] in htmlentitydefs.name2codepoint:
+		# Character entity reference
+		return unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+	else:
+		# We can't tell what the user intention was here, leave it be.
+		return text
+
+def unescape(string, using_unicode=False):
 	"""Replaces all HTML entities and numeric references with the referenced characters.
 	
 	Since pynik is currently unaware of encodings, encoded non-ASCII characters may be
@@ -21,27 +40,13 @@ def unescape(string):
 	return values. Therefore Unicode is encoded into ASCII before returned, as an ugly
 	work-around. Encoding in for example UTF-8 would also be ugly since the input may
 	be in a different encoding, a garbled character soup would be the result."""
+		
+	if using_unicode:
+		sub_function = sub_from_html
+	else:
+		sub_function = lambda m: sub_from_html(m).encode('ascii', 'replace')
 	
-	def fromhtml(m):
-		text = m.group(0)
-		if text[1] == '#':
-			# Numeric character reference
-			try:
-				if text[2] == 'x':
-					val = int(text[3:-1], 16) # Hexadecimal
-				else:
-					val = int(text[2:-1], 10) # Decimal
-				return unichr(val).encode('ascii', 'replace')
-			except ValueError:
-				return text
-		elif text[1:-1] in htmlentitydefs.name2codepoint:
-			# Character entity reference
-			return unichr(htmlentitydefs.name2codepoint[text[1:-1]]).encode('ascii', 'replace')
-		else:
-			# We can't tell what the user intention was here, leave it be.
-			return text
-	
-	return re.sub(r"&#?\w+;", fromhtml, string)
+	return re.sub(r"&#?\w+;", sub_function, string)
 
 def escape(str):
 	import urllib
