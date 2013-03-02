@@ -5,62 +5,47 @@ import re
 import utility
 
 class NextEpisodeCommand(Command):
-	api_url = "http://services.tvrage.com/tools/quickinfo.php?show=%s"
-	search_url = "http://tvrage.com/search.php?search=%s"
-	pattern = re.compile(r"(.+?)@(.+)")
-	usage = "Usage: .nextep Name of TV Show"
+    def trig_nextep(self, bot, source, target, trigger, argument,
+                    network=None, **kwargs):
+        """Information about the latest and next episode of a TV show."""
+        return self.run_command(argument.strip()).encode('utf-8')
+    
+    USAGE = u"Usage: .nextep <tv show name>"
+    
+    URL_API = 'http://services.tvrage.com/tools/quickinfo.php?show=%s'
+    URL_SEARCH = 'http://tvrage.com/search.php?search=%s'
+    
+    PATTERN_DATA_ENTRY = re.compile(r'(?P<key>.+?)@(?P<value>.+)')
 
-	def __init__(self):
-		pass
+    def run_command(self, query_string):
+        if not query_string:
+            return self.USAGE
+        
+        query_string = utility.escape(query_string)
+        
+        info = self.fetch_show_info(query_string)
+        name = info.get('Show Name')
+        if not name:
+            return u"TV show not found | Manual search: " + \
+                    self.URL_SEARCH % query_string
+        
+        year = info.get('Premiered')
+        if year and year not in name:
+            name += u" (%s)" % year
+        
+        latest_ep = info.get('Latest Episode', u"Unknown")
+        next_ep = info.get('Next Episode',
+                           u"Unknown - %s" %
+                           info.get('Status', u"Unknown status"))
+        url = info.get('Show URL', self.URL_SEARCH % query_string)
+        
+        return u"%s | Latest: %s | Next: %s | Read more: %s" % \
+                (name, latest_ep, next_ep, url)
 
-	def fetch_tv_info(self, show):
-		info = {}
-		data = utility.read_url(self.api_url % show)["data"]
-		for m in self.pattern.finditer(data):
-			info[m.group(1)] = m.group(2)
-		return info
-
-	def trig_nextep(self, bot, source, target, trigger, argument):
-		"""Information about the latest and next episode of a TV show."""
-
-		# Sanitize argument
-		argument = utility.escape(argument.strip())
-
-		if not argument:
-			return self.usage
-
-		# Fetch data
-		info = self.fetch_tv_info(argument)
-		if "Show Name" not in info:
-			return "TV show not found | Manual search: " + (self.search_url % argument)
-		
-		# Name of TV series
-		name = info["Show Name"]
-
-		# Premiere year
-		if "Premiered" in info:
-			name += " (" + info["Premiered"] + ")"
-		
-		# Latest episode
-		if "Latest Episode" in info:
-			last_ep = info["Latest Episode"].replace("^", ", ")
-		else:
-			last_ep = "Unknown"
-
-		# Next episode
-		if "Next Episode" in info:
-			next_ep = info["Next Episode"].replace("^", ", ")
-		else:
-			next_ep = "Unknown"
-			if "Status" in info:
-				next_ep += " - " + info["Status"].replace("^", ", ")
-		
-		# Info URL
-		if "Show URL" in info:
-			url = info["Show URL"]
-		else:
-			url = self.search_url % argument
-		
-		# Compose result
-		return "%s | Latest: %s | Next: %s | Read more: %s" % (name, last_ep, next_ep, url)
-			
+    def fetch_show_info(self, show):
+        info = {}
+        query_result = utility.read_url(self.URL_API % show)
+        raw_data = utility.unescape(query_result['data'].decode('utf-8'), True)
+        for m in self.PATTERN_DATA_ENTRY.finditer(raw_data):
+            info[m.group('key')] = m.group('value').replace('^', u", ")
+        return info
