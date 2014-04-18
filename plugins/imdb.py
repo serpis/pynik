@@ -14,8 +14,8 @@ class IMDbCommand(Command):
 	def query(self, argument):
 		decoder = JSONDecoder()
 		argument = utility.escape(argument)
-		api_url = u"http://www.imdbapi.com/?t=%(search_term)s&r=json&plot=short" % \
-				{"search_term": argument}
+                api_url = u"http://www.omdbapi.com/?t=%(search_term)s&r=json&plot=short" % \
+                                {"search_term": argument}
 		site_search_url = u"http://akas.imdb.com/find?s=all&q=" + argument
 		response = utility.read_url(api_url)
 
@@ -36,9 +36,9 @@ class IMDbCommand(Command):
 				u"http://akas.imdb.com/title/%(id)s/ | More results: %(site_search_url)s") % \
 				{u"title": data.get(u"Title", u"Missing title :S"),
 					u"year": data.get(u"Year", u"Unknown year"),
-					u"rating": data.get(u"Rating", u"N/A"),
+					u"rating": data.get(u"imdbRating", u"N/A"),
 					u"genre": data.get(u"Genre", u"Unknown"),
-					u"id": data.get(u"ID", u"tt0107838"),
+					u"id": data.get(u"imdbID", u"tt0107838"),
 					u"site_search_url": site_search_url}
 		
 	def trig_imdb(self, bot, source, target, trigger, argument):
