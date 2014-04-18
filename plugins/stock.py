@@ -17,10 +17,10 @@ class StockCommand(Command):
         """ Requests a CSV file with the data from Yahoo Finance """
 
         # n = name
-        # b2 = ask price
+        # l1 = last trade
         # c1 = change
-        # p2 = change in percent
-        url = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=nb2c1p2" % ticker_symbol
+        # p2 = change percent
+        url = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=nl1c1p2" % ticker_symbol
         req = Request(url)
         resp = urlopen(req) 
         csv_str = resp.read().decode().strip()
@@ -40,6 +40,9 @@ class StockCommand(Command):
             data = self.__get(ticker_symbol)
         except:
             return "Couldn't get data from Yahoo Finance! Sorry!"
+
+        if "N/A" in data.values():
+            return "That wasn't a real ticker symbol, was it?"
 
         if data["change"].startswith('+'):
             return data["name"] + " " + data["ask_price"] + " " + \
