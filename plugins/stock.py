@@ -1,5 +1,7 @@
 from commands import Command
+import utility
 
+import re
 from urllib2 import Request, urlopen
 
 """ mIRC style color codes """
@@ -11,7 +13,10 @@ class StockCommand(Command):
     usage = "Usage: .stock <ticker symbol>"
 
     def __init__(self):
-        pass
+        self.__aliases = {}
+        self.__yahoo_exp = re.compile("^\"(?P<name>.+)\",(?P<ask_price>.+),(?P<change>.+),\"(?P<changep>.+)\"$")
+        self.__stock_exp = re.compile("^(\^?[a-zA-Z0-9\.\-]+)$")
+        self.__alias_exp = re.compile("^([^\s]+)\s+(\^?[a-zA-Z0-9\.\-]+)$")
 
     def __get(self, ticker_symbol):
         """ Requests a CSV file with the data from Yahoo Finance """
@@ -25,16 +30,21 @@ class StockCommand(Command):
         resp = urlopen(req) 
         csv_str = resp.read().decode().strip()
 
-        elems = csv_str.split(',')
+        m = self.__yahoo_exp.match(csv_str)
 
-        return dict(name=elems[0].strip('"'), ask_price=elems[1], change=elems[2], changep=elems[3].strip('"'))
+        return m.groupdict()
 
     def trig_stock(self, bot, source, target, trigger, argument):
         """ Retreives some stock data for a given ticker symbol """
 
-        ticker_symbol = argument.strip().split(' ', 1)[0]
-        if not ticker_symbol:
+        m = self.__stock_exp.match(argument)
+        if not m:
             return self.usage
+
+        if self.__aliases.has_key(m.group(1)):
+            ticker_symbol = self.__aliases[m.group(1)]
+        else:
+            ticker_symbol = m.group(1)
 
         try:
             data = self.__get(ticker_symbol)
@@ -53,4 +63,40 @@ class StockCommand(Command):
         else:
             return data["name"] + " " + data["ask_price"] + " " + \
                    data["change"] + " " + data["changep"] 
+
+    def trig_stockalias(self, bot, source, target, trigger, argument):
+        """ Allows users to add an easy to remember alias for their dividend champ! """
+
+        m = self.__alias_exp.match(argument)
+        
+        if not m:
+            return "Syntax: stockalias <alias> <ticker symbol>"
+
+        alias, ticker_symbol = m.group(1, 2)
+        
+        # Make sure no one turns a real ticker symbol into an alias for something else
+        try:
+            data = self.__get(alias)
+        except:
+            return "Couldn't sanity check that with Yahoo Finance! No deal!"
+
+        if not "N/A" in data.values():
+            return "Nice try."
+
+        self.__aliases[alias] = ticker_symbol 
+        self.save()
+
+        return "Alias %s added." % alias 
+
+    def save(self):
+        utility.save_data("stockaliases", self.__aliases)
+
+    def on_modified_options(self):
+        self.save()
+
+    def on_load(self):
+        self.__aliases = utility.load_data("stockaliases", {})
+
+    def on_unload(self):
+        self.__aliases.clear()
 
