@@ -1,5 +1,6 @@
 import sys
 import re
+import urllib
 from socket import *
 
 def write(s, text):
@@ -57,13 +58,16 @@ def read_http_data(s, length):
 			to_receive = min(length - len(data), 1024)
 
 		new_data = s.recv(to_receive)
-		
+
 		if new_data:
 			data += new_data
 		else:
 			break
 
 	return data
+
+class AppURLopener(urllib.FancyURLopener):
+	version = "Pynik/0.1"
 
 def read_url(url):
 	m = re.match("^(.{3,5}):\/\/([^\/]*)(:?\d*)(\/.*?)?$", url)
@@ -72,20 +76,20 @@ def read_url(url):
 
 		if protocol == 'https':
 			# Use the built-in functions
-			import urllib
-			
+
 			try:
+				urllib._urlopener = AppURLopener()
 				file = urllib.urlopen(url)
 			except IOError:
 				return None
-			
+
 			result = { "url": file.geturl(),
 						"data": file.read(1024*1024),
 						"info": file.info() }
-			
+
 			file.close()
 			return result
-				
+
 		elif protocol != 'http':
 			print "Only http(s) is supported at this moment."
 			return None
@@ -111,7 +115,7 @@ def read_url(url):
 
 			if response_num == 301 or response_num == 302:
 				s.close()
-				
+
 				# Let's do some simple loop detection...
 				if url == headers['Location']:
 					print "Redirect loop discovered at: %s" % headers['Location']
