@@ -16,6 +16,9 @@ pilt:
 plugins/stava
 plugins/tenta
 
+raek:
+plugins/degoogle
+
 teetow:
 plugins/kolli
 plugins/qotd
