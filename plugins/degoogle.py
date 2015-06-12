@@ -32,10 +32,10 @@ class DegooglePlugin(Command):
         if argument:
             url = _find_google_result_url(argument)
             if not url:
-                bot.tell(target, "The argument was not a Google result URL.")
+                return "The argument was not a Google result URL."
             else:
-                bot.tell(target, "de-Googled: " + url)
+                return "de-Googled: " + url
         elif self._last_url:
-            bot.tell(target, "de-Googled: " + self._last_url)
+            return "de-Googled: " + self._last_url
         else:
-            bot.tell(target, "Did not find any Google result URL.")
+            return "Did not find any Google result URL."
