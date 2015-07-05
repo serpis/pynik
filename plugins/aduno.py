@@ -1,4 +1,4 @@
-# coding: utf-8
+# coding: latin-1
 
 from __future__ import with_statement
 import pickle
