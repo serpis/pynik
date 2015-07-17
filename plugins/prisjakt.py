@@ -73,11 +73,11 @@ class PrisjaktCommand(Command):
         return query
 
     def search_for_item(self, query_string):
-        json_result = utility.read_url(self.URL_API % query_string)['data']
+        json_result = utility.read_url(self.URL_API % query_string)
         if not json_result:
             return u"Could not retrieve data from Prisjakt :("
 
-        decoded_result = json.loads(json_result)
+        decoded_result = json.loads(json_result['data'])
         if decoded_result['error']:
             return u"Could not search Prisjakt: " + decoded_result['message']
 
