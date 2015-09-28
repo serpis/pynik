@@ -26,6 +26,7 @@ class down(Command):
 		if search:
 			message = search.group(1)
 			message = re.sub(r'<[^>]*?>', '', message)
+			message = re.sub("&#x2F;", "/", message)
 			return message
 
 		else:
