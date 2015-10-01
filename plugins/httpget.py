@@ -3,6 +3,23 @@ import re
 import urllib
 from socket import *
 
+def read_url(url):
+    m = re.match("^(.{3,5}):\/\/([^\/]*)(:?\d*)(\/.*?)?$", url)
+    if m:
+        protocol, address, port, file = m.group(1, 2, 3, 4)
+
+        if protocol == 'https':
+            # Use the built-in functions
+            return _normal_http_read(url)
+        elif protocol == 'http':
+            return _legacy_http_read(url, protocol, address, port, file)
+        else:
+            print "Only http(s) is supported at this moment."
+            return None
+    else:
+        print "NOT AN URL: %s" % url
+        return None
+
 def _write(s, text):
     s.send(text)
     s.send("\r\n")
@@ -127,20 +144,3 @@ def _normal_http_read(url):
 
     file.close()
     return result
-
-def read_url(url):
-    m = re.match("^(.{3,5}):\/\/([^\/]*)(:?\d*)(\/.*?)?$", url)
-    if m:
-        protocol, address, port, file = m.group(1, 2, 3, 4)
-
-        if protocol == 'https':
-            # Use the built-in functions
-            return _normal_http_read(url)
-        elif protocol == 'http':
-            return _legacy_http_read(url, protocol, address, port, file)
-        else:
-            print "Only http(s) is supported at this moment."
-            return None
-    else:
-        print "NOT AN URL: %s" % url
-        return None
