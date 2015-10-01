@@ -113,16 +113,16 @@ def extract_nick(host):
 	else:
 		return host
 
-def read_url(url):
+def read_url(url, http_headers={}, http_post_data=None):
 	import httpget
 	import socket
-	
+
 	# THIS AFFECTS SOCKETS GLOBALLY AND SHOULD _NOT_ BE USED!!!
 	timeout_time = socket.getdefaulttimeout()
 	socket.setdefaulttimeout(15)
 
-	data = httpget.read_url(url)
-		
+	data = httpget.read_url(url, http_headers, http_post_data)
+
 	# THIS AFFECTS SOCKETS GLOBALLY AND SHOULD _NOT_ BE USED!!!
 	socket.setdefaulttimeout(timeout_time)
 

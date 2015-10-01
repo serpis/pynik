@@ -1,18 +1,20 @@
 import sys
 import re
 import urllib
+import urllib2
 from socket import *
 
-def read_url(url):
+USER_AGENT = 'Pynik/0.1'
+
+def read_url(url, http_headers={}, http_post_data=None):
     m = re.match("^(.{3,5}):\/\/([^\/]*)(:?\d*)(\/.*?)?$", url)
     if m:
         protocol, address, port, file = m.group(1, 2, 3, 4)
 
-        if protocol == 'https':
-            # Use the built-in functions
-            return _normal_http_read(url)
-        elif protocol == 'http':
+        if protocol == 'http' and not http_headers and http_post_data is None:
             return _legacy_http_read(url, protocol, address, port, file)
+        elif protocol in ['http', 'https']:
+            return _normal_http_read(url, http_headers, http_post_data)
         else:
             print "Only http(s) is supported at this moment."
             return None
@@ -92,7 +94,7 @@ def _legacy_http_read(url, protocol, address, port, file):
     # print "Connecting to %s" % address
 
     request = _http_get_request(file)
-    request.add_header("User-Agent", "Pynik/0.1")
+    request.add_header("User-Agent", USER_AGENT)
     request.add_header("Accept", "*/*")
     request.add_header("Host", address)
 
@@ -128,13 +130,15 @@ def _legacy_http_read(url, protocol, address, port, file):
         print "Got unhandled response code: %s" % response_num
         return None
 
-class _AppURLopener(urllib.FancyURLopener):
-    version = "Pynik/0.1"
+def _normal_http_read(url, http_headers, http_post_data):
+    if http_post_data is not None:
+        http_post_data = urllib.urlencode(http_post_data)
 
-def _normal_http_read(url):
+    request = urllib2.Request(url, headers=http_headers, data=http_post_data)
+    request.add_header('User-Agent', USER_AGENT)
+
     try:
-        urllib._urlopener = _AppURLopener()
-        file = urllib.urlopen(url)
+        file = urllib2.urlopen(request)
     except IOError:
         return None
 
