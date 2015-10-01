@@ -3,11 +3,11 @@ import re
 import urllib
 from socket import *
 
-def write(s, text):
+def _write(s, text):
     s.send(text)
     s.send("\r\n")
 
-class http_get_request:
+class _http_get_request:
     def __init__(self, file):
         self.file = file
         self.headers = []
@@ -16,12 +16,12 @@ class http_get_request:
         self.headers.append((name, value))
 
     def send(self, s):
-        write(s, "GET %s HTTP/1.0" % self.file)
-        write(s, "\r\n".join(map(lambda x: "%s: %s" % x, self.headers)))
-        write(s, "")
-        write(s, "")
+        _write(s, "GET %s HTTP/1.0" % self.file)
+        _write(s, "\r\n".join(map(lambda x: "%s: %s" % x, self.headers)))
+        _write(s, "")
+        _write(s, "")
 
-def read_line(s):
+def _read_line(s):
     line = ""
 
     while True:
@@ -34,13 +34,13 @@ def read_line(s):
 
             return line
 
-def read_http_headers(s):
-    m = re.match("^(.+?) (.+?) (.+)$", read_line(s))
+def _read_http_headers(s):
+    m = re.match("^(.+?) (.+?) (.+)$", _read_line(s))
     protocol, response_num, response_string = m.groups()
     headers = {}
 
     while True:
-        line = read_line(s)
+        line = _read_line(s)
         if len(line) == 0:
             break
 
@@ -50,7 +50,7 @@ def read_http_headers(s):
 
     return (protocol, int(response_num), response_string, headers)
 
-def read_http_data(s, length):
+def _read_http_data(s, length):
     data = ''
     while not length or len(data) < length:
         to_receive = 1024
@@ -66,7 +66,7 @@ def read_http_data(s, length):
 
     return data
 
-def legacy_http_read(url, protocol, address, port, file):
+def _legacy_http_read(url, protocol, address, port, file):
     if not port:
         port = 80
     if not file:
@@ -74,7 +74,7 @@ def legacy_http_read(url, protocol, address, port, file):
 
     # print "Connecting to %s" % address
 
-    request = http_get_request(file)
+    request = _http_get_request(file)
     request.add_header("User-Agent", "Pynik/0.1")
     request.add_header("Accept", "*/*")
     request.add_header("Host", address)
@@ -84,7 +84,7 @@ def legacy_http_read(url, protocol, address, port, file):
     s.connect((address, port))
     request.send(s)
 
-    protocol, response_num, response_string, headers = read_http_headers(s)
+    protocol, response_num, response_string, headers = _read_http_headers(s)
 
     if response_num == 301 or response_num == 302:
         s.close()
@@ -102,7 +102,7 @@ def legacy_http_read(url, protocol, address, port, file):
         if "Content-Length" in headers:
             length = min(length, int(headers["Content-Length"]))
 
-        data = read_http_data(s, length)
+        data = _read_http_data(s, length)
 
         s.close()
 
@@ -111,12 +111,12 @@ def legacy_http_read(url, protocol, address, port, file):
         print "Got unhandled response code: %s" % response_num
         return None
 
-class AppURLopener(urllib.FancyURLopener):
+class _AppURLopener(urllib.FancyURLopener):
     version = "Pynik/0.1"
 
-def normal_http_read(url):
+def _normal_http_read(url):
     try:
-        urllib._urlopener = AppURLopener()
+        urllib._urlopener = _AppURLopener()
         file = urllib.urlopen(url)
     except IOError:
         return None
@@ -135,9 +135,9 @@ def read_url(url):
 
         if protocol == 'https':
             # Use the built-in functions
-            return normal_http_read(url)
+            return _normal_http_read(url)
         elif protocol == 'http':
-            return legacy_http_read(url, protocol, address, port, file)
+            return _legacy_http_read(url, protocol, address, port, file)
         else:
             print "Only http(s) is supported at this moment."
             return None
