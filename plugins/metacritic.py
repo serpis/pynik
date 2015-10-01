@@ -1,48 +1,76 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
-### teetow snodde googlefight lol
-
-import re
+import json
 import utility
 from commands import Command
 
-class metacritic(Command):
-	def __init__(self):
-		pass
+class Metacritic(Command):
+    def trig_metacritic(self, bot, source, target, trigger, argument):
+        """Command used to search the review aggregation site Metacritic.com"""
+        return self._run_command(argument.strip()).encode('utf-8')
 
+    USAGE = u"Usage: .metacritic <title>"
 
-	def parse_result(self, response, term, fullurl):
-		rslt = re.search(r'a total of <b>(?P<numresults>\d+) result.+?<p><br>View Results.+?<p>1. <strong>(?P<platform>.+?):</strong>.+?<b>(?P<title>.+?)</b>.+?\((?P<year>\d+)\).+?<SPAN.+?>(?P<score>.+?)</SPAN>.+?<br>(?P<publisher>.+?)</p>', response, re.S)
+    URL_BASE = 'http://www.metacritic.com'
+    URL_API = URL_BASE + '/autosearch'
+    URL_MANUAL_SEARCH = URL_BASE + '/search/all/%s/results'
 
-		if rslt:
-			if (rslt.group('numresults') == '1'):
-				return "%s (%s, %s, %s): %s" % (rslt.group('title'), rslt.group('year'), rslt.group('publisher'), rslt.group('platform'), rslt.group('score'))
-			else:
-				return "%s (%s, %s, %s): %s          %s (%s hits)" % (rslt.group('title'), rslt.group('year'), rslt.group('publisher'), rslt.group('platform'), rslt.group('score'), fullurl, rslt.group('numresults'))
-		else:
-		    return None
+    def __init__(self):
+        pass
 
+    def _run_command(self, search_term):
+        if not search_term:
+            return self.USAGE
 
-	def trig_mc(self, bot, source, target, trigger, argument):
-		term = argument.strip()
+        raw_result = self._get_raw_result(search_term)
+        if not raw_result:
+            return u"Could not retrieve data from Metacritic :("
 
-		if not term:
-			return "usage: .metacritic <game title> or <game> <platform> (slower)"
+        decoded_result = json.loads(raw_result['data'])
+        items = decoded_result['autoComplete']
 
-		url = 'http://apps.metacritic.com/search/process?ty=3&tfs=game_title&ts=' + utility.escape(term)
-		data = utility.read_url(url)["data"]
-		result = self.parse_result(data, term, url)
+        if len(items) == 0:
+            return u"No item found. Manual search: " + self._manual_search_url(search_term)
+        else:
+            return self._formatted_search_result(items[0], search_term)
 
-		if result:
-			return result
+    def _get_raw_result(self, search_term):
+        headers = {'X-Requested-With': 'XMLHttpRequest',
+                   'Referer': self.URL_BASE}
+        post_data = {'search_term': search_term}
 
-		print "title search failed."
-		url = 'http://apps.metacritic.com/search/process?ty=3&ts=' + utility.escape(term)
-		data = utility.read_url(url)["data"]
-		result = self.parse_result(data, term, url)
+        return utility.read_url(self.URL_API, headers, post_data)
 
-		if result:
-			return result
+    def _manual_search_url(self, search_term):
+        return self.URL_MANUAL_SEARCH % utility.escape(search_term)
 
-		return "Found nothing. Try it yourself: " + 'http://apps.metacritic.com/search/process?ty=3&ts=' + utility.escape(term)
+    def _formatted_search_result(self, item, search_term):
+        template = u"{name} ({formatted_info}), {formatted_score}, {item_url}" + \
+            u" | All results: {manual_search_url}"
 
+        data = {'name': item['name'],
+                'formatted_info': self._formatted_item_info(item),
+                'formatted_score': self._formatted_item_score(item),
+                'item_url': self.URL_BASE + item['url'],
+                'manual_search_url': self._manual_search_url(search_term)}
+
+        return template.format(**data)
+
+    def _formatted_item_info(self, item):
+        result = u"%s" % item['refType']
+
+        if item['itemDate']:
+            result += u", %s" % str(item['itemDate'])
+
+        return result
+
+    def _formatted_item_score(self, item):
+        if item['metaScore']:
+            result = u"%s/100" % str(item['metaScore'])
+        else:
+            result = u"No score"
+
+        if item['scoreWord']:
+            result += u" (%s)" % item['scoreWord']
+
+        return result
