@@ -9,6 +9,10 @@ class Metacritic(Command):
         """Command used to search the review aggregation site Metacritic.com"""
         return self._run_command(argument.strip()).encode('utf-8')
 
+    def trig_mc(self, bot, source, target, trigger, argument):
+        """Shorthand for command metacritic"""
+        return self.trig_metacritic(bot, source, target, trigger, argument)
+
     USAGE = u"Usage: .metacritic <title>"
 
     URL_BASE = 'http://www.metacritic.com'
