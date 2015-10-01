@@ -66,8 +66,67 @@ def read_http_data(s, length):
 
 	return data
 
+def legacy_http_read(url, protocol, address, port, file):
+	if not port:
+		port = 80
+	if not file:
+		file = '/'
+
+	# print "Connecting to %s" % address
+
+	request = http_get_request(file)
+	request.add_header("User-Agent", "Pynik/0.1")
+	request.add_header("Accept", "*/*")
+	request.add_header("Host", address)
+
+	s = socket(AF_INET, SOCK_STREAM)
+
+	s.connect((address, port))
+	request.send(s)
+
+	protocol, response_num, response_string, headers = read_http_headers(s)
+
+	if response_num == 301 or response_num == 302:
+		s.close()
+
+		# Let's do some simple loop detection...
+		if url == headers['Location']:
+			print "Redirect loop discovered at: %s" % headers['Location']
+			return None
+		else:
+			print "Site moved to: %s" % headers['Location']
+			return read_url(headers['Location'])
+	elif response_num == 200:
+		# print "Got response 200. Sweet!"
+		length = 1024 * 1024  # max one megabyte
+		if "Content-Length" in headers:
+			length = min(length, int(headers["Content-Length"]))
+
+		data = read_http_data(s, length)
+
+		s.close()
+
+		return { "url": url, "data": data }
+	else:
+		print "Got unhandled response code: %s" % response_num
+		return None
+
 class AppURLopener(urllib.FancyURLopener):
 	version = "Pynik/0.1"
+
+def normal_http_read(url):
+	try:
+		urllib._urlopener = AppURLopener()
+		file = urllib.urlopen(url)
+	except IOError:
+		return None
+
+	result = {"url": file.geturl(),
+			  "data": file.read(1024 * 1024),
+			  "info": file.info()}
+
+	file.close()
+	return result
 
 def read_url(url):
 	m = re.match("^(.{3,5}):\/\/([^\/]*)(:?\d*)(\/.*?)?$", url)
@@ -76,67 +135,12 @@ def read_url(url):
 
 		if protocol == 'https':
 			# Use the built-in functions
-
-			try:
-				urllib._urlopener = AppURLopener()
-				file = urllib.urlopen(url)
-			except IOError:
-				return None
-
-			result = { "url": file.geturl(),
-						"data": file.read(1024*1024),
-						"info": file.info() }
-
-			file.close()
-			return result
-
-		elif protocol != 'http':
+			return normal_http_read(url)
+		elif protocol == 'http':
+			return legacy_http_read(url, protocol, address, port, file)
+		else:
 			print "Only http(s) is supported at this moment."
 			return None
-		else:
-			if not port:
-				port = 80
-			if not file:
-				file = '/'
-
-			#print "Connecting to %s" % address
-
-			request = http_get_request(file)
-			request.add_header("User-Agent", "Pynik/0.1")
-			request.add_header("Accept", "*/*")
-			request.add_header("Host", address)
-
-			s = socket(AF_INET, SOCK_STREAM)
-
-			s.connect((address, port))
-			request.send(s)
-
-			protocol, response_num, response_string, headers = read_http_headers(s)
-
-			if response_num == 301 or response_num == 302:
-				s.close()
-
-				# Let's do some simple loop detection...
-				if url == headers['Location']:
-					print "Redirect loop discovered at: %s" % headers['Location']
-					return None
-				else:
-					print "Site moved to: %s" % headers['Location']
-					return read_url(headers['Location'])
-			elif response_num == 200:
-				#print "Got response 200. Sweet!"
-				length = 1024*1024 # max one megabyte
-				if "Content-Length" in headers:
-					length = min(length, int(headers["Content-Length"]))
-
-				data = read_http_data(s, length)
-
-				s.close()
-
-				return { "url": url, "data": data }
-			else:
-				print "Got unhandled response code: %s" % response_num
-				return None
 	else:
 		print "NOT AN URL: %s" % url
 		return None
