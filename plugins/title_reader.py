@@ -2,6 +2,7 @@
 
 import sys
 import re
+import datetime
 import utility
 import tweet
 from plugins import Plugin
@@ -51,6 +52,9 @@ class TitleReaderPlugin(Command):
 	url_list = []
 	url_masks = {}
 
+	# dict of channel to timestamp
+	# used to turn off title announcement for one url
+	no_spoil_dict = {}
 
 	def __init__(self):
 		pass
@@ -70,11 +74,24 @@ class TitleReaderPlugin(Command):
 				title = utility.timeout(get_title, 10, (url,))
 				self.urls[target].title = title
 				self.save_last_url(target)
-				if not tweetbool and target in ['#c++.se', '#d1d', '#lithen', "#d2006"," #testchannel"]:
-					bot.tell(target, self.clean(url, title))
+				if not tweetbool and target in ['#c++.se', '#d1d', '#lithen', "#d2006","#testchannel"]:
+					# don't announce title if we've been asked to be quiet
+					spoiler_averted = False
+					if target in self.no_spoil_dict:
+						ts = self.no_spoil_dict[target]
+						del self.no_spoil_dict[target]
+						now = datetime.datetime.now()
+						diff_secs = (now - ts).total_seconds()
+						if diff_secs < 60:
+							spoiler_averted = True
+					if not spoiler_averted:
+						bot.tell(target, self.clean(url, title))
 			except utility.TimeoutException:
 				pass
 
+	def trig_nospoiler(self, bot, source, target, trigger, argument):
+		self.no_spoil_dict[target] = datetime.datetime.now()
+		return "ok ok I'll be quiet XD"
 
 	def save_last_url(self, target):
 		self.url_list.append(self.urls[target])
