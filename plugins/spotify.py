@@ -101,7 +101,7 @@ class SpotifyCommand(Command):
 			return None
 
 	def on_privmsg(self, bot, source, target, message):
-		m = re.search(r'http://open\.spotify\.com/(?P<type>.+?)/(?P<hash>\w+)', message)
+		m = re.search(r'https?://open\.spotify\.com/(?P<type>.+?)/(?P<hash>\w+)', message)
 		prot = 'URL'
 		if not m:
 			prot = 'URI'
@@ -121,7 +121,7 @@ class SpotifyCommand(Command):
 
 		# Look up the argument
 		if argument:
-			m = re.search(r'http://open\.spotify\.com/(?P<type>.+?)/(?P<hash>\w+)', argument)
+			m = re.search(r'https?://open\.spotify\.com/(?P<type>.+?)/(?P<hash>\w+)', argument)
 			if not m:
 				m = re.search(r'spotify:(?P<type>.+?):(?P<hash>\w+)', argument)
 			if m:
@@ -136,7 +136,7 @@ class SpotifyCommand(Command):
 			ref = self.references[target]
 			if ref:
 				res = u" | ".join([self.lookup_direct(ref), ref.URL()])
-		
+
 		if res:
 			return res.encode("utf-8")
 		else:
