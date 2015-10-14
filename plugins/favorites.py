@@ -2,9 +2,14 @@
 
 from commands import Command
 import re
+import datetime
 import utility
 
 class FavoriteCommands(Command):
+	# dict of channel,fav,url to timestamp
+	# used to handle safe overwrites
+	overwrite_dict = {}
+
 	def __init__(self):
 		self.favorites = {}
 
@@ -31,11 +36,25 @@ class FavoriteCommands(Command):
 		if m:
 			fav_trig, fav_url = m.group(1, 2)
 			
-			self.favorites[fav_trig] = fav_url
-	
-			self.save()
-
-			return "Favorite %s added." % fav_trig
+			write_allowed = True
+			ow_key = (target, fav_trig, fav_url)
+			if fav_trig in self.favorites:
+				write_allowed = False
+				if ow_key in self.overwrite_dict:
+					ts = self.overwrite_dict[ow_key]
+					del self.overwrite_dict[ow_key]
+					now = datetime.datetime.now()
+					diff_secs = (now - ts).total_seconds()
+					if diff_secs < 60:
+						write_allowed = True
+			
+			if write_allowed:	
+				self.favorites[fav_trig] = fav_url
+				self.save()
+				return "Favorite %s added." % fav_trig
+			else:
+				self.overwrite_dict[ow_key] = datetime.datetime.now()
+				return "Favorite is already %s. Run command again to overwrite." % self.favorites[fav_trig]
 		else:
 			return "Syntax: setfav <trigger> <url>"
 
