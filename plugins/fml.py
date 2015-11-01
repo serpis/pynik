@@ -32,7 +32,7 @@ def fml_entry(identifier, lang):
     dom = get_fml_dom(identifier, lang)
     result = ""
 
-    if dom.getElementsByTagName("code")[0] == "0":
+    if get_node_text(dom.getElementsByTagName("code")[0]) == "0":
         if lang == "se":
             result = "Idag lyckades jag inte använda API:et. FFML"
         else:
