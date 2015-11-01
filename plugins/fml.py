@@ -15,9 +15,9 @@ def get_node_text(node):
 
     return text
 
-def get_fml_dom(identifier, lang):
-    url = "http://api.betacie.com/view/" + identifier + \
-            "/nocomment?key=readonly&language=" + lang
+def get_fml_dom(identifier, lang, api_key):
+    url_format = "http://api.betacie.com/view/%s/nocomment?key=%s&language=%s"
+    url = url_format % (identifier, api_key, lang)
     response = utility.read_url(url)
     data = response["data"]
     return minidom.parseString(data)
@@ -28,8 +28,8 @@ def base_fml_url(lang):
     else:
         return "http://www.fmylife.com/"
 
-def fml_entry(identifier, lang):
-    dom = get_fml_dom(identifier, lang)
+def fml_entry(identifier, lang, api_key):
+    dom = get_fml_dom(identifier, lang, api_key)
     result = ""
 
     if get_node_text(dom.getElementsByTagName("code")[0]) == "0":
@@ -57,6 +57,7 @@ def fml_entry(identifier, lang):
             get_node_text(item.getElementsByTagName("category")[0]) + "/" + \
             item.getAttribute("id")
 
+
 class FMLCommand(Command):
     types = ['last', 'random', 'top', 'top_day', 'top_week', 'top_month', 'flop',
             'flop_day', 'flop_week', 'flop_month', 'love', 'money', 'kids',
@@ -66,6 +67,9 @@ class FMLCommand(Command):
 
     def __init__(self):
         pass
+
+    def on_load(self):
+        self._api_key = utility.load_data("betacie_api_key", "readonly")
 
     def trig_fml(self, bot, source, target, trigger, argument):
         """Command used to display stories from www.fmylife.com"""
@@ -83,9 +87,9 @@ class FMLCommand(Command):
 
             # If the argument is a valid type, look it up
             elif (argument in self.types) or (argument.isdigit()):
-                result = fml_entry(argument, "en")
+                result = fml_entry(argument, "en", self._api_key)
             elif m:
-                result = fml_entry(m.group(1), "en")
+                result = fml_entry(m.group(1), "en", self._api_key)
 
             if result:
                 # Return result (encoded to make IRCClient.send() happy)
@@ -93,6 +97,7 @@ class FMLCommand(Command):
 
         # Non-valid argument
         return self.usage
+
 
 class FFMLCommand(Command):
     types = ['last', 'random', 'top', 'top_day', 'top_week', 'top_month', 'flop',
@@ -103,6 +108,9 @@ class FFMLCommand(Command):
 
     def __init__(self):
         pass
+
+    def on_load(self):
+        self._api_key = utility.load_data("betacie_api_key", "readonly")
 
     def trig_ffml(self, bot, source, target, trigger, argument):
         """Kommando för att visa anekdoter från www.fanformittliv.com"""
@@ -121,9 +129,9 @@ class FFMLCommand(Command):
 
             # If the argument is a valid type, look it up
             elif (argument in self.types) or (argument.isdigit()):
-                result = fml_entry(argument, "se")
+                result = fml_entry(argument, "se", self._api_key)
             elif m:
-                result = fml_entry(m.group(1), "se")
+                result = fml_entry(m.group(1), "se", self._api_key)
 
             if result:
                 # Return result (encoded to make IRCClient.send() happy)
