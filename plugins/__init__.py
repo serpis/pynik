@@ -6,4 +6,5 @@ __all__ = ['plugins', 'command_catcher', 'first_plugin', 'auto_join', 'aduno',
             'ical_parser', 'icq', 'pylisp', 'lithcourse', 'scale', 'postnr',
             'tenta', 'prisjakt', 'spotify', 'stava', 'stock', 'down', 'metacritic',
             'notes', 'fml', 'systembolaget', 'randombuy', 'festern_bbq',
-            'compliment', 'roulette', 'tyda', 'yrno', 'tweet', 'calc', 'degoogle']
+            'compliment', 'roulette', 'tyda', 'yrno', 'tweet', 'calc', 'degoogle',
+            'temperatur_nu']
