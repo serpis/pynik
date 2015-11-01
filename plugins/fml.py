@@ -34,7 +34,7 @@ def fml_entry(identifier, lang):
 
     if get_node_text(dom.getElementsByTagName("code")[0]) == "0":
         if lang == "se":
-            result = "Idag lyckades jag inte använda API:et. FFML"
+            result = u"Idag lyckades jag inte använda API:et. FFML"
         else:
             result = "Today, I could not use the API. FML"
         return result + " | " + base_fml_url(lang)
@@ -43,7 +43,7 @@ def fml_entry(identifier, lang):
 
     if not items:
         if lang == "se":
-            result = "Idag lyckades jag inte hitta något resultat. FFML"
+            result = u"Idag lyckades jag inte hitta något resultat. FFML"
         else:
             result = "Today, I could not find a result. FML"
         return result + " | " + base_fml_url(lang)
@@ -117,7 +117,7 @@ class FFMLCommand(Command):
 
             # Show all types, if requested
             if argument == 'visa_typer':
-                result = "Tillgängliga typer: " + ", ".join(self.types)
+                result = u"Tillgängliga typer: " + ", ".join(self.types)
 
             # If the argument is a valid type, look it up
             elif (argument in self.types) or (argument.isdigit()):
