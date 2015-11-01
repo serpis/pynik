@@ -1,4 +1,4 @@
-# coding: utf-8
+# coding: latin-1
 
 from commands import Command
 import htmlentitydefs
