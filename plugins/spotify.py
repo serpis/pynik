@@ -21,8 +21,7 @@ class SpotifyRef(object):
 class SpotifyCommand(Command):
 	hooks = ['on_privmsg']
 	references = {}
-	#api_base_url = u"http://78.31.8.28/" # http://ws.spotiy.com/ is official but seems unstable
-	api_base_url = u"http://ws.spotify.com/"
+	api_base_url = u"https://api.spotify.com/"
 
 	def __init__(self):
 		pass
@@ -36,69 +35,73 @@ class SpotifyCommand(Command):
 			return u"No metadata found :("
 
 	def lookup_direct(self, reference):
-		decoder = JSONDecoder()
-		api_url = self.api_base_url + u"lookup/1/.json?uri=" + reference.URI()
+		if reference.type == u"album":
+			endpoint = u"v1/albums/{id}"
+		elif reference.type == u"artist":
+			endpoint = u"v1/artists/{id}"
+		elif reference.type == u"playlist":
+			endpoint = u"v1/users/{user_id}/playlists/{playlist_id}"
+			return None  # Unsupported by this plugin
+		elif reference.type == u"track":
+			endpoint = u"v1/tracks/{id}"
+		else:
+			return None  # Unsupported by this plugin
+
+		api_url = self.api_base_url + endpoint.format(id=reference.hash)
 		response = utility.read_url(api_url)
 
 		if not response:
 			return None
 
 		try:
-			data = decoder.decode(response['data'])
-		except StandardError:
+			data = JSONDecoder().decode(response['data'])
+		except ValueError:
 			return None
 
-		if not data.get(u"info"):
+		if data.get(u"status"):
 			return None
-
-		# Album reference
-		if reference.type == u"album":
-			metadata = data.get(u"album", {})
-			album = metadata.get(u"name", u"Unknown album")
-			artist = metadata.get(u"artist", u"Unknown artist")
-			year = metadata.get(u"released", u"Unknown year")
-			return u"%s: %s (%s)" % (artist, album, year)
-
-		# Artist reference
-		elif reference.type == u"artist":
-			metadata = data.get(u"artist", {})
-			artist = metadata.get(u"name", u"Unknown artist")
-			return u"%s" % artist
-
-		# Track reference
-		elif reference.type == u"track":
-			#return u"track"
-			# Extract some dicts from the data
-			metadata = data.get(u"track", {})
-			metadata_album = metadata.get(u"album", {})
-			metadata_artists = metadata.get(u"artists", [{}])
-
-			# Extract info from the dicts
-			album = metadata_album.get(u"name", u"Unknown album")
-			artists = map(lambda artist: artist.get(u"name", u"Unknown artist"), metadata_artists)
-			artist = ", ".join(artists)
-			duration = metadata.get(u"length", u"0.0")
-			popularity = metadata.get(u"popularity", u"0.0")
-			track = metadata.get(u"name", u"Unknown track")
-			year = metadata_album.get(u"released", u"Unknown year")
-
-			# Convert strings to floats
-			try:
-				duration = float(duration)
-			except ValueError:
-				duration = 0.0;
-			try:
-				popularity = float(popularity)
-			except ValueError:
-				popularity = 0.0;
-
-			# Construct result
-			return u"%s: %s | %s (%s) | Track popularity %d%%, Track duration %d:%02d" % \
-					(artist, track, album, year, int(round(popularity*100)), duration / 60, duration % 60)
-
-		# Unsupported reference
 		else:
-			return None
+			return self._format_result(reference.type, data)
+
+	def _format_result(self, type, data):
+		if type == u"album":
+			album = data.get(u"name", u"Unknown album")
+			date = data.get(u"release_date", u"Unknown year")
+			popularity = data.get(u"popularity", 0)
+
+			artist_data = data.get(u"artists")
+			if artist_data:
+				artists = ", ".join(a.get(u"name", "???") for a in artist_data)
+			else:
+				artists = u"Unknown artist"
+
+			return u"%s: %s (%s) | Album popularity %s%%" % \
+				(artists, album, date, popularity)
+
+		elif type == u"artist":
+			artist = data.get(u"name", u"Unknown artist")
+			popularity = data.get(u"popularity", 0)
+
+			return u"%s | Artist popularity %s%%" % (artist, popularity)
+
+		elif type == u"track":
+			track = data.get(u"name", u"Unknown track")
+			track_number = data.get(u"track_number", "???")
+			popularity = data.get(u"popularity", 0)
+			duration = data.get(u"duration_ms", 0) / 1000.0
+
+			album_data = data.get(u"album", {})
+			album = album_data.get(u"name", u"Unknown album")
+
+			artist_data = data.get(u"artists")
+			if artist_data:
+				artists = ", ".join(a.get(u"name", "???") for a in artist_data)
+			else:
+				artists = u"Unknown artist"
+
+			return u"%s: %s | Track #%s on %s | Track popularity %d%%, Track duration %d:%02d" % \
+				(artists, track, track_number, album, popularity,
+				 int(duration / 60), round(duration % 60))
 
 	def on_privmsg(self, bot, source, target, message):
 		m = re.search(r'https?://open\.spotify\.com/(?P<type>.+?)/(?P<hash>\w+)', message)
