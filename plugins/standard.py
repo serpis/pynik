@@ -6,6 +6,7 @@ import string
 import re
 import utility
 import random
+import datetime
 
 class EchoCommand(Command): 
 	def __init__(self):
@@ -21,21 +22,58 @@ class HelloCommand(Command):
 	def trig_hello(self, bot, source, target, trigger, argument):
 		return "Hello there, %s!" % source
 
+class TimeoutDict():
+	def __init__(self, timeout_secs):
+		self.d = {}
+		self.timeout_secs = timeout_secs
+
+	def get(self, key):
+		if key in self.d:
+			(ts, data) = self.d[key]
+			now = datetime.datetime.now()
+			diff_secs = (now - ts).total_seconds()
+			if diff_secs < self.timeout_secs:
+				#self.put(key, data, now=now)
+				return data
+			else:
+				del self.d[key]
+				return None
+		else:
+			return None
+
+	def put(self, key, data, now=None):
+		if not now:
+			now = datetime.datetime.now()
+		self.d[key] = (now, data)
+
 class PickCommand(Command): 
 	def __init__(self):
-		pass
+		self.old_choices = TimeoutDict(60)
 	
 	def trig_pick(self, bot, source, target, trigger, argument):
 		choices = argument.split(" or ")
 		choices = map(lambda x: x.strip(), choices)
 		choices = filter(lambda choice: len(choice), choices)
 
+		c_key = "%s,%s" % (target, source)
+
+		if not choices:
+			choices = self.old_choices.get(c_key)
+
 		#print choices
 
 		if choices:
-			responses = ["Hm... Definitely not %s.", "%s!", "I say... %s!", "I wouldn't pick %s...", "Perhaps %s..."]
+			responses = [(False, "Hm... Definitely not %s."), (True, "%s!"), (True, "I say... %s!"), (False, "I wouldn't pick %s..."), (True, "Perhaps %s...")]
 			choice = random.choice(choices)
-			response = random.choice(responses)
+			positive, response = random.choice(responses)
+
+			if positive or len(choices) == 1:
+				self.old_choices.put(c_key, None)
+			else:
+				choices_minus_that_one = [x for x in choices]
+				choices_minus_that_one.remove(choice)
+
+				self.old_choices.put(c_key, choices_minus_that_one)
 			
 			return response % choice
 		else:
