@@ -253,7 +253,15 @@ class ConsCell:
 				return rest.rest().rest().first().eval(env)
 
 		if isinstance(first, Symbol) and first.name == "lambda":
-			return Lambda(env, rest.first(), rest.rest())
+			if isinstance(rest.first(), Symbol):
+				name = rest.first()
+				parameters = rest.rest().first()
+				expression = rest.rest().rest()
+			else:
+				name = None
+				parameters = rest.first()
+				expression = rest.rest()
+			return Lambda(env, name, parameters, expression)
 
 		if isinstance(first, Symbol) and first.name in ["let", "let*"]:
 			bindings = rest.first()
@@ -396,8 +404,9 @@ class Macro:
 		return "<macro: %s, %s>" % (self.parameters, self.expression)
 
 class Lambda:
-	def __init__(self, env, parameters, expressions):
+	def __init__(self, env, name, parameters, expressions):
 		self.env = env
+		self.name = name
 		self.parameters = parameters
 		self.expression = ExpressionBody(expressions)
 
@@ -408,13 +417,15 @@ class Lambda:
 		#env = self.env
 		eval_assert(len(self.parameters) == len(args), "wrong number of arguments to lambda function (%d instead of %d)" % (len(args), len(self.parameters)))
 
+		if self.name:
+			env[self.name] = self
 		for (param, arg) in zip(self.parameters, args):
 			env[param] = arg.eval(env.parent)
 
 		return self.expression.eval(env)
 
 	def __repr__(self):
-		return "<lambda function: %s, %s>" % (self.parameters, self.expression)
+		return "<lambda function: %s, %s, %s>" % (self.name or "<anonymous>", self.parameters, self.expression)
 	
 class NativeFunction:
 	def __init__(self, function, name, num_args):
