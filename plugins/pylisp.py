@@ -281,6 +281,25 @@ class ConsCell:
 
 			return code.eval(child_env)
 
+		if isinstance(first, Symbol) and first.name in ["flet", "labels"]:
+			bindings = rest.first()
+			code = ExpressionBody(rest.rest())
+
+			child_env = Environment(env)
+
+			for binding in bindings:
+				symbol = binding.first()
+				parameters = binding.rest().first()
+				expression = binding.rest().rest()
+				if first.name == "flet":
+					value = Lambda(env, parameters, expression)
+				else:
+					value = Lambda(child_env, parameters, expression)
+
+				setq_func(child_env, symbol, value)
+
+			return code.eval(child_env)
+
 		if isinstance(first, Symbol) and first.name == "setq":
 			return setq_func(env, rest.first(), rest.rest().first().eval(env))
 
