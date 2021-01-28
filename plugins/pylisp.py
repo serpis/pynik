@@ -257,11 +257,12 @@ class ConsCell:
 				name = rest.first()
 				parameters = rest.rest().first()
 				expression = rest.rest().rest()
+				return NamedLambda(env, name, parameters, expression)
 			else:
 				name = None
 				parameters = rest.first()
 				expression = rest.rest()
-			return Lambda(env, name, parameters, expression)
+				return Lambda(env, parameters, expression)
 
 		if isinstance(first, Symbol) and first.name in ["let", "let*"]:
 			bindings = rest.first()
@@ -404,6 +405,27 @@ class Macro:
 		return "<macro: %s, %s>" % (self.parameters, self.expression)
 
 class Lambda:
+	def __init__(self, env, parameters, expressions):
+		self.env = env
+		self.parameters = parameters
+		self.expression = ExpressionBody(expressions)
+
+	def eval(self, env):
+		return self
+
+	def apply(self, env, args):
+		#env = self.env
+		eval_assert(len(self.parameters) == len(args), "wrong number of arguments to lambda function (%d instead of %d)" % (len(args), len(self.parameters)))
+
+		for (param, arg) in zip(self.parameters, args):
+			env[param] = arg.eval(env.parent)
+
+		return self.expression.eval(env)
+
+	def __repr__(self):
+		return "<lambda function: %s, %s>" % (self.parameters, self.expression)
+
+class NamedLambda:
 	def __init__(self, env, name, parameters, expressions):
 		self.env = env
 		self.name = name
@@ -425,7 +447,7 @@ class Lambda:
 		return self.expression.eval(env)
 
 	def __repr__(self):
-		return "<lambda function: %s, %s, %s>" % (self.name or "<anonymous>", self.parameters, self.expression)
+		return "<named lambda function: %s, %s, %s>" % (self.name, self.parameters, self.expression)
 	
 class NativeFunction:
 	def __init__(self, function, name, num_args):
@@ -457,7 +479,7 @@ class FunctionCall:
 	def eval(self, env):
 		function = self.function.eval(env)
 
-		eval_assert(isinstance(function, NativeFunction) or isinstance(function, Lambda) or isinstance(function, Macro), "attempt to call non-function: %s" % function);
+		eval_assert(isinstance(function, NativeFunction) or isinstance(function, Lambda) or isinstance(function, NamedLambda) or isinstance(function, Macro), "attempt to call non-function: %s" % function);
 
 		return function.apply(Environment(env), self.args)
 
