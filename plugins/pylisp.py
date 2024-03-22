@@ -165,6 +165,22 @@ class Integer:
 	def __repr__(self):
 		return "%i" % self.value
 
+class Float:
+	def __init__(self, value):
+		self.value = value
+
+	def eval(self, env):
+		return self
+
+	def __hash__(self):
+		return self.value.__hash__()
+
+	def __eq__(self, other):
+		return self.value.__eq__(other.value)
+
+	def __repr__(self):
+		return "%f" % self.value
+
 class ExpressionBody:
 	def __init__(self, expressions):
 		self.expressions = expressions
@@ -363,7 +379,7 @@ def null_func(env, thing):
 		return Nil()
 
 def atom_func(env, thing):
-	if isinstance(thing, (Nil, True, Symbol, Integer)):
+	if isinstance(thing, (Nil, True, Symbol, Integer, Float)):
 		return True()
 	else:
 		return Nil()
@@ -511,6 +527,7 @@ def tokenize(text):
 	("string", r'("(?:\\.|[^"])*")'), # hack for allowing empty strings, cont'd below
 	("leftparenthesis", "(\()"),
 	("rightparenthesis", "(\))"),
+	("float", "(\d*\.\d+)"),
 	("integer", "(\d+)"),
 	("quote", "(')"),
 	("dot", "(\.)"),
@@ -565,6 +582,8 @@ def parse_constant(token_stream):
 		return String(token_stream.pop().value)
 	elif token_stream.peek().name == "integer":
 		return Integer(int(token_stream.pop().value))
+	elif token_stream.peek().name == "float":
+		return Float(float(token_stream.pop().value))
 	else:
 		parse_assert(False, "invalid constant: %s" % token_stream.peek().value)
 
@@ -595,7 +614,7 @@ def parse_expression(token_stream):
 		return parse_list(token_stream)
 	elif token_stream.peek().name == "symbol":
 		return parse_symbol(token_stream)
-	elif token_stream.peek().name in ["string", "integer"]:
+	elif token_stream.peek().name in ["string", "integer", "float"]:
 		return parse_constant(token_stream)
 	elif token_stream.peek().name == "quote":
 		return parse_quoted(token_stream)
@@ -615,17 +634,29 @@ def parse_expression_list(token_stream):
 def eval_func(env, x):
 	return x.eval(env)
 
+def number_args(f):
+	def func(env, *args):
+		eval_assert(all(isinstance(x, Integer) for x in args) or all(isinstance(x, Float) for x in args), "arguments must be numbers of the same type")
+		return f(env, *args)
+	return func
+
+def number_ret(f):
+	def func(env, *args):
+		if isinstance(args[0], Integer):
+			return Integer(int(f(env, *args)))
+		else:
+			return Float(float(f(env, *args)))
+	return func
+
+@number_args
+@number_ret
 def sub_func(env, a, b):
-	#eval_assert(len(l) == 2, "function - takes exactly 2 arguments")
+	return a.value - b.value
 
-	#a = l[0]
-	#b = l[1]
-	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
-	return Integer(a.value - b.value)
-
+@number_args
+@number_ret
 def mul_func(env, a, b):
-	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
-	return Integer(a.value * b.value)
+	return a.value * b.value
 
 def setq_func(env, s, x):
 	eval_assert(isinstance(s, Symbol), "must be 2 args with first being a symbol")
@@ -653,26 +684,24 @@ def rand_func(env, i):
 	eval_assert(isinstance(i, Integer), "argument must be an integer")
 	return Integer(random.randint(0, i.value-1))
 
-def integer_eq_func(env, a, b):
-	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
-	
+@number_args
+def eq_func(env, a, b):
 	if a.value == b.value:
 		return True()
 	else:
 		return Nil()
 
-def integer_lt_func(env, a, b):
-	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
-
+@number_args
+def lt_func(env, a, b):
 	if a.value < b.value:
 		return True()
 	else:
 		return Nil()
 
-def integer_div_func(env, a, b):
-	eval_assert(isinstance(a, Integer) and isinstance(b, Integer), "arguments must be ints")
-
-	return Integer(a.value / b.value)
+@number_args
+@number_ret
+def div_func(env, a, b):
+	return a.value / b.value
 
 def str_append_func(env, a, b):
 	eval_assert(isinstance(a, String) and isinstance(b, String), "arguments must be strings")
@@ -685,12 +714,17 @@ def str_split_func(env, a, b):
 	return make_list([String(x) for x in a.value.split(b.value)])
 
 def convert_to_integer_func(env, x):
-	eval_assert(isinstance(x, (Integer, String)), "argument must be integer or string")
+	eval_assert(isinstance(x, (Integer, Float, String)), "argument must be number or string")
 
 	return Integer(int(x.value))
 
+def convert_to_float_func(env, x):
+	eval_assert(isinstance(x, (Integer, Float, String)), "argument must be number or string")
+
+	return Float(float(x.value))
+
 def convert_to_string_func(env, x):
-	eval_assert(isinstance(x, (Integer, String)), "argument must be integer or string")
+	eval_assert(isinstance(x, (Integer, Float, String)), "argument must be number or string")
 
 	return String(str(x.value))
 
@@ -751,19 +785,20 @@ class LispCommand(Command):
 		self.globals[Symbol("nil")] = Nil()
 		self.globals[Symbol("-")] = NativeFunction(sub_func, "-", 2)
 		self.globals[Symbol("*")] = NativeFunction(mul_func, "*", 2)
-		self.globals[Symbol("/")] = NativeFunction(integer_div_func, "/", 2)
+		self.globals[Symbol("/")] = NativeFunction(div_func, "/", 2)
 		self.globals[Symbol("str-append")] = NativeFunction(str_append_func, "str-append", 2)
 		self.globals[Symbol("str-split")] = NativeFunction(str_split_func, "str-split", 2)
 		self.globals[Symbol("string")] = NativeFunction(convert_to_string_func, "string", 1)
 		self.globals[Symbol("integer")] = NativeFunction(convert_to_integer_func, "string", 1)
+		self.globals[Symbol("float")] = NativeFunction(convert_to_float_func, "string", 1)
 		self.globals[Symbol("cons")] = NativeFunction(cons_func, "cons", 2)
 		self.globals[Symbol("car")] = NativeFunction(car_func, "car", 1)
 		self.globals[Symbol("cdr")] = NativeFunction(cdr_func, "cdr", 1)
 		self.globals[Symbol("list")] = NativeFunction(list_func, "list", -1)
 		self.globals[Symbol("print")] = NativeFunction(print_func, "print", 1)
 		self.globals[Symbol("rand")] = NativeFunction(rand_func, "rand", 1)
-		self.globals[Symbol("=")] = NativeFunction(integer_eq_func, "=", 2)
-		self.globals[Symbol("<")] = NativeFunction(integer_lt_func, "<", 2)
+		self.globals[Symbol("=")] = NativeFunction(eq_func, "=", 2)
+		self.globals[Symbol("<")] = NativeFunction(lt_func, "<", 2)
 		self.globals[Symbol("not")] = NativeFunction(not_func, "not", 1)
 		self.globals[Symbol("and")] = NativeFunction(and_func, "and", 2)
 		self.globals[Symbol("or")] = NativeFunction(or_func, "or", 2)
