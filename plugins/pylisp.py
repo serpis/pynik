@@ -216,7 +216,7 @@ class ListIterator:
 		if isinstance(self.cell, Nil):
 			raise StopIteration
 
-		if isinstance(self.cell.cdr, ConsCell) or isinstance(self.cell.cdr, Nil):
+		if isinstance(self.cell.cdr, (ConsCell, Nil)):
 			cell = self.cell
 			self.cell = self.cell.cdr
 			return cell.car
@@ -343,13 +343,13 @@ def cons_func(env, car, cdr):
 	return ConsCell(car, cdr)
 
 def listp_func(env, thing):
-	if isinstance(thing, ConsCell) or isinstance(thing, Nil):
+	if isinstance(thing, (ConsCell, Nil)):
 		return True()
 	else:
 		return Nil()
 
 def endp_func(env, thing):
-	eval_assert(isinstance(thing, ConsCell) or isinstance(thing, Nil), "argument to endp was not a list: %s" % thing)
+	eval_assert(isinstance(thing, (ConsCell, Nil)), "argument to endp was not a list: %s" % thing)
 
 	if isinstance(thing, Nil):
 		return True()
@@ -363,7 +363,7 @@ def null_func(env, thing):
 		return Nil()
 
 def atom_func(env, thing):
-	if isinstance(thing, Nil) or isinstance(thing, True) or isinstance(thing, Symbol) or isinstance(thing, Integer):
+	if isinstance(thing, (Nil, True, Symbol, Integer)):
 		return True()
 	else:
 		return Nil()
@@ -498,7 +498,7 @@ class FunctionCall:
 	def eval(self, env):
 		function = self.function.eval(env)
 
-		eval_assert(isinstance(function, NativeFunction) or isinstance(function, Lambda) or isinstance(function, NamedLambda) or isinstance(function, Macro), "attempt to call non-function: %s" % function);
+		eval_assert(isinstance(function, (NativeFunction, Lambda, NamedLambda, Macro)), "attempt to call non-function: %s" % function);
 
 		return function.apply(Environment(env), self.args)
 
@@ -685,12 +685,12 @@ def str_split_func(env, a, b):
 	return make_list([String(x) for x in a.value.split(b.value)])
 
 def convert_to_integer_func(env, x):
-	eval_assert(isinstance(x, Integer) or isinstance(x, String), "argument must be integer or string")
+	eval_assert(isinstance(x, (Integer, String)), "argument must be integer or string")
 
 	return Integer(int(x.value))
 
 def convert_to_string_func(env, x):
-	eval_assert(isinstance(x, Integer) or isinstance(x, String), "argument must be integer or string")
+	eval_assert(isinstance(x, (Integer, String)), "argument must be integer or string")
 
 	return String(str(x.value))
 
