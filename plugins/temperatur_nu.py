@@ -3,6 +3,7 @@
 from commands import Command
 import re
 import utility
+from urllib import urlencode
 
 _get_temp_re = re.compile('^\s*(.+)\s*$')
 
@@ -34,7 +35,7 @@ class TempCommand(Command):
 		else:
 			actual_argument = argument
 
-		url = "http://www.temperatur.nu/termo/%s/temp.txt" % actual_argument.lower()
+		url = "https://www.temperatur.nu/termo/gettemp.php?" + urlencode({"stadname": actual_argument.lower(), "what": "temp"})
 		response = utility.read_url(url)
 		m = None
 
