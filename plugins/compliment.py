@@ -21,7 +21,7 @@ class ComplimentCommand(Command):
 		
 		compliment = random.sample(self.compliments, 1)[0]
 		try:
-			return compliment.replace('%s', t)
+			return compliment.replace('%s', t).replace('samråre', 'samröre')
 			
 		except:
 			return "We all know %s rules, but unfortunately the compliment I tried to use does not." % t
